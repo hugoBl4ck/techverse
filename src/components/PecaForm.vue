@@ -39,6 +39,7 @@ const precoVenda = ref(0);
 const tipo = ref('');
 const socket = ref('');
 const tipoRam = ref('');
+const imageUrl = ref('');
 const isLoading = ref(false);
 
 const tiposPeca = [
@@ -64,6 +65,7 @@ async function fetchPeca(id) {
     tipo.value = data.tipo;
     socket.value = data.compatibilidade?.socket || '';
     tipoRam.value = data.compatibilidade?.tipoRam || '';
+    imageUrl.value = data.imageUrl || '';
   } else {
     console.error('No such document!');
     router.push('/inventario'); // Redirect if not found
@@ -84,6 +86,7 @@ watch(() => props.pecaPreenchida, (newPeca) => {
     precoVenda.value = 0;
     socket.value = newPeca.compatibilidade?.socket || '';
     tipoRam.value = newPeca.compatibilidade?.tipoRam || '';
+    imageUrl.value = newPeca.imageUrl || '';
   }
 }, { deep: true, immediate: true });
 
@@ -101,6 +104,7 @@ async function handleSubmit() {
       precoCusto: precoCusto.value,
       precoVenda: precoVenda.value,
       tipo: tipo.value,
+      imageUrl: imageUrl.value, // Adicionando o campo da imagem
       compatibilidade: {
         socket: socket.value,
         tipoRam: tipoRam.value,
@@ -126,6 +130,7 @@ async function handleSubmit() {
       precoVenda.value = 0;
       socket.value = '';
       tipoRam.value = '';
+      imageUrl.value = '';
     }
   } catch (error) {
     console.error('Erro ao salvar peça: ', error);
@@ -179,6 +184,10 @@ async function handleSubmit() {
         <div class="grid gap-2">
           <Label for="tipoRam">Tipo de RAM</Label>
           <Input id="tipoRam" v-model="tipoRam" type="text" placeholder="Ex: DDR4" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="imageUrl">URL da Imagem</Label>
+          <Input id="imageUrl" v-model="imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" />
         </div>
       </div>
     </CardContent>

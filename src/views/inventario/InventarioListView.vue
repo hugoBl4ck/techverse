@@ -3,15 +3,6 @@ import { ref, onMounted } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs } from 'firebase/firestore'
 import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table'
 import { RouterLink } from 'vue-router'
 
 const pecas = ref([])
@@ -27,42 +18,66 @@ async function fetchPecas() {
 onMounted(() => {
   fetchPecas()
 })
+
+// Estilo para o padrão de pontos a ser injetado no head
+const dotPatternStyle = `
+  .pattern-dots {
+    background-image: radial-gradient(currentColor 2px, transparent 2px);
+    background-size: 16px 16px;
+  }
+`;
+
 </script>
 
 <template>
-  <div>
-    <div class="flex justify-between items-center mb-4">
+  <div class="p-4 md:p-6">
+    <!-- Injeta o estilo do padrão no head do documento -->
+    <Teleport to="head">
+      <style>{{ dotPatternStyle }}</style>
+    </Teleport>
+
+    <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Inventário de Peças</h1>
       <RouterLink to="/inventario/novo">
         <Button>Nova Peça</Button>
       </RouterLink>
     </div>
-    <Table>
-      <TableCaption>Uma lista de peças no seu inventário.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Nome da Peça</TableHead>
-          <TableHead>Quantidade</TableHead>
-          <TableHead>Preço de Custo</TableHead>
-          <TableHead>Preço de Venda</TableHead>
-          <TableHead class="text-right">Ações</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        <TableRow v-for="peca in pecas" :key="peca.id">
-          <TableCell class="font-medium">
-            {{ peca.nome }}
-          </TableCell>
-          <TableCell>{{ peca.quantidade }}</TableCell>
-          <TableCell>R$ {{ peca.precoCusto?.toFixed(2) }}</TableCell>
-          <TableCell>R$ {{ peca.precoVenda?.toFixed(2) }}</TableCell>
-          <TableCell class="text-right">
-            <RouterLink :to="`/inventario/${peca.id}/editar`">
-              <Button variant="outline" size="sm">Editar</Button>
-            </RouterLink>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
+
+    <div v-if="!pecas.length" class="text-center text-muted-foreground">
+      Carregando peças...
+    </div>
+
+    <!-- Grid de Cards -->
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div v-for="peca in pecas" :key="peca.id" 
+           class="relative rounded-lg overflow-hidden shadow-lg group h-72 flex flex-col justify-end text-white">
+        
+        <!-- 1. Imagem de Fundo -->
+        <img v-if="peca.imageUrl" :src="peca.imageUrl" :alt="peca.nome" 
+             class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 z-0" />
+        <!-- Fallback para quando não há imagem -->
+        <div v-else class="absolute inset-0 w-full h-full bg-gray-800 z-0"></div>
+
+        <!-- 2. Padrão de Pontos -->
+        <div class="pattern-dots absolute inset-0 w-full h-full text-white/10 z-10"></div>
+
+        <!-- 3. Gradiente Overlay -->
+        <div class="absolute inset-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-20"></div>
+
+        <!-- Conteúdo do Card -->
+        <div class="relative p-4 z-30">
+          <h3 class="font-bold text-lg truncate">{{ peca.nome }}</h3>
+          <div class="text-sm opacity-90 mt-1">
+            <p>Qtd: {{ peca.quantidade }}</p>
+            <p>Venda: R$ {{ peca.precoVenda?.toFixed(2) }}</p>
+          </div>
+          <RouterLink :to="`/inventario/${peca.id}/editar`" class="mt-4">
+            <Button variant="secondary" size="sm" class="w-full bg-white/20 backdrop-blur-sm hover:bg-white/30">
+              Editar
+            </Button>
+          </RouterLink>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
