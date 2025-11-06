@@ -1,20 +1,30 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
+import Sidebar from '@/components/sidebar/Sidebar.vue'
+import SidebarHeader from '@/components/sidebar/SidebarHeader.vue'
+import SidebarContent from '@/components/sidebar/SidebarContent.vue'
+import SidebarMenu from '@/components/sidebar/SidebarMenu.vue'
+import SidebarItem from '@/components/sidebar/SidebarItem.vue'
+import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 </script>
 
 <template>
   <div class="flex h-screen bg-background text-foreground">
-    <!-- Sidebar -->
-    <aside class="w-64 flex-shrink-0 border-r border-border p-4">
-      <h1 class="text-2xl font-bold text-primary mb-8">TechVerse</h1>
-      <nav class="flex flex-col space-y-2">
-        <RouterLink to="/" class="hover:text-primary">Dashboard</RouterLink>
-        <RouterLink to="/clientes" class="hover:text-primary">Clientes</RouterLink>
-        <RouterLink to="/servicos" class="hover:text-primary">Serviços</RouterLink>
-        <RouterLink to="/inventario" class="hover:text-primary">Inventário</RouterLink>
-        <RouterLink to="/kits" class="hover:text-primary">Kits</RouterLink>
-      </nav>
-    </aside>
+    <Sidebar>
+      <SidebarHeader>
+        <h1 class="text-2xl font-bold text-primary">TechVerse</h1>
+        <ThemeToggle />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarMenu>
+          <SidebarItem to="/">Dashboard</SidebarItem>
+          <SidebarItem to="/clientes">Clientes</SidebarItem>
+          <SidebarItem to="/servicos">Serviços</SidebarItem>
+          <SidebarItem to="/inventario">Inventário</SidebarItem>
+          <SidebarItem to="/kits">Kits</SidebarItem>
+        </SidebarMenu>
+      </SidebarContent>
+    </Sidebar>
 
     <!-- Main Content -->
     <main class="flex-1 p-8 overflow-auto">
