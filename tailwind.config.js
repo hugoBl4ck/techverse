@@ -15,38 +15,38 @@ export default {
     },
     extend: {
       colors: {
-        border: 'oklch(var(--border))',
-        input: 'oklch(var(--input))',
-        ring: 'oklch(var(--ring))',
-        background: 'oklch(var(--background))',
-        foreground: 'oklch(var(--foreground))',
+        border: 'oklch(var(--color-border))',
+        input: 'oklch(var(--color-input))',
+        ring: 'oklch(var(--color-ring))',
+        background: 'oklch(var(--color-background))',
+        foreground: 'oklch(var(--color-foreground))',
         primary: {
-          DEFAULT: 'oklch(var(--primary))',
-          foreground: 'oklch(var(--primary-foreground))',
+          DEFAULT: 'oklch(var(--color-primary))',
+          foreground: 'oklch(var(--color-primary-foreground))',
         },
         secondary: {
-          DEFAULT: 'oklch(var(--secondary))',
-          foreground: 'oklch(var(--secondary-foreground))',
+          DEFAULT: 'oklch(var(--color-secondary))',
+          foreground: 'oklch(var(--color-secondary-foreground))',
         },
         destructive: {
-          DEFAULT: 'oklch(var(--destructive))',
-          foreground: 'oklch(var(--destructive-foreground))',
+          DEFAULT: 'oklch(var(--color-destructive))',
+          foreground: 'oklch(var(--color-destructive-foreground))',
         },
         muted: {
-          DEFAULT: 'oklch(var(--muted))',
-          foreground: 'oklch(var(--muted-foreground))',
+          DEFAULT: 'oklch(var(--color-muted))',
+          foreground: 'oklch(var(--color-muted-foreground))',
         },
         accent: {
-          DEFAULT: 'oklch(var(--accent))',
-          foreground: 'oklch(var(--accent-foreground))',
+          DEFAULT: 'oklch(var(--color-accent))',
+          foreground: 'oklch(var(--color-accent-foreground))',
         },
         popover: {
-          DEFAULT: 'oklch(var(--popover))',
-          foreground: 'oklch(var(--popover-foreground))',
+          DEFAULT: 'oklch(var(--color-popover))',
+          foreground: 'oklch(var(--color-popover-foreground))',
         },
         card: {
-          DEFAULT: 'oklch(var(--card))',
-          foreground: 'oklch(var(--card-foreground))',
+          DEFAULT: 'oklch(var(--color-card))',
+          foreground: 'oklch(var(--color-card-foreground))',
         },
       },
       borderRadius: {
