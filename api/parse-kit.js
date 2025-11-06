@@ -5,6 +5,7 @@
  * Ela recebe o texto do Vue, chama o Perplexity, e devolve o JSON.
  */
 export default async function handler(request, response) {
+  console.log("Request body:", request.body);
   // 1. Só aceitar método POST (do nosso formulário)
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Método não permitido' });
