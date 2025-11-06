@@ -5,7 +5,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import draggable from 'vuedraggable';
 import LegoBrick from '@/components/kit/LegoBrick.vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Button } from '@/components/ui/button';
 
 // Estado do Inventário e Kit
@@ -332,10 +332,10 @@ const dragOptions = {
           </CardHeader>
           <CardContent class="space-y-4">
             <p class="text-sm text-muted-foreground">Cole a descrição de um kit para pré-montá-lo.</p>
-            <Textarea 
+            <textarea 
               v-model="chatInput"
               placeholder="Ex: Kit com Ryzen 5 5600X, RTX 3060 e 16GB de RAM..."
-              class="min-h-[200px]"
+              class="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 min-h-[200px]"
               :disabled="isLoadingIA"
             />
             <Button @click="handleIAChat" class="w-full" :disabled="isLoadingIA">
