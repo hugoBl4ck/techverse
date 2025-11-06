@@ -5,10 +5,21 @@
  * Ela recebe o texto do Vue, chama o Perplexity, e devolve o JSON.
  */
 export default async function handler(request, response) {
-  console.log("Request body:", request.body);
   // 1. Só aceitar método POST (do nosso formulário)
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Método não permitido' });
+  }
+
+  // Adicionado para depuração e para garantir que o corpo seja JSON
+  let body = request.body;
+  try {
+    // Vercel pode não fazer o parse automático em alguns casos.
+    if (typeof body === 'string') {
+      body = JSON.parse(body);
+    }
+  } catch (error) {
+    console.error("Erro ao fazer parse do corpo da requisição:", request.body);
+    return response.status(400).json({ error: 'Corpo da requisição mal formatado.' });
   }
 
   // 2. Ler a chave da API (que você colocou no Vercel)
@@ -20,9 +31,10 @@ export default async function handler(request, response) {
   }
 
   // 3. Pegar o texto que o Vue enviou
-  const { text } = request.body;
+  const { text } = body || {};
 
   if (!text) {
+    console.error("Nenhum texto encontrado no corpo da requisição. Corpo processado:", body);
     return response.status(400).json({ error: 'Nenhum texto fornecido' });
   }
 
