@@ -18,7 +18,7 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: 'Chave da API não configurada no servidor' });
   }
 
-  // 3. Pegar o texto que o Vue enviou (ex: "Ryzen 5 3600...")
+  // 3. Pegar o texto que o Vue enviou
   const { text } = request.body;
 
   if (!text) {
