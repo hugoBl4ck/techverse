@@ -1,6 +1,6 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 // Importando nossos componentes customizados
@@ -30,26 +30,26 @@ import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 
     <div class="flex-1 overflow-hidden">
       
-      <ResizablePanelGroup direction="horizontal" class="h-full">
+      <SplitterGroup direction="horizontal" class="h-full">
 
-        <ResizablePanel 
+        <SplitterPanel 
           :default-size="20" 
           :min-size="15" 
           :max-size="30" 
           class="p-4 pt-6"
         >
           <SidebarMenu />
-        </ResizablePanel>
+        </SplitterPanel>
 
-        <ResizableHandle with-grip />
+        <SplitterResizeHandle />
 
-        <ResizablePanel :default-size="80">
+        <SplitterPanel :default-size="80">
           <div class="h-full overflow-y-auto p-6">
             <RouterView />
           </div>
-        </ResizablePanel>
+        </SplitterPanel>
 
-      </ResizablePanelGroup>
+      </SplitterGroup>
     </div>
 
   </div>
