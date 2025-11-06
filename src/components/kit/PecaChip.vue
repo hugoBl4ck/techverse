@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import {
-  Cpu, Motherboard, MemoryStick, HardDrive, Plug, Case, HelpCircle,
+  Cpu, CircuitBoard, MemoryStick, HardDrive, Plug, Case, HelpCircle,
   Mouse, Keyboard, Gamepad2, Waves, Wind, Fan, SquareTerminal, Brush, Gpu
 } from 'lucide-vue-next'
 
@@ -14,7 +14,7 @@ const chipConfig = computed(() => {
   switch (tipo) {
     // Hardware Principal (Cores Vibrantes)
     case 'cpu': return { icon: Cpu, colorHex: '#ef4444' }; // red-500
-    case 'placa-mae': return { icon: Motherboard, colorHex: '#3b82f6' }; // blue-500
+    case 'placa-mae': return { icon: CircuitBoard, colorHex: '#3b82f6' }; // blue-500
     case 'ram': return { icon: MemoryStick, colorHex: '#eab308' }; // yellow-500
     case 'gpu': return { icon: Gpu, colorHex: '#22c55e' }; // green-500
     case 'armazenamento': return { icon: HardDrive, colorHex: '#a855f7' }; // purple-500
