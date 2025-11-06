@@ -1,4 +1,7 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { db } from '@/firebase/config.js'
+import { collection, getDocs } from 'firebase/firestore'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -11,26 +14,19 @@ import {
 } from '@/components/ui/table'
 import { RouterLink } from 'vue-router'
 
-const clients = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '55 11 99999-9999'
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    phone: '55 21 98888-8888'
-  },
-  {
-    id: '3',
-    name: 'Peter Jones',
-    email: 'peter.jones@example.com',
-    phone: '55 31 97777-7777'
-  }
-]
+const clients = ref([])
+
+async function fetchClients() {
+  const querySnapshot = await getDocs(collection(db, 'clientes'))
+  clients.value = querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }))
+}
+
+onMounted(() => {
+  fetchClients()
+})
 </script>
 
 <template>
@@ -48,15 +44,21 @@ const clients = [
           <TableHead>Nome</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Telefone</TableHead>
+          <TableHead class="text-right">Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow v-for="client in clients" :key="client.id">
           <TableCell class="font-medium">
-            {{ client.name }}
+            {{ client.nome }}
           </TableCell>
           <TableCell>{{ client.email }}</TableCell>
-          <TableCell>{{ client.phone }}</TableCell>
+          <TableCell>{{ client.telefone }}</TableCell>
+          <TableCell class="text-right">
+            <RouterLink :to="`/clientes/${client.id}/editar`">
+              <Button variant="outline" size="sm">Editar</Button>
+            </RouterLink>
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>
