@@ -1,28 +1,10 @@
 // api/parse-kit.js
 
-/**
- * Esta é a nossa API Serverless (Backend).
- * Ela recebe o texto do Vue, chama o Perplexity, e devolve o JSON.
- */
 export default async function handler(request, response) {
-  // 1. Só aceitar método POST (do nosso formulário)
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Método não permitido' });
   }
 
-  // Adicionado para depuração e para garantir que o corpo seja JSON
-  let body = request.body;
-  try {
-    // Vercel pode não fazer o parse automático em alguns casos.
-    if (typeof body === 'string') {
-      body = JSON.parse(body);
-    }
-  } catch (error) {
-    console.error("Erro ao fazer parse do corpo da requisição:", request.body);
-    return response.status(400).json({ error: 'Corpo da requisição mal formatado.' });
-  }
-
-  // 2. Ler a chave da API (que você colocou no Vercel)
   const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
 
   if (!PERPLEXITY_API_KEY) {
@@ -30,26 +12,21 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: 'Chave da API não configurada no servidor' });
   }
 
-  // 3. Pegar o texto que o Vue enviou
-  const { text } = body || {};
-
-  if (!text) {
-    console.error("Nenhum texto encontrado no corpo da requisição. Corpo processado:", body);
+  const { texto } = request.body;
+  if (!texto) {
     return response.status(400).json({ error: 'Nenhum texto fornecido' });
   }
 
-  // 4. O Prompt de Engenharia (O Cérebro da IA)
   const systemPrompt = `Você é um assistente de TI especialista em hardware de computador. Sua função é extrair componentes de uma descrição de PC para um formato JSON.
 
 Analise o texto abaixo e retorne um objeto JSON que contenha:
 1.  Um campo "precoTotal" (number), se o preço for encontrado.
 2.  Um array "componentes". Cada objeto no array deve ter:
-    - "nome": O nome da peça (ex: "Intel Core i5 4ª Geração").
+    - "componente": O nome da peça (ex: "Intel Core i5 4ª Geração").
     - "tipo": A categoria da peça (use UMA das seguintes: 'cpu', 'placa-mae', 'ram', 'gpu', 'armazenamento', 'fonte', 'gabinete', 'outro').
 
 NÃO inclua emojis. Retorne APENAS o JSON.`;
 
-  // 5. Chamar a API do Perplexity
   try {
     const apiResponse = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
@@ -58,12 +35,14 @@ NÃO inclua emojis. Retorne APENAS o JSON.`;
         'Authorization': `Bearer ${PERPLEXITY_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'sonar',
+        model: 'sonar-small-online', // Modelo correto que você lembrou
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: text } // O texto do seu anúncio
-        ],
-        response_format: { type: 'json_object' } // Força a resposta a ser JSON
+          { role: 'user', content: texto }
+        ]
+        
+        // --- A LINHA 'response_format' FOI REMOVIDA DAQUI ---
+
       })
     });
 
@@ -75,13 +54,16 @@ NÃO inclua emojis. Retorne APENAS o JSON.`;
 
     const data = await apiResponse.json();
     
-    // 6. Extrair e enviar a resposta JSON de volta para o Vue
-    const jsonResponse = JSON.parse(data.choices[0].message.content);
+    // Agora temos que PARSEAR a resposta, pois ela não é mais JSON garantido
+    // (Embora o prompt peça)
+    const jsonString = data.choices[0].message.content;
+    const jsonResponse = JSON.parse(jsonString);
     
     return response.status(200).json(jsonResponse);
 
   } catch (error) {
     console.error('Erro interno do servidor:', error);
-    return response.status(500).json({ error: 'Erro interno do servidor', details: error.message });
+    // Este 'catch' pode pegar o 'JSON.parse' se a IA não retornar um JSON
+    return response.status(500).json({ error: 'Erro ao processar a resposta da IA', details: error.message });
   }
 }
