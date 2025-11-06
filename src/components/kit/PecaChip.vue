@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import {
-  Cpu, CircuitBoard, MemoryStick, HardDrive, Plug, Case, HelpCircle,
+  Cpu, CircuitBoard, MemoryStick, HardDrive, Plug, PcCase, HelpCircle,
   Mouse, Keyboard, Gamepad2, Waves, Wind, Fan, SquareTerminal, Brush, Gpu
 } from 'lucide-vue-next'
 
@@ -19,7 +19,7 @@ const chipConfig = computed(() => {
     case 'gpu': return { icon: Gpu, colorHex: '#22c55e' }; // green-500
     case 'armazenamento': return { icon: HardDrive, colorHex: '#a855f7' }; // purple-500
     case 'fonte': return { icon: Plug, colorHex: '#6b7280' }; // gray-500
-    case 'gabinete': return { icon: Case, colorHex: '#4f46e5' }; // indigo-500
+    case 'gabinete': return { icon: PcCase, colorHex: '#4f46e5' }; // indigo-500
     
     // Refrigeração (Tons de Azul/Ciano)
     case 'watercooler': return { icon: Waves, colorHex: '#06b6d4' }; // cyan-500
