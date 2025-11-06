@@ -176,7 +176,7 @@ const dragOptions = {
             
             <div v-if="cpus.length">
               <h3 class="font-semibold mb-2">CPUs</h3>
-              <draggable :list="cpus" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
+              <:group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
                   <KitPecaCard :peca="element" />
                 </template>
