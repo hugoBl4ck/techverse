@@ -85,7 +85,7 @@ watch(() => props.pecaPreenchida, (newPeca) => {
     socket.value = newPeca.compatibilidade?.socket || '';
     tipoRam.value = newPeca.compatibilidade?.tipoRam || '';
   }
-}, { deep: true });
+}, { deep: true, immediate: true });
 
 async function handleSubmit() {
   if (!nome.value || !tipo.value) {

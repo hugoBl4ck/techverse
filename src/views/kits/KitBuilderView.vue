@@ -5,11 +5,12 @@ import { collection, getDocs } from 'firebase/firestore';
 import draggable from 'vuedraggable';
 import PecaChip from '@/components/kit/PecaChip.vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-
 import { Button } from '@/components/ui/button';
 
-// Estado do Inventário e Kit
+// Estado do Inventário
 const inventario = ref([]);
+
+// Estado do Kit Builder Atual
 const kitPlacaMae = ref([]);
 const kitCpu = ref([]);
 const kitRam = ref([]);
@@ -18,12 +19,11 @@ const kitArmazenamento = ref([]);
 const kitFonte = ref([]);
 const kitGabinete = ref([]);
 
+// Canvas de Kits Salvos
+const savedKits = ref([]);
+
 // Regras de Compatibilidade
 const regrasKit = ref({ socket: null, tipoRam: null, formatoPlaca: null });
-
-// Estado da IA
-const chatInput = ref('');
-const isLoadingIA = ref(false);
 
 // Carregar Peças do Firebase
 async function fetchPecas() {
@@ -35,12 +35,11 @@ async function fetchPecas() {
     console.error("Erro ao buscar peças:", error);
   }
 }
-
 onMounted(fetchPecas);
 
+// Watcher para atualizar regras de compatibilidade
 watch(kitPlacaMae, (novasPecas) => {
   if (novasPecas.length > 0) {
-    // Pega a compatibilidade da primeira (e única) placa-mãe
     const comp = novasPecas[0].compatibilidade;
     if (comp) {
       regrasKit.value.socket = comp.socket || null;
@@ -48,19 +47,50 @@ watch(kitPlacaMae, (novasPecas) => {
       regrasKit.value.formatoPlaca = comp.formato || null;
     }
   } else {
-    // Limpa as regras se o slot da placa-mãe estiver vazio
     regrasKit.value = { socket: null, tipoRam: null, formatoPlaca: null };
   }
 });
+
+// Funções do Canvas
+function salvarKitAtual() {
+  const novoKit = {
+    id: Date.now(),
+    placaMae: kitPlacaMae.value,
+    cpu: kitCpu.value,
+    ram: kitRam.value,
+    gpu: kitGpu.value,
+    armazenamento: kitArmazenamento.value,
+    fonte: kitFonte.value,
+    gabinete: kitGabinete.value,
+  };
+
+  // Verifica se o kit não está vazio
+  const temPecas = Object.values(novoKit).some(arr => Array.isArray(arr) && arr.length > 0);
+  if (temPecas) {
+    savedKits.value.push(novoKit);
+    limparKitAtual();
+  }
+}
+
+function limparKitAtual() {
+  kitPlacaMae.value = [];
+  kitCpu.value = [];
+  kitRam.value = [];
+  kitGpu.value = [];
+  kitArmazenamento.value = [];
+  kitFonte.value = [];
+  kitGabinete.value = [];
+}
+
+function removerKitSalvo(kitId) {
+  savedKits.value = savedKits.value.filter(k => k.id !== kitId);
+}
 
 // Listas de Peças Computadas por Tipo com Filtro de Compatibilidade
 const cpus = computed(() => {
   return inventario.value.filter(p => {
     if (p.tipo !== 'cpu') return false;
-    // Se uma regra de socket estiver ativa, a CPU DEVE dar match
-    if (regrasKit.value.socket && p.compatibilidade?.socket !== regrasKit.value.socket) {
-      return false;
-    }
+    if (regrasKit.value.socket && p.compatibilidade?.socket !== regrasKit.value.socket) return false;
     return true;
   });
 });
@@ -70,10 +100,7 @@ const placasMae = computed(() => inventario.value.filter(p => p.tipo === 'placa-
 const rams = computed(() => {
   return inventario.value.filter(p => {
     if (p.tipo !== 'ram') return false;
-    // Se uma regra de RAM estiver ativa, a RAM DEVE dar match
-    if (regrasKit.value.tipoRam && p.compatibilidade?.tipoRam !== regrasKit.value.tipoRam) {
-      return false;
-    }
+    if (regrasKit.value.tipoRam && p.compatibilidade?.tipoRam !== regrasKit.value.tipoRam) return false;
     return true;
   });
 });
@@ -81,10 +108,7 @@ const rams = computed(() => {
 const gabinetes = computed(() => {
     return inventario.value.filter(p => {
         if (p.tipo !== 'gabinete') return false;
-        // Se uma regra de formato de placa estiver ativa, o gabinete DEVE ser compatível
-        if (regrasKit.value.formatoPlaca && p.compatibilidade?.formatosAceitos && !p.compatibilidade.formatosAceitos.includes(regrasKit.value.formatoPlaca)) {
-            return false;
-        }
+        if (regrasKit.value.formatoPlaca && p.compatibilidade?.formatosAceitos && !p.compatibilidade.formatosAceitos.includes(regrasKit.value.formatoPlaca)) return false;
         return true;
     });
 });
@@ -92,75 +116,6 @@ const gabinetes = computed(() => {
 const gpus = computed(() => inventario.value.filter(p => p.tipo === 'gpu'));
 const armazenamentos = computed(() => inventario.value.filter(p => p.tipo === 'armazenamento'));
 const fontes = computed(() => inventario.value.filter(p => p.tipo === 'fonte'));
-
-// Lógica do Assistente de IA
-async function handleIAChat() {
-  if (!chatInput.value.trim()) return;
-  isLoadingIA.value = true;
-  try {
-    // Simulação de chamada de API
-    // Em um projeto real, isso seria:
-    // const response = await fetch('/api/parse-kit', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ text: chatInput.value })
-    // });
-    // const data = await response.json();
-
-    // Mock da resposta da IA para fins de desenvolvimento
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const data = {
-      componentes: [
-        { tipo: 'cpu', componente: 'Ryzen 5 5600X' },
-        { tipo: 'placa-mae', componente: 'ASUS TUF B550M' },
-        { tipo: 'ram', componente: 'Corsair Vengeance 16GB' },
-        { tipo: 'gpu', componente: 'NVIDIA RTX 3060' },
-      ]
-    };
-
-    // Limpa os slots
-    kitCpu.value = [];
-    kitPlacaMae.value = [];
-    kitRam.value = [];
-    kitGpu.value = [];
-    kitArmazenamento.value = [];
-    kitFonte.value = [];
-    kitGabinete.value = [];
-
-    // Preenche os slots com base na resposta da IA
-    data.componentes.forEach(pecaIA => {
-      const pecaFormatada = { nome: pecaIA.componente, tipo: pecaIA.tipo, id: `ia-${Date.now()}` };
-      switch (pecaIA.tipo) {
-        case 'cpu':
-          kitCpu.value = [pecaFormatada];
-          break;
-        case 'placa-mae':
-          kitPlacaMae.value = [pecaFormatada];
-          break;
-        case 'ram':
-          kitRam.value.push(pecaFormatada);
-          break;
-        case 'gpu':
-          kitGpu.value = [pecaFormatada];
-          break;
-        case 'armazenamento':
-          kitArmazenamento.value = [pecaFormatada];
-          break;
-        case 'fonte':
-          kitFonte.value = [pecaFormatada];
-          break;
-        case 'gabinete':
-          kitGabinete.value = [pecaFormatada];
-          break;
-      }
-    });
-
-  } catch (error) {
-    console.error("Erro ao processar o kit com IA:", error);
-  } finally {
-    isLoadingIA.value = false;
-  }
-}
 
 const dragOptions = {
   animation: 200,
@@ -249,17 +204,22 @@ const dragOptions = {
         </Card>
       </div>
 
-      <!-- Coluna 2: Montagem do Kit -->
-      <div class="lg:col-span-5">
+      <!-- Coluna 2: Canvas de Montagem -->
+      <div class="lg:col-span-8 space-y-6">
+        <!-- Card de Montagem do Kit Atual -->
         <Card>
-          <CardHeader>
+          <CardHeader class="flex flex-row items-center justify-between">
             <CardTitle>Montagem do Kit Atual</CardTitle>
+            <div class="space-x-2">
+              <Button variant="outline" @click="limparKitAtual">Limpar</Button>
+              <Button @click="salvarKitAtual">Salvar Kit</Button>
+            </div>
           </CardHeader>
           <CardContent class="space-y-4">
             
             <div>
-              <label class="font-semibold">CPU</label>
-              <draggable v-model="kitCpu" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1" :disabled="kitPlacaMae.length === 0">
+              <label class="font-semibold">Placa-Mãe</label>
+              <draggable v-model="kitPlacaMae" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
                  <template #item="{element}">
                     <PecaChip :peca="element" />
                 </template>
@@ -267,8 +227,8 @@ const dragOptions = {
             </div>
 
             <div>
-              <label class="font-semibold">Placa-Mãe</label>
-              <draggable v-model="kitPlacaMae" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
+              <label class="font-semibold">CPU</label>
+              <draggable v-model="kitCpu" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1" :disabled="kitPlacaMae.length === 0">
                  <template #item="{element}">
                     <PecaChip :peca="element" />
                 </template>
@@ -322,28 +282,28 @@ const dragOptions = {
 
           </CardContent>
         </Card>
-      </div>
 
-      <!-- Coluna 3: Assistente de IA -->
-      <div class="lg:col-span-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Assistente de IA</CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-4">
-            <p class="text-sm text-muted-foreground">Cole a descrição de um kit para pré-montá-lo.</p>
-            <textarea 
-              v-model="chatInput"
-              placeholder="Ex: Kit com Ryzen 5 5600X, RTX 3060 e 16GB de RAM..."
-              class="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 min-h-[200px]"
-              :disabled="isLoadingIA"
-            />
-            <Button @click="handleIAChat" class="w-full" :disabled="isLoadingIA">
-              <span v-if="isLoadingIA">Analisando...</span>
-              <span v-else>Analisar Kit</span>
-            </Button>
-          </CardContent>
-        </Card>
+        <!-- Canvas de Kits Salvos -->
+        <div v-if="savedKits.length > 0" class="space-y-4">
+            <h2 class="text-2xl font-bold">Canvas de Kits Salvos</h2>
+            <Card v-for="kit in savedKits" :key="kit.id">
+                <CardHeader class="flex flex-row items-center justify-between">
+                    <CardTitle>Kit Salvo #{{ kit.id }}</CardTitle>
+                    <Button variant="destructive" size="sm" @click="removerKitSalvo(kit.id)">Remover</Button>
+                </CardHeader>
+                <CardContent class="flex flex-wrap gap-2">
+                    <!-- Renderiza todos os chips de peças do kit salvo -->
+                    <PecaChip v-for="peca in kit.placaMae" :key="peca.id" :peca="peca" />
+                    <PecaChip v-for="peca in kit.cpu" :key="peca.id" :peca="peca" />
+                    <PecaChip v-for="peca in kit.ram" :key="peca.id" :peca="peca" />
+                    <PecaChip v-for="peca in kit.gpu" :key="peca.id" :peca="peca" />
+                    <PecaChip v-for="peca in kit.armazenamento" :key="peca.id" :peca="peca" />
+                    <PecaChip v-for="peca in kit.fonte" :key="peca.id" :peca="peca" />
+                    <PecaChip v-for="peca in kit.gabinete" :key="peca.id" :peca="peca" />
+                </CardContent>
+            </Card>
+        </div>
+
       </div>
 
     </div>
