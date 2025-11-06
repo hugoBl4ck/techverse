@@ -45,6 +45,8 @@ const chipConfig = computed(() => {
   <div
     :class="chipConfig.color"
     class="flex items-center gap-2 p-2 rounded-md border-l-4 shadow-sm bg-card hover:bg-muted cursor-grab"
+    :data-tipo="peca.tipo"
+    :data-peca="JSON.stringify(peca)"
   >
     <component :is="chipConfig.icon" class="size-5 shrink-0" />
     <div class="truncate font-medium text-sm">{{ peca.nome }}</div>

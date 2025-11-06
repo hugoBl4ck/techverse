@@ -61,7 +61,7 @@ function removerKit(index) {
             <!-- CPUs -->
             <div>
               <h3 class="font-semibold mb-2">CPUs</h3>
-              <draggable :list="cpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+              <draggable :list="cpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>
@@ -70,7 +70,7 @@ function removerKit(index) {
             <!-- Placas-Mãe -->
             <div>
               <h3 class="font-semibold mb-2">Placas-Mãe</h3>
-              <draggable :list="placasMae" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+              :group="{ name: 'pecas', pull: true, put: false }"
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>
@@ -79,7 +79,7 @@ function removerKit(index) {
             <!-- Memória RAM -->
             <div>
               <h3 class="font-semibold mb-2">Memória RAM</h3>
-              <draggable :list="rams" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+              <draggable :list="rams" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>
@@ -88,7 +88,7 @@ function removerKit(index) {
             <!-- Placas de Vídeo -->
             <div>
               <h3 class="font-semibold mb-2">Placas de Vídeo</h3>
-              <draggable :list="gpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+              <draggable :list="gpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>
@@ -97,7 +97,7 @@ function removerKit(index) {
             <!-- Armazenamento -->
             <div>
               <h3 class="font-semibold mb-2">Armazenamento</h3>
-              <draggable :list="armazenamentos" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+              <draggable ::group="{ name: 'pecas', pull: true, put: false }">
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>
@@ -106,7 +106,7 @@ function removerKit(index) {
              <!-- Fontes -->
             <div>
               <h3 class="font-semibold mb-2">Fontes</h3>
-              <draggable :list="fontes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+              <draggable :list="fontes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>
@@ -115,7 +115,7 @@ function removerKit(index) {
              <!-- Gabinetes -->
             <div>
               <h3 class="font-semibold mb-2">Gabinetes</h3>
-              <draggable :list="gabinetes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+              <draggable :list="gabinetes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>
