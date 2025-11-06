@@ -1,18 +1,21 @@
 <template>
-  <Button @click="toggleDark()" variant="outline" class="size-9 p-0">
-    <Sun class="size-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-    <Moon class="absolute size-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-    <span class="sr-only">Toggle theme</span>
-  </Button>
+  <div class="flex items-center space-x-2">
+    <Label for="theme-toggle" class="text-sm font-medium">
+      {{ isDark ? 'Dark' : 'Light' }}
+    </Label>
+    <Switch
+      id="theme-toggle"
+      :checked="isDark"
+      @update:checked="toggleDark"
+    />
+  </div>
 </template>
 
 <script setup>
-// Esta biblioteca fantástica gerencia o dark mode automaticamente
 import { useDark, useToggle } from '@vueuse/core'
-import { Button } from '@/components/ui/button'
-import { Sun, Moon } from 'lucide-vue-next' // Pacote de ícones
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 
-// 'isDark' lê e aplica a classe 'dark' no <html>
-const isDark = useDark()
+const isDark = useDark({ selector: 'html', attribute: 'class' })
 const toggleDark = useToggle(isDark)
 </script>

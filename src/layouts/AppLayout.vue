@@ -1,13 +1,3 @@
-<script setup>
-import { RouterView } from 'vue-router'
-import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-
-// Importando nossos componentes customizados
-import SidebarMenu from '@/components/ui/SidebarMenu.vue'
-import ThemeToggle from '@/components/ui/ThemeToggle.vue'
-</script>
-
 <template>
   <div class="flex flex-col h-screen overflow-hidden bg-background text-foreground">
 
@@ -16,20 +6,30 @@ import ThemeToggle from '@/components/ui/ThemeToggle.vue'
         <div class="font-display text-2xl font-bold">
           TechVerse
         </div>
-        
         <Avatar>
-          <AvatarFallback>HL</AvatarFallback> </Avatar>
+          <AvatarFallback>HL</AvatarFallback>
+        </Avatar>
       </div>
     </header>
 
     <div class="border-b bg-muted/50 shadow-inner">
-      <div class="container mx-auto flex h-12 items-center justify-end px-4">
+      <div class="container mx-auto flex h-12 items-center justify-between px-4">
+        <h1 class="text-lg font-display font-semibold">
+          {{ $route.meta.title || 'Dashboard' }} 
+        </h1>
+      </div>
+    </div>
+
+    <div class="border-b">
+      <div class="container mx-auto flex h-12 items-center justify-between px-4">
+        <div class="flex-1">
+          </div>
+        
         <ThemeToggle />
       </div>
     </div>
 
     <div class="flex-1 overflow-hidden">
-      
       <SplitterGroup direction="horizontal" class="h-full">
 
         <SplitterPanel 
@@ -54,3 +54,20 @@ import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 
   </div>
 </template>
+
+<script setup>
+import { RouterView } from 'vue-router'
+import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import SidebarMenu from '@/components/ui/SidebarMenu.vue'
+
+// Importando o NOVO Toggle (Switch)
+import ThemeToggle from '@/components/ui/ThemeToggle.vue'
+</script>
+
+<style>
+/* Estilo global para forçar altura total */
+html, body, #app {
+  height: 100%;
+}
+</style>
