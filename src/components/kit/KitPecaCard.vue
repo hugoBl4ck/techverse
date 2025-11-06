@@ -70,7 +70,7 @@ const glowStyle = computed(() => {
   >
     <component :is="categoryConfig.icon" :class="categoryConfig.color" :style="glowStyle" class="size-6 shrink-0" />
     <div class="flex-1 truncate min-w-0">
-      <h3 class="font-semibold truncate text-sm text-foreground">{{ peca.nome }}</h3>
+      <h3 class="font-semibold truncate text-sm text-foreground max-w-full">{{ peca.nome }}</h3>
       <span class="text-xs uppercase opacity-70">{{ peca.tipo }}</span>
     </div>
   </div>

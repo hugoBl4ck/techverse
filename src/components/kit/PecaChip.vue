@@ -49,19 +49,7 @@ const chipConfig = computed(() => {
       'box-shadow': `0 4px 12px -5px ${chipConfig.colorHex}`
     }"
   >
-    <div
-      class="absolute inset-0 z-0 opacity-20"
-      :style="{
-        'background-image': `repeating-linear-gradient(
-          -45deg, 
-          transparent 0, 
-          transparent 1px, 
-          ${chipConfig.colorHex} 1px, 
-          ${chipConfig.colorHex} 2px
-        )`
-      }"
-    />
-
+    
     <div class="relative z-10 flex items-center gap-3 min-w-0">
       <component 
         :is="chipConfig.icon" 
@@ -70,7 +58,7 @@ const chipConfig = computed(() => {
       />
       
       <div class="flex-1 min-w-0">
-        <h3 class="font-semibold truncate text-sm text-foreground">
+        <h3 class="font-semibold truncate text-sm text-foreground max-w-full">
           {{ peca.nome }}
         </h3>
         <p class="text-xs text-muted-foreground uppercase">{{ peca.tipo }}</p>
