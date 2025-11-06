@@ -17,25 +17,13 @@ async function handleAnalisar() {
   pecaSelecionada.value = null;
 
   try {
-    // In a real project, this would be the actual API call
-    // const response = await fetch('/api/parse-kit', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ text: anuncioInput.value })
-    // });
-    // if (!response.ok) throw new Error('API Error');
-    // const data = await response.json();
-
-    // Mock data for development
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const data = {
-      componentes: [
-        { nome: 'Intel Core i7-9700K', tipo: 'cpu', compatibilidade: { socket: 'LGA1151' } },
-        { nome: 'Gigabyte Z390 AORUS PRO', tipo: 'placa-mae', compatibilidade: { socket: 'LGA1151', tipoRam: 'DDR4' } },
-        { nome: 'Corsair Vengeance LPX 16GB', tipo: 'ram', compatibilidade: { tipoRam: 'DDR4' } },
-        { nome: 'NVIDIA GeForce RTX 2080 Ti', tipo: 'gpu' },
-      ]
-    };
+    const response = await fetch('/api/parse-kit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: anuncioInput.value })
+    });
+    if (!response.ok) throw new Error('API Error');
+    const data = await response.json();
 
     pecasEncontradas.value = data.componentes;
 
