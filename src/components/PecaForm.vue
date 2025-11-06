@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { db } from '@/firebase/config.js';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { useRouter } from 'vue-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +23,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+const props = defineProps({
+  id: { type: String, default: null },
+});
+
+const router = useRouter();
+
 const nome = ref('');
 const quantidade = ref(0);
 const precoCusto = ref(0);
@@ -41,6 +48,29 @@ const tiposPeca = [
   { value: 'gabinete', label: 'Gabinete' },
 ];
 
+async function fetchPeca(id) {
+  if (!id) return;
+  const docRef = doc(db, 'pecas', id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    nome.value = data.nome;
+    quantidade.value = data.quantidade;
+    precoCusto.value = data.precoCusto;
+    precoVenda.value = data.precoVenda;
+    tipo.value = data.tipo;
+    socket.value = data.compatibilidade?.socket || '';
+    tipoRam.value = data.compatibilidade?.tipoRam || '';
+  } else {
+    console.error('No such document!');
+    router.push('/inventario'); // Redirect if not found
+  }
+}
+
+watch(() => props.id, (newId) => {
+  fetchPeca(newId);
+}, { immediate: true });
+
 async function handleSubmit() {
   if (!nome.value || !tipo.value) {
     console.error('Nome e Tipo da peça são obrigatórios.');
@@ -49,7 +79,7 @@ async function handleSubmit() {
 
   isLoading.value = true;
   try {
-    await addDoc(collection(db, 'pecas'), {
+    const pecaData = {
       nome: nome.value,
       quantidade: quantidade.value,
       precoCusto: precoCusto.value,
@@ -59,74 +89,22 @@ async function handleSubmit() {
         socket: socket.value,
         tipoRam: tipoRam.value,
       },
-    });
-    console.log('Peça salva!');
-    nome.value = '';
-    quantidade.value = 0;
-    precoCusto.value = 0;
-    precoVenda.value = 0;
-    tipo.value = '';
-    socket.value = '';
-    tipoRam.value = '';
+    };
+
+    if (props.id) {
+      // Update existing document
+      const docRef = doc(db, 'pecas', props.id);
+      await updateDoc(docRef, pecaData);
+      console.log('Peça atualizada!');
+    } else {
+      // Add new document
+      await addDoc(collection(db, 'pecas'), pecaData);
+      console.log('Peça salva!');
+    }
+    router.push('/inventario'); // Redirect to list after save/update
   } catch (error) {
     console.error('Erro ao salvar peça: ', error);
   } finally {
     isLoading.value = false;
   }
 }
-</script>
-
-<template>
-  <Card>
-    <CardHeader>
-      <CardTitle>Cadastrar Nova Peça</CardTitle>
-      <CardDescription>Preencha os dados da nova peça.</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div class="grid gap-4">
-        <div class="grid gap-2">
-          <Label for="nome">Nome da Peça</Label>
-          <Input id="nome" v-model="nome" type="text" placeholder="Nome da peça" />
-        </div>
-        <div class="grid gap-2">
-          <Label for="tipo">Tipo da Peça</Label>
-          <Select v-model="tipo">
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione o tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="t in tiposPeca" :key="t.value" :value="t.value">
-                {{ t.label }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div class="grid gap-2">
-          <Label for="quantidade">Quantidade</Label>
-          <Input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" />
-        </div>
-        <div class="grid gap-2">
-          <Label for="precoCusto">Preço de Custo</Label>
-          <Input id="precoCusto" v-model.number="precoCusto" type="number" placeholder="0.00" />
-        </div>
-        <div class="grid gap-2">
-          <Label for="precoVenda">Preço de Venda</Label>
-          <Input id="precoVenda" v-model.number="precoVenda" type="number" placeholder="0.00" />
-        </div>
-        <div class="grid gap-2">
-          <Label for="socket">Socket</Label>
-          <Input id="socket" v-model="socket" type="text" placeholder="Ex: AM4" />
-        </div>
-        <div class="grid gap-2">
-          <Label for="tipoRam">Tipo de RAM</Label>
-          <Input id="tipoRam" v-model="tipoRam" type="text" placeholder="Ex: DDR4" />
-        </div>
-      </div>
-    </CardContent>
-    <CardFooter>
-      <Button @click="handleSubmit" :disabled="isLoading" class="w-full">
-        {{ isLoading ? 'Salvando...' : 'Salvar Peça' }}
-      </Button>
-    </CardFooter>
-  </Card>
-</template>

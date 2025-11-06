@@ -1,4 +1,7 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { db } from '@/firebase/config.js'
+import { collection, getDocs } from 'firebase/firestore'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -11,26 +14,19 @@ import {
 } from '@/components/ui/table'
 import { RouterLink } from 'vue-router'
 
-const pecas = [
-  {
-    id: '1',
-    nome: 'Filtro de Óleo',
-    quantidade: 10,
-    preco: 'R$ 25,00'
-  },
-  {
-    id: '2',
-    nome: 'Pastilha de Freio',
-    quantidade: 5,
-    preco: 'R$ 120,00'
-  },
-  {
-    id: '3',
-    nome: 'Vela de Ignição',
-    quantidade: 20,
-    preco: 'R$ 15,00'
-  }
-]
+const pecas = ref([])
+
+async function fetchPecas() {
+  const querySnapshot = await getDocs(collection(db, 'pecas'))
+  pecas.value = querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }))
+}
+
+onMounted(() => {
+  fetchPecas()
+})
 </script>
 
 <template>
@@ -47,7 +43,9 @@ const pecas = [
         <TableRow>
           <TableHead>Nome da Peça</TableHead>
           <TableHead>Quantidade</TableHead>
-          <TableHead class="text-right">Preço</TableHead>
+          <TableHead>Preço de Custo</TableHead>
+          <TableHead>Preço de Venda</TableHead>
+          <TableHead class="text-right">Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -56,7 +54,13 @@ const pecas = [
             {{ peca.nome }}
           </TableCell>
           <TableCell>{{ peca.quantidade }}</TableCell>
-          <TableCell class="text-right">{{ peca.preco }}</TableCell>
+          <TableCell>R$ {{ peca.precoCusto?.toFixed(2) }}</TableCell>
+          <TableCell>R$ {{ peca.precoVenda?.toFixed(2) }}</TableCell>
+          <TableCell class="text-right">
+            <RouterLink :to="`/inventario/${peca.id}/editar`">
+              <Button variant="outline" size="sm">Editar</Button>
+            </RouterLink>
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>
