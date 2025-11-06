@@ -15,14 +15,6 @@ const colorMap = {
   armazenamento: { bg: 'bg-purple-500', text: 'text-purple-500' },
   fonte: { bg: 'bg-gray-500', text: 'text-gray-500' },
   gabinete: { bg: 'bg-indigo-500', text: 'text-indigo-500' },
-  watercooler: { bg: 'bg-sky-500', text: 'text-sky-500' },
-  aircooler: { bg: 'bg-sky-300', text: 'text-sky-300' },
-  ventoinhas: { bg: 'bg-zinc-400', text: 'text-zinc-400' },
-  'pasta termica': { bg: 'bg-zinc-600', text: 'text-zinc-600' },
-  mouse: { bg: 'bg-pink-500', text: 'text-pink-500' },
-  teclado: { bg: 'bg-orange-500', text: 'text-orange-500' },
-  controle: { bg: 'bg-cyan-500', text: 'text-cyan-500' },
-  controladoras: { bg: 'bg-teal-500', text: 'text-teal-500' },
   outro: { bg: 'bg-gray-300', text: 'text-gray-300' },
 };
 
@@ -53,7 +45,6 @@ const nomesCategoria = {
   armazenamento: 'Armazenamento',
   fonte: 'Fontes de Alimentação',
   gabinete: 'Gabinetes',
-  // Adicione outros tipos aqui conforme necessário
   outro: 'Outros'
 };
 

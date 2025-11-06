@@ -26,6 +26,17 @@ const gpus = computed(() => inventario.value.filter(p => p.tipo === 'gpu'));
 const armazenamentos = computed(() => inventario.value.filter(p => p.tipo === 'armazenamento'));
 const fontes = computed(() => inventario.value.filter(p => p.tipo === 'fonte'));
 const gabinetes = computed(() => inventario.value.filter(p => p.tipo === 'gabinete'));
+const outrasPecas = computed(() => inventario.value.filter(p => [
+  'outro',
+  'Watercooler',
+  'Air Cooler',
+  'Ventoinhas',
+  'Pasta Térmica',
+  'Mouse',
+  'Teclado',
+  'Controle',
+  'Controladoras',
+].includes(p.tipo)));
 
 // --- METHODS ---
 async function fetchPecas() {
