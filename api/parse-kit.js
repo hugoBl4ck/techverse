@@ -1,23 +1,7 @@
 // api/parse-kit.js
 
-export default async function handler(request, response) {
-  if (request.method !== 'POST') {
-    return response.status(405).json({ error: 'Método não permitido' });
-  }
-
-  const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
-
-  if (!PERPLEXITY_API_KEY) {
-    console.error('Chave PERPLEXITY_API_KEY não encontrada');
-    return response.status(500).json({ error: 'Chave da API não configurada no servidor' });
-  }
-
-  const { texto } = request.body;
-  if (!texto) {
-    return response.status(400).json({ error: 'Nenhum texto fornecido' });
-  }
-
-  const systemPrompt = `Você é um assistente de TI especialista em hardware de computador. Sua função é extrair componentes de uma descrição de PC para um formato JSON.
+// --- PROMPT DE ENGENHARIA (O Cérebro) ---
+const systemPrompt = `Você é um assistente de TI especialista em hardware de computador. Sua função é extrair componentes de uma descrição de PC para um formato JSON.
 
 Analise o texto abaixo e retorne um objeto JSON que contenha:
 1.  Um campo "precoTotal" (number), se o preço for encontrado.
@@ -27,43 +11,116 @@ Analise o texto abaixo e retorne um objeto JSON que contenha:
 
 NÃO inclua emojis. Retorne APENAS o JSON.`;
 
-  try {
-    const apiResponse = await fetch('https://api.perplexity.ai/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${PERPLEXITY_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'sonar-small-online', // Modelo correto que você lembrou
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: texto }
-        ]
-        
-        // --- A LINHA 'response_format' FOI REMOVIDA DAQUI ---
-
-      })
-    });
-
-    if (!apiResponse.ok) {
-      const errorData = await apiResponse.text();
-      console.error('Erro da API Perplexity:', errorData);
-      return response.status(apiResponse.status).json({ error: 'Erro da API Perplexity', details: errorData });
-    }
-
-    const data = await apiResponse.json();
-    
-    // Agora temos que PARSEAR a resposta, pois ela não é mais JSON garantido
-    // (Embora o prompt peça)
-    const jsonString = data.choices[0].message.content;
-    const jsonResponse = JSON.parse(jsonString);
-    
-    return response.status(200).json(jsonResponse);
-
-  } catch (error) {
-    console.error('Erro interno do servidor:', error);
-    // Este 'catch' pode pegar o 'JSON.parse' se a IA não retornar um JSON
-    return response.status(500).json({ error: 'Erro ao processar a resposta da IA', details: error.message });
+// --- FUNÇÃO PRINCIPAL (O ROTEADOR) ---
+export default async function handler(request, response) {
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Método não permitido' });
   }
+
+  const { texto } = request.body;
+  if (!texto) {
+    return response.status(400).json({ error: 'Nenhum texto fornecido' });
+  }
+
+  const PPLX_KEY = process.env.PERPLEXITY_API_KEY;
+  const GEMINI_KEY = process.env.GEMINI_API_KEY;
+
+  // --- TENTATIVA 1: PERPLEXITY (O RÁPIDO) ---
+  if (PPLX_KEY) {
+    try {
+      console.log('Tentando API: Perplexity...');
+      const jsonResult = await callPerplexity(texto, PPLX_KEY);
+      return response.status(200).json(jsonResult);
+    } catch (perplexityError) {
+      
+      // ===== ESTE É O LOG DETALHADO QUE VOCÊ PEDIU =====
+      console.error(
+        "FALHA NO PERPLEXITY. Motivo:", 
+        perplexityError.message
+      );
+      // =================================================
+
+      // Não retorne o erro ainda, vamos tentar o Gemini
+      console.log('Perplexity falhou. Tentando fallback: Gemini...');
+    }
+  }
+
+  // --- TENTATIVA 2: GEMINI (O FALLBACK) ---
+  if (GEMINI_KEY) {
+    try {
+      console.log('Tentando API: Gemini...');
+      const jsonResult = await callGemini(texto, GEMINI_KEY);
+      return response.status(200).json(jsonResult);
+    } catch (geminiError) {
+      console.error("FALHA NO GEMINI. Motivo:", geminiError.message);
+      return response.status(500).json({ error: 'Falha no Gemini', details: geminiError.message });
+    }
+  }
+
+  // Se nenhuma chave estiver configurada
+  return response.status(500).json({ error: 'Nenhuma chave de API de IA configurada no servidor.' });
+}
+
+
+// --- HELPER 1: CHAMADA DO PERPLEXITY ---
+async function callPerplexity(texto, apiKey) {
+  const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'sonar-small-online',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: texto }
+      ],
+      response_format: { type: 'json_object' } // Vamos tentar com o 'json_object' de novo
+    })
+  });
+
+  if (!response.ok) {
+    const errorDetails = await response.text();
+    // Envia o erro exato do Perplexity para o log do servidor
+    throw new Error(`Erro ${response.status} do Perplexity: ${errorDetails}`);
+  }
+
+  const data = await response.json();
+  return JSON.parse(data.choices[0].message.content);
+}
+
+// --- HELPER 2: CHAMADA DO GEMINI ---
+async function callGemini(texto, apiKey) {
+  // A API do Gemini usa uma URL e um formato de 'body' diferentes
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+
+  // O prompt do Gemini funciona melhor se pedirmos explicitamente o JSON
+  const geminiPrompt = `${systemPrompt}\n\nTexto para analisar:\n${texto}`;
+
+  const response = await fetch(GEMINI_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{ text: geminiPrompt }]
+      }],
+      generationConfig: {
+        // Força a resposta a ser JSON
+        responseMimeType: "application/json", 
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const errorDetails = await response.text();
+    throw new Error(`Erro ${response.status} do Gemini: ${errorDetails}`);
+  }
+
+  const data = await response.json();
+  // O Gemini retorna o JSON de forma diferente
+  const jsonString = data.candidates[0].content.parts[0].text;
+  return JSON.parse(jsonString);
 }
