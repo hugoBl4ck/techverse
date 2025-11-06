@@ -7,6 +7,31 @@ import { RouterLink } from 'vue-router'
 
 const pecas = ref([])
 
+const colorMap = {
+  cpu: { bg: 'bg-red-500', text: 'text-red-500' },
+  'placa-mae': { bg: 'bg-blue-500', text: 'text-blue-500' },
+  ram: { bg: 'bg-yellow-500', text: 'text-yellow-500' },
+  gpu: { bg: 'bg-green-500', text: 'text-green-500' },
+  armazenamento: { bg: 'bg-purple-500', text: 'text-purple-500' },
+  fonte: { bg: 'bg-gray-500', text: 'text-gray-500' },
+  gabinete: { bg: 'bg-indigo-500', text: 'text-indigo-500' },
+  watercooler: { bg: 'bg-sky-500', text: 'text-sky-500' },
+  aircooler: { bg: 'bg-sky-300', text: 'text-sky-300' },
+  ventoinhas: { bg: 'bg-zinc-400', text: 'text-zinc-400' },
+  'pasta termica': { bg: 'bg-zinc-600', text: 'text-zinc-600' },
+  mouse: { bg: 'bg-pink-500', text: 'text-pink-500' },
+  teclado: { bg: 'bg-orange-500', text: 'text-orange-500' },
+  controle: { bg: 'bg-cyan-500', text: 'text-cyan-500' },
+  controladoras: { bg: 'bg-teal-500', text: 'text-teal-500' },
+  outro: { bg: 'bg-gray-300', text: 'text-gray-300' },
+};
+
+function getCategoryColors(peca) {
+  const tipo = peca?.tipo || 'outro';
+  return colorMap[tipo] || colorMap.outro;
+}
+
+
 // Agrupa as peças por categoria
 const pecasAgrupadas = computed(() => {
   return pecas.value.reduce((acc, peca) => {
@@ -80,34 +105,47 @@ const dotPatternStyle = `
         </h2>
         <!-- Grid de Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <div v-for="peca in listaPecas" :key="peca.id" 
-              class="relative rounded-lg overflow-hidden shadow-lg group h-72 flex flex-col justify-end text-white">
-            
-            <!-- 1. Imagem de Fundo -->
-            <img v-if="peca.imageUrl" :src="peca.imageUrl" :alt="peca.nome" 
-                class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 z-0" />
-            <!-- Fallback para quando não há imagem -->
-            <div v-else class="absolute inset-0 w-full h-full bg-gray-800 z-0"></div>
+          <div v-for="peca in listaPecas" :key="peca.id"
+              class="relative h-48 rounded-lg overflow-hidden shadow-md bg-card flex">
+              <div :class="getCategoryColors(peca).bg" class="w-2 h-full"></div>
+              <div class="flex-1 relative">
+                <!-- Camada 1: Imagem de Fundo -->
+                <img
+                  v-if="peca.imageUrl"
+                  :src="peca.imageUrl"
+                  :alt="peca.nome"
+                  class="absolute inset-0 z-0 w-full h-full object-cover opacity-30"
+                />
+                <div v-else class="absolute inset-0 z-0 w-full h-full bg-gray-800 opacity-30"></div>
 
-            <!-- 2. Padrão de Pontos -->
-            <div class="pattern-dots absolute inset-0 w-full h-full text-white/10 z-10"></div>
+                <!-- Camada 2: Gradiente -->
+                <div class="absolute inset-0 z-10 bg-gradient-to-r from-background via-background/70 to-transparent"></div>
 
-            <!-- 3. Gradiente Overlay -->
-            <div class="absolute inset-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-20"></div>
+                <!-- Camada 3: Pattern (Listrinhas) -->
+                <div
+                  class="absolute inset-0 z-20 opacity-30"
+                  style="background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 6px);"
+                ></div>
 
-            <!-- Conteúdo do Card -->
-            <div class="relative p-4 z-30">
-              <h3 class="font-bold text-lg truncate">{{ peca.nome }}</h3>
-              <div class="text-sm opacity-90 mt-1">
-                <p>Qtd: {{ peca.quantidade }}</p>
-                <p>Venda: R$ {{ peca.precoVenda?.toFixed(2) }}</p>
+                <!-- Camada 4: Conteúdo -->
+                <div class="relative z-30 p-3 h-full flex flex-col justify-between text-foreground">
+                  <div>
+                      <h3 :class="getCategoryColors(peca).text" class="font-bold truncate text-sm">{{ peca.nome }}</h3>
+                      <span class="text-xs uppercase opacity-70">{{ peca.tipo }}</span>
+                  </div>
+                  <div>
+                      <div class="text-sm opacity-90 mt-1">
+                          <p>Qtd: {{ peca.quantidade }}</p>
+                          <p>Venda: R$ {{ peca.precoVenda?.toFixed(2) }}</p>
+                      </div>
+                      <RouterLink :to="`/inventario/${peca.id}/editar`" class="mt-2">
+                          <Button variant="secondary" size="sm" class="w-full">
+                          Editar
+                          </Button>
+                      </RouterLink>
+                  </div>
+                </div>
               </div>
-              <RouterLink :to="`/inventario/${peca.id}/editar`" class="mt-4">
-                <Button variant="secondary" size="sm" class="w-full bg-white/20 backdrop-blur-sm hover:bg-white/30">
-                  Editar
-                </Button>
-              </RouterLink>
-            </div>
           </div>
         </div>
       </section>
