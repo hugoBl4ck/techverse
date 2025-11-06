@@ -37,6 +37,7 @@ const chipConfig = computed(() => {
     default: return { icon: HelpCircle, colorHex: '#9ca3af' }; // gray-400
   }
 });
+</script>
 
 <template>
   <div
