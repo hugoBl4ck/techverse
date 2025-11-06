@@ -70,7 +70,7 @@ function removerKit(index) {
             <!-- Placas-Mãe -->
             <div>
               <h3 class="font-semibold mb-2">Placas-Mãe</h3>
-              :group="{ name: 'pecas', pull: true, put: false }"
+              <draggable :list="placasMae" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>
@@ -97,7 +97,7 @@ function removerKit(index) {
             <!-- Armazenamento -->
             <div>
               <h3 class="font-semibold mb-2">Armazenamento</h3>
-              <draggable ::group="{ name: 'pecas', pull: true, put: false }">
+              <draggable :list="armazenamentos" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
                 <template #item="{ element }">
                   <PecaChip :peca="element" />
                 </template>

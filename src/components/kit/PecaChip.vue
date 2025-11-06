@@ -21,7 +21,7 @@ const chipConfig = computed(() => {
     case 'gpu': return { icon: Gpu, color: 'border-l-green-500 bg-green-500/10' }; // Adicionei 'Gpu' aqui
     case 'armazenamento': return { icon: HardDrive, color: 'border-l-purple-500 bg-purple-500/10' };
     case 'fonte': return { icon: Plug, color: 'border-l-gray-500 bg-gray-500/10' };
-    case 'gabinete': return { icon: Codepen, color: 'border-l-indigo-500 bg-indigo-500/10' };
+    case 'gabinete': return { icon: Codepen, color: 'border-l-indigo-500 bg-indigo-500/30' };
     
     // Novas Categorias (Refrigeração)
     case 'watercooler': return { icon: Waves, color: 'border-l-sky-500 bg-sky-500/10' };
@@ -49,6 +49,13 @@ const chipConfig = computed(() => {
     :data-peca="JSON.stringify(peca)"
   >
     <component :is="chipConfig.icon" class="size-5 shrink-0" />
-    <div class="truncate font-medium text-sm">{{ peca.nome }}</div>
+    <div class="flex-1 min-w-0">
+      <div class="truncate font-medium text-sm">{{ peca.nome }}</div>
+      <div v-if="peca.descricao || peca.cor || peca.tamanho" class="text-xs text-muted-foreground truncate">
+        <span v-if="peca.descricao">{{ peca.descricao }}</span>
+        <span v-if="peca.cor">, Cor: {{ peca.cor }}</span>
+        <span v-if="peca.tamanho">, Tam: {{ peca.tamanho }}</span>
+      </div>
+    </div>
   </div>
 </template>
