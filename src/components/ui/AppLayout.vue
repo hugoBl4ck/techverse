@@ -51,7 +51,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 // Importando nossos componentes customizados
-import SidebarMenu from '@/components/SidebarMenu.vue'
+import SidebarMenu from '@/components/ui/SidebarMenu.vue'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 </script>
 
