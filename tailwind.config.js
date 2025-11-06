@@ -1,17 +1,10 @@
-// tailwind.config.js
-
 /** @type {import('tailwindcss').Config} */
 export default {
-  // 1. IMPORTANTE: Habilita o modo escuro
   darkMode: 'class',
-  
-  // 2. IMPORTANTE: Garante que o Tailwind vai "ler" todos os seus arquivos
   content: [
     './index.html',
     './src/**/*.{vue,js,ts,jsx,tsx}',
   ],
-  
-  // 3. ESSA É A PARTE QUE ESTÁ FALTANDO/QUEBRADA
   theme: {
     container: {
       center: true,
@@ -21,58 +14,51 @@ export default {
       },
     },
     extend: {
-      // 4. AQUI MAPEAMOS AS CORES DO SEU TEMA
       colors: {
-        border: 'hsl(var(--border))', // <-- A COR DO ERRO
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        border: 'oklch(var(--border))',
+        input: 'oklch(var(--input))',
+        ring: 'oklch(var(--ring))',
+        background: 'oklch(var(--background))',
+        foreground: 'oklch(var(--foreground))',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: 'oklch(var(--primary))',
+          foreground: 'oklch(var(--primary-foreground))',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: 'oklch(var(--secondary))',
+          foreground: 'oklch(var(--secondary-foreground))',
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: 'oklch(var(--destructive))',
+          foreground: 'oklch(var(--destructive-foreground))',
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: 'oklch(var(--muted))',
+          foreground: 'oklch(var(--muted-foreground))',
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: 'oklch(var(--accent))',
+          foreground: 'oklch(var(--accent-foreground))',
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: 'oklch(var(--popover))',
+          foreground: 'oklch(var(--popover-foreground))',
         },
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: 'oklch(var(--card))',
+          foreground: 'oklch(var(--card-foreground))',
         },
       },
-      
-      // 5. AQUI MAPEAMOS O 'radius: 0px' DO SEU TEMA
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
-
-      // 6. AQUI MAPEAMOS AS FONTES 'Oxanium' DO SEU TEMA
       fontFamily: {
         sans: ['var(--font-sans)', 'sans-serif'],
         serif: ['var(--font-serif)', 'serif'],
         mono: ['var(--font-mono)', 'monospace'],
       },
-      
-      // 7. ESSENCIAL: Animações do shadcn-vue
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
@@ -89,8 +75,6 @@ export default {
       },
     },
   },
-  
-  // 8. ESSENCIAL: Plugin de animação do shadcn
   plugins: [
     require('tailwindcss-animate')
   ],
