@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
-import PecaChip from '@/components/kit/PecaChip.vue';
+import KitPecaCard from '@/components/kit/KitPecaCard.vue';
 
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
@@ -44,7 +44,7 @@ function handleClose() {
             Nenhuma peça no kit.
           </div>
           <div v-else class="flex flex-wrap gap-2">
-            <PecaChip v-for="peca in allParts" :key="peca.id" :peca="peca" />
+            <KitPecaCard v-for="peca in allParts" :key="peca.id" :peca="peca" />
           </div>
         </div>
 
