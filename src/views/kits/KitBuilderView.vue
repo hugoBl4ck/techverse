@@ -1,33 +1,33 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { db } from '@/firebase/config';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import draggable from 'vuedraggable';
-import KitPecaCard from '@/components/kit/KitPecaCard.vue'; // Importando o novo componente
-import KitSaveDialog from '@/components/kit/KitSaveDialog.vue'; // Importando o novo componente
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import PecaChip from '@/components/kit/PecaChip.vue';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import KitMount from '@/components/kit/KitMount.vue';
 
-// Estado do Inventário
+// --- STATE ---
 const inventario = ref([]);
+const kitsNaTela = ref([]);
+const kitCounter = ref(0);
 
-// Estado do Kit Builder Atual
-const kitPlacaMae = ref([]);
-const kitCpu = ref([]);
-const kitRam = ref([]);
-const kitGpu = ref([]);
-const kitArmazenamento = ref([]);
-const kitFonte = ref([]);
-const kitGabinete = ref([]);
+// --- LIFECYCLE ---
+onMounted(fetchPecas);
 
-// Estado do Dialog
-const isSaveDialogVisible = ref(false);
-const kitToSave = ref(null);
+// --- COMPUTED ---
+const cpus = computed(() => inventario.value.filter(p => p.tipo === 'cpu'));
+const rams = computed(() => inventario.value.filter(p => p.tipo === 'ram'));
+const placasMae = computed(() => inventario.value.filter(p => p.tipo === 'placa-mae'));
+const gpus = computed(() => inventario.value.filter(p => p.tipo === 'gpu'));
+const armazenamentos = computed(() => inventario.value.filter(p => p.tipo === 'armazenamento'));
+const fontes = computed(() => inventario.value.filter(p => p.tipo === 'fonte'));
+const gabinetes = computed(() => inventario.value.filter(p => p.tipo === 'gabinete'));
 
-// Regras de Compatibilidade
-const regrasKit = ref({ socket: null, tipoRam: null, formatoPlaca: null });
-
-// Carregar Peças do Firebase
+// --- METHODS ---
 async function fetchPecas() {
   try {
     const pecasCol = collection(db, 'pecas');
@@ -37,296 +37,112 @@ async function fetchPecas() {
     console.error("Erro ao buscar peças:", error);
   }
 }
-onMounted(fetchPecas);
 
-// Watcher para atualizar regras de compatibilidade
-watch(kitPlacaMae, (novasPecas) => {
-  if (novasPecas.length > 0) {
-    const comp = novasPecas[0].compatibilidade;
-    if (comp) {
-      regrasKit.value.socket = comp.socket || null;
-      regrasKit.value.tipoRam = comp.tipoRam || null;
-      regrasKit.value.formatoPlaca = comp.formato || null;
-    }
-  } else {
-    regrasKit.value = { socket: null, tipoRam: null, formatoPlaca: null };
-  }
-});
-
-// Funções para salvar o kit
-function openSaveDialog() {
-  const novoKit = {
-    placaMae: kitPlacaMae.value,
-    cpu: kitCpu.value,
-    ram: kitRam.value,
-    gpu: kitGpu.value,
-    armazenamento: kitArmazenamento.value,
-    fonte: kitFonte.value,
-    gabinete: kitGabinete.value,
-  };
-
-  const temPecas = Object.values(novoKit).some(arr => Array.isArray(arr) && arr.length > 0);
-  if (temPecas) {
-    kitToSave.value = novoKit;
-    isSaveDialogVisible.value = true;
-  }
+function adicionarNovoKit() {
+  kitCounter.value++;
+  kitsNaTela.value.push({ id: kitCounter.value });
 }
 
-async function handleSaveConfirmed() {
-  if (!kitToSave.value) return;
-
-  try {
-    // Mapeia para salvar apenas os IDs das peças, para normalizar os dados
-    const kitDataForDB = {
-      createdAt: new Date(),
-      pecas: {
-        placaMae: kitToSave.value.placaMae.map(p => p.id),
-        cpu: kitToSave.value.cpu.map(p => p.id),
-        ram: kitToSave.value.ram.map(p => p.id),
-        gpu: kitToSave.value.gpu.map(p => p.id),
-        armazenamento: kitToSave.value.armazenamento.map(p => p.id),
-        fonte: kitToSave.value.fonte.map(p => p.id),
-        gabinete: kitToSave.value.gabinete.map(p => p.id),
-      }
-    };
-
-    await addDoc(collection(db, 'kits'), kitDataForDB);
-    
-    // Feedback para o usuário (pode ser um toast no futuro)
-    alert('Kit salvo com sucesso!');
-
-    limparKitAtual();
-  } catch (error) {
-    console.error("Erro ao salvar o kit no Firebase:", error);
-    alert('Houve um erro ao salvar o kit.');
-  } finally {
-    isSaveDialogVisible.value = false;
-    kitToSave.value = null;
-  }
+function removerKit(index) {
+  kitsNaTela.value.splice(index, 1);
 }
-
-function limparKitAtual() {
-  kitPlacaMae.value = [];
-  kitCpu.value = [];
-  kitRam.value = [];
-  kitGpu.value = [];
-  kitArmazenamento.value = [];
-  kitFonte.value = [];
-  kitGabinete.value = [];
-}
-
-// Listas de Peças Computadas por Tipo com Filtro de Compatibilidade
-const cpus = computed(() => {
-  return inventario.value.filter(p => {
-    if (p.tipo !== 'cpu') return false;
-    if (regrasKit.value.socket && p.compatibilidade?.socket !== regrasKit.value.socket) return false;
-    return true;
-  });
-});
-
-const placasMae = computed(() => inventario.value.filter(p => p.tipo === 'placa-mae'));
-
-const rams = computed(() => {
-  return inventario.value.filter(p => {
-    if (p.tipo !== 'ram') return false;
-    if (regrasKit.value.tipoRam && p.compatibilidade?.tipoRam !== regrasKit.value.tipoRam) return false;
-    return true;
-  });
-});
-
-const gabinetes = computed(() => {
-    return inventario.value.filter(p => {
-        if (p.tipo !== 'gabinete') return false;
-        if (regrasKit.value.formatoPlaca && p.compatibilidade?.formatosAceitos && !p.compatibilidade.formatosAceitos.includes(regrasKit.value.formatoPlaca)) return false;
-        return true;
-    });
-});
-
-const gpus = computed(() => inventario.value.filter(p => p.tipo === 'gpu'));
-const armazenamentos = computed(() => inventario.value.filter(p => p.tipo === 'armazenamento'));
-const fontes = computed(() => inventario.value.filter(p => p.tipo === 'fonte'));
-
-const dragOptions = {
-  animation: 200,
-  ghostClass: "ghost"
-};
-
 </script>
 
 <template>
-  <div class="p-6">
-    <!-- Nosso novo Dialog de Confirmação -->
-    <KitSaveDialog 
-      :is-open="isSaveDialogVisible" 
-      :kit="kitToSave" 
-      @close="isSaveDialogVisible = false"
-      @save="handleSaveConfirmed"
-    />
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <!-- Coluna 1: Estoque de Peças -->
-      <div class="lg:col-span-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Estoque de Peças</CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-4 max-h-[80vh] overflow-y-auto">
-            <div v-if="!inventario.length">Carregando peças...</div>
-            
-            <div v-if="cpus.length">
+  <ResizablePanelGroup direction="horizontal" class="h-full w-full">
+    <!-- Coluna Esquerda: Estoque de Peças -->
+    <ResizablePanel :default-size="30" class="p-4">
+      <Card class="h-full flex flex-col">
+        <div class="p-4 border-b">
+          <h2 class="text-lg font-semibold font-display">Estoque de Peças</h2>
+        </div>
+        <ScrollArea class="flex-1">
+          <div class="p-4 space-y-4">
+            <!-- CPUs -->
+            <div>
               <h3 class="font-semibold mb-2">CPUs</h3>
-              <draggable :list="cpus" :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
-                <template #item="{element}">
-                  <KitPecaCard :peca="element" />
+              <draggable :list="cpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+                <template #item="{ element }">
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
-            
-            <div v-if="placasMae.length">
+            <!-- Placas-Mãe -->
+            <div>
               <h3 class="font-semibold mb-2">Placas-Mãe</h3>
-              <draggable :list="placasMae" :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
-                <template #item="{element}">
-                  <KitPecaCard :peca="element" />
+              <draggable :list="placasMae" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+                <template #item="{ element }">
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
-
-            <div v-if="rams.length">
+            <!-- Memória RAM -->
+            <div>
               <h3 class="font-semibold mb-2">Memória RAM</h3>
-              <draggable :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
-                <template #item="{element}">
-                  <KitPecaCard :peca="element" />
+              <draggable :list="rams" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+                <template #item="{ element }">
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
-
-            <div v-if="gpus.length">
+            <!-- Placas de Vídeo -->
+            <div>
               <h3 class="font-semibold mb-2">Placas de Vídeo</h3>
-              <draggable :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
-                <template #item="{element}">
-                  <KitPecaCard :peca="element" />
+              <draggable :list="gpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+                <template #item="{ element }">
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
-
-             <div v-if="armazenamentos.length">
+            <!-- Armazenamento -->
+            <div>
               <h3 class="font-semibold mb-2">Armazenamento</h3>
-              <draggable :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
-                <template #item="{element}">
-                  <KitPecaCard :peca="element" />
+              <draggable :list="armazenamentos" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+                <template #item="{ element }">
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
-
-             <div v-if="fontes.length">
+             <!-- Fontes -->
+            <div>
               <h3 class="font-semibold mb-2">Fontes</h3>
-              <draggable :list="fontes" :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
-                <template #item="{element}">
-                  <KitPecaCard :peca="element" />
+              <draggable :list="fontes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+                <template #item="{ element }">
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
-
-             <div v-if="gabinetes.length">
+             <!-- Gabinetes -->
+            <div>
               <h3 class="font-semibold mb-2">Gabinetes</h3>
-              <draggable :list="gabinetes" :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
-                <template #item="{element}">
-                  <KitPecaCard :peca="element" />
+              <draggable :list="gabinetes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: 'clone', put: false }">
+                <template #item="{ element }">
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
+          </div>
+        </ScrollArea>
+      </Card>
+    </ResizablePanel>
 
-          </CardContent>
-        </Card>
+    <ResizableHandle with-handle />
+
+    <!-- Coluna Direita: Área de Trabalho (Canvas) -->
+    <ResizablePanel :default-size="70">
+      <div class="flex flex-col h-full">
+        <div class="flex justify-between items-center p-4 border-b">
+          <h2 class="text-lg font-semibold font-display">Área de Trabalho</h2>
+          <Button @click="adicionarNovoKit">+ Adicionar Novo Kit</Button>
+        </div>
+        <ScrollArea class="flex-1 bg-muted/30">
+          <div class="flex flex-wrap gap-6 p-6">
+            <div v-for="(kit, index) in kitsNaTela" :key="kit.id">
+              <KitMount :kit-id="kit.id" @delete="removerKit(index)" />
+            </div>
+          </div>
+        </ScrollArea>
       </div>
-
-      <!-- Coluna 2: Montagem -->
-      <div class="lg:col-span-8 space-y-6">
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between">
-            <CardTitle>Montagem do Kit Atual</CardTitle>
-            <div class="space-x-2">
-              <Button variant="outline" @click="limparKitAtual">Limpar</Button>
-              <Button @click="openSaveDialog">Salvar Kit</Button>
-            </div>
-          </CardHeader>
-          <CardContent class="space-y-4">
-            
-            <div>
-              <label class="font-semibold">Placa-Mãe</label>
-              <draggable v-model="kitPlacaMae" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
-                 <template #item="{element}">
-                    <KitPecaCard :peca="element" />
-                </template>
-              </draggable>
-            </div>
-
-            <div>
-              <label class="font-semibold">CPU</label>
-              <draggable v-model="kitCpu" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1" :disabled="kitPlacaMae.length === 0">
-                 <template #item="{element}">
-                    <KitPecaCard :peca="element" />
-                </template>
-              </draggable>
-            </div>
-
-            <div>
-              <label class="font-semibold">Memória RAM</label>
-              <draggable v-model="kitRam" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1" :disabled="kitPlacaMae.length === 0">
-                 <template #item="{element}">
-                    <KitPecaCard :peca="element" />
-                </template>
-              </draggable>
-            </div>
-
-            <div>
-              <label class="font-semibold">Placa de Vídeo (GPU)</label>
-              <draggable v-model="kitGpu" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
-                 <template #item="{element}">
-                    <KitPecaCard :peca="element" />
-                </template>
-              </draggable>
-            </div>
-
-            <div>
-              <label class="font-semibold">Armazenamento</label>
-              <draggable v-model="kitArmazenamento" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
-                 <template #item="{element}">
-                    <KitPecaCard :peca="element" />
-                </template>
-              </draggable>
-            </div>
-
-            <div>
-              <label class="font-semibold">Fonte de Alimentação</label>
-              <draggable v-model="kitFonte" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
-                 <template #item="{element}">
-                    <KitPecaCard :peca="element" />
-                </template>
-              </draggable>
-            </div>
-
-            <div>
-              <label class="font-semibold">Gabinete</label>
-              <draggable v-model="kitGabinete" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
-                 <template #item="{element}">
-                    <KitPecaCard :peca="element" />
-                </template>
-              </draggable>
-            </div>
-
-          </CardContent>
-        </Card>
-      </div>
-
-    </div>
-  </div>
+    </ResizablePanel>
+  </ResizablePanelGroup>
 </template>
-
-<style>
-.ghost {
-  opacity: 0.5;
-  background: #c8ebfb;
-}
-</style>
