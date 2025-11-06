@@ -14,15 +14,33 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const nome = ref('');
 const quantidade = ref(0);
 const preco = ref(0);
+const tipo = ref(''); // Novo campo para o tipo da peça
 const isLoading = ref(false);
 
+const tiposPeca = [
+  { value: 'cpu', label: 'CPU' },
+  { value: 'placa-mae', label: 'Placa-Mãe' },
+  { value: 'ram', label: 'Memória RAM' },
+  { value: 'gpu', label: 'GPU' },
+  { value: 'armazenamento', label: 'Armazenamento' },
+  { value: 'fonte', label: 'Fonte' },
+  { value: 'gabinete', label: 'Gabinete' },
+];
+
 async function handleSubmit() {
-  if (!nome.value) {
-    console.error('O nome da peça é obrigatório.');
+  if (!nome.value || !tipo.value) {
+    console.error('Nome e Tipo da peça são obrigatórios.');
     return;
   }
 
@@ -32,11 +50,13 @@ async function handleSubmit() {
       nome: nome.value,
       quantidade: quantidade.value,
       preco: preco.value,
+      tipo: tipo.value, // Adiciona o tipo ao documento
     });
     console.log('Peça salva!');
     nome.value = '';
     quantidade.value = 0;
     preco.value = 0;
+    tipo.value = '';
   } catch (error) {
     console.error('Erro ao salvar peça: ', error);
   } finally {
@@ -56,6 +76,19 @@ async function handleSubmit() {
         <div class="grid gap-2">
           <Label for="nome">Nome da Peça</Label>
           <Input id="nome" v-model="nome" type="text" placeholder="Nome da peça" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="tipo">Tipo da Peça</Label>
+          <Select v-model="tipo">
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="t in tiposPeca" :key="t.value" :value="t.value">
+                {{ t.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div class="grid gap-2">
           <Label for="quantidade">Quantidade</Label>

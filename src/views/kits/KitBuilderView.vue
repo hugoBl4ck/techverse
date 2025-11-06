@@ -3,8 +3,19 @@ import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/firebase/config'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import draggable from 'vuedraggable'
 
 const inventario = ref([])
+
+// Refs para os slots do kit
+const kitPlacaMae = ref([])
+const kitCpu = ref([])
+const kitRam1 = ref([])
+const kitRam2 = ref([])
+const kitGpu = ref([])
+const kitStorage = ref([])
+const kitPsu = ref([])
+const kitCase = ref([])
 
 async function fetchPecas() {
   const pecasCol = collection(db, 'pecas')
@@ -39,9 +50,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>CPUs</CardTitle>
           </CardHeader>
           <CardContent>
-            <div v-for="cpu in cpus" :key="cpu.id" class="mb-2">
-              {{ cpu.nome }} (Estoque: {{ cpu.estoque }})
-            </div>
+            <draggable
+              :list="cpus"
+              :group="{ name: 'pecas', pull: 'clone', put: false }"
+              item-key="id"
+              class="min-h-[50px]"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }} (Estoque: {{ element.estoque }})
+                </div>
+              </template>
+            </draggable>
             <div v-if="cpus.length === 0">Nenhuma CPU disponível.</div>
           </CardContent>
         </Card>
@@ -51,9 +71,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Placas-Mãe</CardTitle>
           </CardHeader>
           <CardContent>
-            <div v-for="placa in placasMae" :key="placa.id" class="mb-2">
-              {{ placa.nome }} (Estoque: {{ placa.estoque }})
-            </div>
+            <draggable
+              :list="placasMae"
+              :group="{ name: 'pecas', pull: 'clone', put: false }"
+              item-key="id"
+              class="min-h-[50px]"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }} (Estoque: {{ element.estoque }})
+                </div>
+              </template>
+            </draggable>
             <div v-if="placasMae.length === 0">Nenhuma Placa-Mãe disponível.</div>
           </CardContent>
         </Card>
@@ -63,9 +92,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Memórias RAM</CardTitle>
           </CardHeader>
           <CardContent>
-            <div v-for="ram in rams" :key="ram.id" class="mb-2">
-              {{ ram.nome }} (Estoque: {{ ram.estoque }})
-            </div>
+            <draggable
+              :list="rams"
+              :group="{ name: 'pecas', pull: 'clone', put: false }"
+              item-key="id"
+              class="min-h-[50px]"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }} (Estoque: {{ element.estoque }})
+                </div>
+              </template>
+            </draggable>
             <div v-if="rams.length === 0">Nenhuma Memória RAM disponível.</div>
           </CardContent>
         </Card>
@@ -75,9 +113,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>GPUs</CardTitle>
           </CardHeader>
           <CardContent>
-            <div v-for="gpu in gpus" :key="gpu.id" class="mb-2">
-              {{ gpu.nome }} (Estoque: {{ gpu.estoque }})
-            </div>
+            <draggable
+              :list="gpus"
+              :group="{ name: 'pecas', pull: 'clone', put: false }"
+              item-key="id"
+              class="min-h-[50px]"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }} (Estoque: {{ element.estoque }})
+                </div>
+              </template>
+            </draggable>
             <div v-if="gpus.length === 0">Nenhuma GPU disponível.</div>
           </CardContent>
         </Card>
@@ -87,9 +134,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Armazenamento</CardTitle>
           </CardHeader>
           <CardContent>
-            <div v-for="storage in storages" :key="storage.id" class="mb-2">
-              {{ storage.nome }} (Estoque: {{ storage.estoque }})
-            </div>
+            <draggable
+              :list="storages"
+              :group="{ name: 'pecas', pull: 'clone', put: false }"
+              item-key="id"
+              class="min-h-[50px]"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }} (Estoque: {{ element.estoque }})
+                </div>
+              </template>
+            </draggable>
             <div v-if="storages.length === 0">Nenhum Armazenamento disponível.</div>
           </CardContent>
         </Card>
@@ -99,9 +155,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Fontes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div v-for="psu in psus" :key="psu.id" class="mb-2">
-              {{ psu.nome }} (Estoque: {{ psu.estoque }})
-            </div>
+            <draggable
+              :list="psus"
+              :group="{ name: 'pecas', pull: 'clone', put: false }"
+              item-key="id"
+              class="min-h-[50px]"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }} (Estoque: {{ element.estoque }})
+                </div>
+              </template>
+            </draggable>
             <div v-if="psus.length === 0">Nenhuma Fonte disponível.</div>
           </CardContent>
         </Card>
@@ -111,9 +176,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Gabinetes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div v-for="caseItem in cases" :key="caseItem.id" class="mb-2">
-              {{ caseItem.nome }} (Estoque: {{ caseItem.estoque }})
-            </div>
+            <draggable
+              :list="cases"
+              :group="{ name: 'pecas', pull: 'clone', put: false }"
+              item-key="id"
+              class="min-h-[50px]"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }} (Estoque: {{ element.estoque }})
+                </div>
+              </template>
+            </draggable>
             <div v-if="cases.length === 0">Nenhum Gabinete disponível.</div>
           </CardContent>
         </Card>
@@ -130,7 +204,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Slot Placa-Mãe</CardTitle>
           </CardHeader>
           <CardContent>
-            <!-- Peça da Placa-Mãe arrastada aqui -->
+            <draggable
+              v-model="kitPlacaMae"
+              group="pecas"
+              item-key="id"
+              class="min-h-[50px] p-2 border-dashed border-border rounded-md"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }}
+                </div>
+              </template>
+            </draggable>
           </CardContent>
         </Card>
 
@@ -139,7 +224,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Slot CPU</CardTitle>
           </CardHeader>
           <CardContent>
-            <!-- Peça da CPU arrastada aqui -->
+            <draggable
+              v-model="kitCpu"
+              group="pecas"
+              item-key="id"
+              class="min-h-[50px] p-2 border-dashed border-border rounded-md"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }}
+                </div>
+              </template>
+            </draggable>
           </CardContent>
         </Card>
 
@@ -148,7 +244,18 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Slot RAM 1</CardTitle>
           </CardHeader>
           <CardContent>
-            <!-- Peça da RAM arrastada aqui -->
+            <draggable
+              v-model="kitRam1"
+              group="pecas"
+              item-key="id"
+              class="min-h-[50px] p-2 border-dashed border-border rounded-md"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }}
+                </div>
+              </template>
+            </draggable>
           </CardContent>
         </Card>
 
@@ -157,7 +264,98 @@ const cases = computed(() => inventario.value.filter(p => p.tipo === 'gabinete')
             <CardTitle>Slot RAM 2</CardTitle>
           </CardHeader>
           <CardContent>
-            <!-- Peça da RAM arrastada aqui -->
+            <draggable
+              v-model="kitRam2"
+              group="pecas"
+              item-key="id"
+              class="min-h-[50px] p-2 border-dashed border-border rounded-md"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }}
+                </div>
+              </template>
+            </draggable>
+          </CardContent>
+        </Card>
+
+        <Card class="min-h-[100px]">
+          <CardHeader>
+            <CardTitle>Slot GPU</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <draggable
+              v-model="kitGpu"
+              group="pecas"
+              item-key="id"
+              class="min-h-[50px] p-2 border-dashed border-border rounded-md"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }}
+                </div>
+              </template>
+            </draggable>
+          </CardContent>
+        </Card>
+
+        <Card class="min-h-[100px]">
+          <CardHeader>
+            <CardTitle>Slot Armazenamento</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <draggable
+              v-model="kitStorage"
+              group="pecas"
+              item-key="id"
+              class="min-h-[50px] p-2 border-dashed border-border rounded-md"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }}
+                </div>
+              </template>
+            </draggable>
+          </CardContent>
+        </Card>
+
+        <Card class="min-h-[100px]">
+          <CardHeader>
+            <CardTitle>Slot Fonte</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <draggable
+              v-model="kitPsu"
+              group="pecas"
+              item-key="id"
+              class="min-h-[50px] p-2 border-dashed border-border rounded-md"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }}
+                </div>
+              </template>
+            </draggable>
+          </CardContent>
+        </Card>
+
+        <Card class="min-h-[100px]">
+          <CardHeader>
+            <CardTitle>Slot Gabinete</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <draggable
+              v-model="kitCase"
+              group="pecas"
+              item-key="id"
+              class="min-h-[50px] p-2 border-dashed border-border rounded-md"
+            >
+              <template #item="{ element }">
+                <div class="mb-2 p-2 border rounded-md bg-card">
+                  {{ element.nome }}
+                </div>
+              </template>
+            </draggable>
           </CardContent>
         </Card>
       </div>
