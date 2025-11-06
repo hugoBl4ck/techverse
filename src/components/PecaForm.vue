@@ -25,7 +25,10 @@ import {
 
 const props = defineProps({
   id: { type: String, default: null },
+  pecaPreenchida: { type: Object, default: null }
 });
+
+const emit = defineEmits(['peca-salva']);
 
 const router = useRouter();
 
@@ -71,6 +74,19 @@ watch(() => props.id, (newId) => {
   fetchPeca(newId);
 }, { immediate: true });
 
+watch(() => props.pecaPreenchida, (newPeca) => {
+  if (newPeca) {
+    nome.value = newPeca.nome || '';
+    tipo.value = newPeca.tipo || '';
+    // Reset other fields for the new entry
+    quantidade.value = 1;
+    precoCusto.value = 0;
+    precoVenda.value = 0;
+    socket.value = newPeca.compatibilidade?.socket || '';
+    tipoRam.value = newPeca.compatibilidade?.tipoRam || '';
+  }
+}, { deep: true });
+
 async function handleSubmit() {
   if (!nome.value || !tipo.value) {
     console.error('Nome e Tipo da peça são obrigatórios.');
@@ -96,12 +112,20 @@ async function handleSubmit() {
       const docRef = doc(db, 'pecas', props.id);
       await updateDoc(docRef, pecaData);
       console.log('Peça atualizada!');
+      router.push('/inventario'); // Redirect to list after update
     } else {
       // Add new document
-      await addDoc(collection(db, 'pecas'), pecaData);
+      const docRef = await addDoc(collection(db, 'pecas'), pecaData);
       console.log('Peça salva!');
-    }
-    router.push('/inventario'); // Redirect to list after save/update
+      emit('peca-salva', { id: docRef.id, ...pecaData });
+      // Reset form
+      nome.value = '';
+      tipo.value = '';
+      quantidade.value = 0;
+      precoCusto.value = 0;
+      precoVenda.value = 0;
+      socket.value = '';
+      tipoRam.value = '';
   } catch (error) {
     console.error('Erro ao salvar peça: ', error);
   } finally {
