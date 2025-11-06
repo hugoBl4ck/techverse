@@ -106,7 +106,7 @@ const dotPatternStyle = `
         <!-- Grid de Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div v-for="peca in listaPecas" :key="peca.id"
-              class="relative h-48 rounded-lg overflow-hidden shadow-md bg-card flex">
+              class="group relative h-48 rounded-lg overflow-hidden shadow-md bg-card flex">
               <div :class="getCategoryColors(peca).bg" class="w-2 h-full"></div>
               <div class="flex-1 relative">
                 <!-- Camada 1: Imagem de Fundo -->
@@ -114,12 +114,12 @@ const dotPatternStyle = `
                   v-if="peca.imageUrl"
                   :src="peca.imageUrl"
                   :alt="peca.nome"
-                  class="absolute inset-0 z-0 w-full h-full object-cover opacity-30"
+                  class="absolute inset-0 z-0 w-full h-full object-cover opacity-30 transition-all duration-300 group-hover:opacity-75 group-hover:scale-110"
                 />
                 <div v-else class="absolute inset-0 z-0 w-full h-full bg-gray-800 opacity-30"></div>
 
                 <!-- Camada 2: Gradiente -->
-                <div class="absolute inset-0 z-10 bg-gradient-to-r from-background via-background/70 to-transparent"></div>
+                <div class="absolute inset-0 z-10 bg-gradient-to-r from-background via-background/50 to-transparent transition-opacity duration-300 group-hover:opacity-0"></div>
 
                 <!-- Camada 3: Pattern (Listrinhas) -->
                 <div
@@ -139,7 +139,7 @@ const dotPatternStyle = `
                           <p>Venda: R$ {{ peca.precoVenda?.toFixed(2) }}</p>
                       </div>
                       <RouterLink :to="`/inventario/${peca.id}/editar`" class="mt-2">
-                          <Button variant="secondary" size="sm" class="w-full">
+                          <Button variant="outline" size="sm" class="w-full bg-transparent border border-white/20 hover:bg-white/10">
                           Editar
                           </Button>
                       </RouterLink>
