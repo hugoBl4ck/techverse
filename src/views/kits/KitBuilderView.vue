@@ -176,7 +176,7 @@ const dragOptions = {
             
             <div v-if="cpus.length">
               <h3 class="font-semibold mb-2">CPUs</h3>
-              <:group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
+              <draggable :list="cpus" :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
                   <KitPecaCard :peca="element" />
                 </template>
@@ -185,7 +185,7 @@ const dragOptions = {
             
             <div v-if="placasMae.length">
               <h3 class="font-semibold mb-2">Placas-Mãe</h3>
-              <draggable :list="placasMae" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
+              <draggable :list="placasMae" :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
                   <KitPecaCard :peca="element" />
                 </template>
@@ -194,7 +194,7 @@ const dragOptions = {
 
             <div v-if="rams.length">
               <h3 class="font-semibold mb-2">Memória RAM</h3>
-              <draggable :list="rams" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
+              <draggable :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
                   <KitPecaCard :peca="element" />
                 </template>
@@ -203,7 +203,7 @@ const dragOptions = {
 
             <div v-if="gpus.length">
               <h3 class="font-semibold mb-2">Placas de Vídeo</h3>
-              <draggable :list="gpus" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
+              <draggable :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
                   <KitPecaCard :peca="element" />
                 </template>
@@ -212,7 +212,7 @@ const dragOptions = {
 
              <div v-if="armazenamentos.length">
               <h3 class="font-semibold mb-2">Armazenamento</h3>
-              <draggable :list="armazenamentos" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
+              <draggable :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
                   <KitPecaCard :peca="element" />
                 </template>
@@ -221,7 +221,7 @@ const dragOptions = {
 
              <div v-if="fontes.length">
               <h3 class="font-semibold mb-2">Fontes</h3>
-              <draggable :list="fontes" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
+              <draggable :list="fontes" :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
                   <KitPecaCard :peca="element" />
                 </template>
@@ -230,7 +230,7 @@ const dragOptions = {
 
              <div v-if="gabinetes.length">
               <h3 class="font-semibold mb-2">Gabinetes</h3>
-              <draggable :list="gabinetes" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
+              <draggable :list="gabinetes" :group="{ name: 'pecas', pull: true, put: true }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
                   <KitPecaCard :peca="element" />
                 </template>
