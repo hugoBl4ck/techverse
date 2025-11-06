@@ -1,60 +1,51 @@
 <script setup>
 import { computed } from 'vue';
+import {
+  Cpu, CircuitBoard, MemoryStick, HardDrive, Plug, Server, HelpCircle,
+  Mouse, Keyboard, Gamepad2, Waves, Wind, Fan, SquareTerminal, Brush, Gpu
+} from 'lucide-vue-next';
 
 const props = defineProps({ peca: Object });
 
-const colorMap = {
-  cpu: { bg: 'bg-red-500', text: 'text-red-500' },
-  'placa-mae': { bg: 'bg-blue-500', text: 'text-blue-500' },
-  ram: { bg: 'bg-yellow-500', text: 'text-yellow-500' },
-  gpu: { bg: 'bg-green-500', text: 'text-green-500' },
-  armazenamento: { bg: 'bg-purple-500', text: 'text-purple-500' },
-  fonte: { bg: 'bg-gray-500', text: 'text-gray-500' },
-  gabinete: { bg: 'bg-indigo-500', text: 'text-indigo-500' },
-  watercooler: { bg: 'bg-sky-500', text: 'text-sky-500' },
-  aircooler: { bg: 'bg-sky-300', text: 'text-sky-300' },
-  ventoinhas: { bg: 'bg-zinc-400', text: 'text-zinc-400' },
-  'pasta termica': { bg: 'bg-zinc-600', text: 'text-zinc-600' },
-  mouse: { bg: 'bg-pink-500', text: 'text-pink-500' },
-  teclado: { bg: 'bg-orange-500', text: 'text-orange-500' },
-  controle: { bg: 'bg-cyan-500', text: 'text-cyan-500' },
-  controladoras: { bg: 'bg-teal-500', text: 'text-teal-500' },
-  outro: { bg: 'bg-gray-300', text: 'text-gray-300' },
-};
-
-const categoryColors = computed(() => {
+const categoryConfig = computed(() => {
   const tipo = props.peca?.tipo || 'outro';
-  return colorMap[tipo] || colorMap.outro;
+  switch (tipo) {
+    // Hardware Principal
+    case 'cpu': return { icon: Cpu, color: 'text-red-500', border: 'border-red-500' };
+    case 'placa-mae': return { icon: CircuitBoard, color: 'text-blue-500', border: 'border-blue-500' };
+    case 'ram': return { icon: MemoryStick, color: 'text-yellow-500', border: 'border-yellow-500' };
+    case 'gpu': return { icon: Gpu, color: 'text-green-500', border: 'border-green-500' };
+    case 'armazenamento': return { icon: HardDrive, color: 'text-purple-500', border: 'border-purple-500' };
+    case 'fonte': return { icon: Plug, color: 'text-gray-500', border: 'border-gray-500' };
+    case 'gabinete': return { icon: Server, color: 'text-indigo-500', border: 'border-indigo-500' };
+
+    // Refrigeração
+    case 'watercooler': return { icon: Waves, color: 'text-sky-500', border: 'border-sky-500' };
+    case 'aircooler': return { icon: Wind, color: 'text-sky-300', border: 'border-sky-300' };
+    case 'ventoinhas': return { icon: Fan, color: 'text-zinc-400', border: 'border-zinc-400' };
+    case 'pasta termica': return { icon: Brush, color: 'text-zinc-600', border: 'border-zinc-600' };
+
+    // Periféricos
+    case 'mouse': return { icon: Mouse, color: 'text-pink-500', border: 'border-pink-500' };
+    case 'teclado': return { icon: Keyboard, color: 'text-orange-500', border: 'border-orange-500' };
+    case 'controle': return { icon: Gamepad2, color: 'text-cyan-500', border: 'border-cyan-500' };
+
+    // Outros
+    case 'controladoras': return { icon: SquareTerminal, color: 'text-teal-500', border: 'border-teal-500' };
+    default: return { icon: HelpCircle, color: 'text-gray-300', border: 'border-gray-300' };
+  }
 });
 </script>
 
 <template>
-  <div class="relative h-20 w-full rounded-lg overflow-hidden shadow-md bg-card cursor-grab flex">
-    <div :class="categoryColors.bg" class="w-2 h-full"></div>
-    <div class="flex-1 relative">
-      <!-- Camada 1: Imagem de Fundo -->
-      <img
-        v-if="peca.imageUrl"
-        :src="peca.imageUrl"
-        :alt="peca.nome"
-        class="absolute inset-0 z-0 w-full h-full object-cover opacity-30"
-      />
-      <div v-else class="absolute inset-0 z-0 w-full h-full bg-gray-800 opacity-30"></div>
-
-      <!-- Camada 2: Gradiente -->
-      <div class="absolute inset-0 z-10 bg-gradient-to-r from-background via-background/70 to-transparent"></div>
-
-      <!-- Camada 3: Pattern (Listrinhas) -->
-      <div
-        class="absolute inset-0 z-20 opacity-30"
-        style="background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 6px);"
-      ></div>
-
-      <!-- Camada 4: Conteúdo -->
-      <div class="relative z-30 p-3 h-full flex flex-col justify-end text-foreground">
-        <h3 :class="categoryColors.text" class="font-bold truncate text-sm">{{ peca.nome }}</h3>
-        <span class="text-xs uppercase opacity-70">{{ peca.tipo }}</span>
-      </div>
+  <div
+    :class="categoryConfig.border"
+    class="flex items-center gap-4 p-3 rounded-lg border-l-4 bg-card shadow-sm hover:bg-muted/80 cursor-grab transition-colors"
+  >
+    <component :is="categoryConfig.icon" :class="categoryConfig.color" class="size-6 shrink-0" />
+    <div class="flex-1 truncate">
+      <h3 class="font-semibold truncate text-sm text-foreground">{{ peca.nome }}</h3>
+      <span class="text-xs uppercase opacity-70">{{ peca.tipo }}</span>
     </div>
   </div>
 </template>
