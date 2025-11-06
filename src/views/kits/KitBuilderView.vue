@@ -1,9 +1,10 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { db } from '@/firebase/config';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 import draggable from 'vuedraggable';
 import PecaChip from '@/components/kit/PecaChip.vue';
+import KitSaveDialog from '@/components/kit/KitSaveDialog.vue'; // Importando o novo componente
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -19,8 +20,9 @@ const kitArmazenamento = ref([]);
 const kitFonte = ref([]);
 const kitGabinete = ref([]);
 
-// Canvas de Kits Salvos
-const savedKits = ref([]);
+// Estado do Dialog
+const isSaveDialogVisible = ref(false);
+const kitToSave = ref(null);
 
 // Regras de Compatibilidade
 const regrasKit = ref({ socket: null, tipoRam: null, formatoPlaca: null });
@@ -51,10 +53,9 @@ watch(kitPlacaMae, (novasPecas) => {
   }
 });
 
-// Funções do Canvas
-function salvarKitAtual() {
+// Funções para salvar o kit
+function openSaveDialog() {
   const novoKit = {
-    id: Date.now(),
     placaMae: kitPlacaMae.value,
     cpu: kitCpu.value,
     ram: kitRam.value,
@@ -64,11 +65,43 @@ function salvarKitAtual() {
     gabinete: kitGabinete.value,
   };
 
-  // Verifica se o kit não está vazio
   const temPecas = Object.values(novoKit).some(arr => Array.isArray(arr) && arr.length > 0);
   if (temPecas) {
-    savedKits.value.push(novoKit);
+    kitToSave.value = novoKit;
+    isSaveDialogVisible.value = true;
+  }
+}
+
+async function handleSaveConfirmed() {
+  if (!kitToSave.value) return;
+
+  try {
+    // Mapeia para salvar apenas os IDs das peças, para normalizar os dados
+    const kitDataForDB = {
+      createdAt: new Date(),
+      pecas: {
+        placaMae: kitToSave.value.placaMae.map(p => p.id),
+        cpu: kitToSave.value.cpu.map(p => p.id),
+        ram: kitToSave.value.ram.map(p => p.id),
+        gpu: kitToSave.value.gpu.map(p => p.id),
+        armazenamento: kitToSave.value.armazenamento.map(p => p.id),
+        fonte: kitToSave.value.fonte.map(p => p.id),
+        gabinete: kitToSave.value.gabinete.map(p => p.id),
+      }
+    };
+
+    await addDoc(collection(db, 'kits'), kitDataForDB);
+    
+    // Feedback para o usuário (pode ser um toast no futuro)
+    alert('Kit salvo com sucesso!');
+
     limparKitAtual();
+  } catch (error) {
+    console.error("Erro ao salvar o kit no Firebase:", error);
+    alert('Houve um erro ao salvar o kit.');
+  } finally {
+    isSaveDialogVisible.value = false;
+    kitToSave.value = null;
   }
 }
 
@@ -80,10 +113,6 @@ function limparKitAtual() {
   kitArmazenamento.value = [];
   kitFonte.value = [];
   kitGabinete.value = [];
-}
-
-function removerKitSalvo(kitId) {
-  savedKits.value = savedKits.value.filter(k => k.id !== kitId);
 }
 
 // Listas de Peças Computadas por Tipo com Filtro de Compatibilidade
@@ -126,6 +155,14 @@ const dragOptions = {
 
 <template>
   <div class="p-6">
+    <!-- Nosso novo Dialog de Confirmação -->
+    <KitSaveDialog 
+      :is-open="isSaveDialogVisible" 
+      :kit="kitToSave" 
+      @close="isSaveDialogVisible = false"
+      @save="handleSaveConfirmed"
+    />
+
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
       <!-- Coluna 1: Estoque de Peças -->
@@ -204,15 +241,14 @@ const dragOptions = {
         </Card>
       </div>
 
-      <!-- Coluna 2: Canvas de Montagem -->
+      <!-- Coluna 2: Montagem -->
       <div class="lg:col-span-8 space-y-6">
-        <!-- Card de Montagem do Kit Atual -->
         <Card>
           <CardHeader class="flex flex-row items-center justify-between">
             <CardTitle>Montagem do Kit Atual</CardTitle>
             <div class="space-x-2">
               <Button variant="outline" @click="limparKitAtual">Limpar</Button>
-              <Button @click="salvarKitAtual">Salvar Kit</Button>
+              <Button @click="openSaveDialog">Salvar Kit</Button>
             </div>
           </CardHeader>
           <CardContent class="space-y-4">
@@ -282,28 +318,6 @@ const dragOptions = {
 
           </CardContent>
         </Card>
-
-        <!-- Canvas de Kits Salvos -->
-        <div v-if="savedKits.length > 0" class="space-y-4">
-            <h2 class="text-2xl font-bold">Canvas de Kits Salvos</h2>
-            <Card v-for="kit in savedKits" :key="kit.id">
-                <CardHeader class="flex flex-row items-center justify-between">
-                    <CardTitle>Kit Salvo #{{ kit.id }}</CardTitle>
-                    <Button variant="destructive" size="sm" @click="removerKitSalvo(kit.id)">Remover</Button>
-                </CardHeader>
-                <CardContent class="flex flex-wrap gap-2">
-                    <!-- Renderiza todos os chips de peças do kit salvo -->
-                    <PecaChip v-for="peca in kit.placaMae" :key="peca.id" :peca="peca" />
-                    <PecaChip v-for="peca in kit.cpu" :key="peca.id" :peca="peca" />
-                    <PecaChip v-for="peca in kit.ram" :key="peca.id" :peca="peca" />
-                    <PecaChip v-for="peca in kit.gpu" :key="peca.id" :peca="peca" />
-                    <PecaChip v-for="peca in kit.armazenamento" :key="peca.id" :peca="peca" />
-                    <PecaChip v-for="peca in kit.fonte" :key="peca.id" :peca="peca" />
-                    <PecaChip v-for="peca in kit.gabinete" :key="peca.id" :peca="peca" />
-                </CardContent>
-            </Card>
-        </div>
-
       </div>
 
     </div>
