@@ -31,7 +31,7 @@ async function handleAnalisar() {
 
       // ===== ESTA É A CORREÇÃO CRUCIAL (2) =====
       // Garante que estamos enviando um OBJETO JSON
-      body: JSON.stringify({ text: anuncioInput.value })
+      body: JSON.stringify({ texto: anuncioInput.value })
       // ==========================================
     });
 

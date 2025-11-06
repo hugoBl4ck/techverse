@@ -6,7 +6,7 @@ const systemPrompt = `Você é um assistente de TI especialista em hardware de c
 Analise o texto abaixo e retorne um objeto JSON que contenha:
 1.  Um campo "precoTotal" (number), se o preço for encontrado.
 2.  Um array "componentes". Cada objeto no array deve ter:
-    - "componente": O nome da peça (ex: "Intel Core i5 4ª Geração").
+    - "nome": O nome da peça (ex: "Intel Core i5 4ª Geração").
     - "tipo": A categoria da peça (use UMA das seguintes: 'cpu', 'placa-mae', 'ram', 'gpu', 'armazenamento', 'fonte', 'gabinete', 'outro').
 
 NÃO inclua emojis. Retorne APENAS o JSON.`;
@@ -17,8 +17,20 @@ export default async function handler(request, response) {
     return response.status(405).json({ error: 'Método não permitido' });
   }
 
-  const { texto } = request.body;
+  // Adicionado para garantir que o corpo seja JSON
+  let body = request.body;
+  try {
+    if (typeof body === 'string') {
+      body = JSON.parse(body);
+    }
+  } catch (error) {
+    console.error("Erro ao fazer parse do corpo da requisição:", request.body);
+    return response.status(400).json({ error: 'Corpo da requisição mal formatado.' });
+  }
+
+  const { texto } = body || {};
   if (!texto) {
+    console.error("Nenhum texto encontrado no corpo da requisição. Corpo processado:", body);
     return response.status(400).json({ error: 'Nenhum texto fornecido' });
   }
 
