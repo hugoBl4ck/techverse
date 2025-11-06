@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme inline {
+:root {
   --color-background: oklch(0.8452 0 0);
   --color-foreground: oklch(0.2393 0 0);
   --color-card: oklch(0.7572 0 0);
@@ -31,9 +31,7 @@
   --font-mono: "Source Code Pro", monospace;
   
   --radius: 0px;
-}
 
-:root {
   --shadow-x: 0px;
   --shadow-y: 2px;
   --shadow-blur: 4px;
@@ -93,12 +91,12 @@
 }
 
 body {
-  background-color: oklch(var(--color-background));
-  color: oklch(var(--color-foreground));
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-sans);
   font-size: 14px;
 }
 
 * {
-  border-color: oklch(var(--color-border));
+  border-color: var(--color-border);
 }
