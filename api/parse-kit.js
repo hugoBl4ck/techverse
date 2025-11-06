@@ -105,7 +105,7 @@ async function callPerplexity(texto, apiKey) {
 // --- HELPER 2: CHAMADA DO GEMINI ---
 async function callGemini(texto, apiKey) {
   // A API do Gemini usa uma URL e um formato de 'body' diferentes
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
   // O prompt do Gemini funciona melhor se pedirmos explicitamente o JSON
   const geminiPrompt = `${systemPrompt}\n\nTexto para analisar:\n${texto}`;
