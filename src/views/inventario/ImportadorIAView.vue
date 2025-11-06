@@ -11,25 +11,43 @@ const pecasEncontradas = ref([]);
 const pecaSelecionada = ref(null);
 
 async function handleAnalisar() {
-  if (!anuncioInput.value.trim()) return;
+  if (!anuncioInput.value.trim()) {
+    alert("Por favor, cole um anúncio primeiro.");
+    return;
+  }
+  
   isLoadingIA.value = true;
-  pecasEncontradas.value = [];
-  pecaSelecionada.value = null;
+  pecasEncontradas.value = []; 
 
   try {
     const response = await fetch('/api/parse-kit', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: anuncioInput.value })
-    });
-    if (!response.ok) throw new Error('API Error');
-    const data = await response.json();
+      
+      // ===== ESTA É A CORREÇÃO CRUCIAL (1) =====
+      headers: {
+        'Content-Type': 'application/json' 
+      },
+      // ==========================================
 
-    pecasEncontradas.value = data.componentes;
+      // ===== ESTA É A CORREÇÃO CRUCIAL (2) =====
+      // Garante que estamos enviando um OBJETO JSON
+      body: JSON.stringify({ text: anuncioInput.value })
+      // ==========================================
+    });
+
+    if (!response.ok) {
+      // Isso vai capturar o erro 400 da API e exibir
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'A API retornou um erro');
+    }
+
+    const data = await response.json();
+    pecasEncontradas.value = data.componentes || [];
 
   } catch (error) {
     console.error("Erro ao analisar anúncio:", error);
-    // Optionally, show an error message to the user
+    // Exibe o erro real da API (ex: "Nenhum texto fornecido")
+    alert(`Houve um erro: ${error.message}`); 
   } finally {
     isLoadingIA.value = false;
   }
