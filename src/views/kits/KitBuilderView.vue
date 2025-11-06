@@ -3,7 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { db } from '@/firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
 import draggable from 'vuedraggable';
-import LegoBrick from '@/components/kit/LegoBrick.vue';
+import PecaChip from '@/components/kit/PecaChip.vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
@@ -177,70 +177,70 @@ const dragOptions = {
       <div class="lg:col-span-4">
         <Card>
           <CardHeader>
-            <CardTitle>Estoque de Peças (Lego)</CardTitle>
+            <CardTitle>Estoque de Peças</CardTitle>
           </CardHeader>
           <CardContent class="space-y-4 max-h-[80vh] overflow-y-auto">
             <div v-if="!inventario.length">Carregando peças...</div>
             
             <div v-if="cpus.length">
               <h3 class="font-semibold mb-2">CPUs</h3>
-              <draggable :list="cpus" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-wrap gap-2">
+              <draggable :list="cpus" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
-                  <LegoBrick :peca="element" class="w-full"/>
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
             
             <div v-if="placasMae.length">
               <h3 class="font-semibold mb-2">Placas-Mãe</h3>
-              <draggable :list="placasMae" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-wrap gap-2">
+              <draggable :list="placasMae" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
-                  <LegoBrick :peca="element" class="w-full"/>
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
 
             <div v-if="rams.length">
               <h3 class="font-semibold mb-2">Memória RAM</h3>
-              <draggable :list="rams" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-wrap gap-2">
+              <draggable :list="rams" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
-                  <LegoBrick :peca="element" class="w-full"/>
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
 
             <div v-if="gpus.length">
               <h3 class="font-semibold mb-2">Placas de Vídeo</h3>
-              <draggable :list="gpus" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-wrap gap-2">
+              <draggable :list="gpus" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
-                  <LegoBrick :peca="element" class="w-full"/>
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
 
              <div v-if="armazenamentos.length">
               <h3 class="font-semibold mb-2">Armazenamento</h3>
-              <draggable :list="armazenamentos" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-wrap gap-2">
+              <draggable :list="armazenamentos" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
-                  <LegoBrick :peca="element" class="w-full"/>
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
 
              <div v-if="fontes.length">
               <h3 class="font-semibold mb-2">Fontes</h3>
-              <draggable :list="fontes" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-wrap gap-2">
+              <draggable :list="fontes" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
-                  <LegoBrick :peca="element" class="w-full"/>
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
 
              <div v-if="gabinetes.length">
               <h3 class="font-semibold mb-2">Gabinetes</h3>
-              <draggable :list="gabinetes" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-wrap gap-2">
+              <draggable :list="gabinetes" :group="{ name: 'pecas', pull: 'clone', put: false }" item-key="id" :sort="false" class="flex flex-col gap-2">
                 <template #item="{element}">
-                  <LegoBrick :peca="element" class="w-full"/>
+                  <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
@@ -261,7 +261,7 @@ const dragOptions = {
               <label class="font-semibold">CPU</label>
               <draggable v-model="kitCpu" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1" :disabled="kitPlacaMae.length === 0">
                  <template #item="{element}">
-                    <LegoBrick :peca="element" />
+                    <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
@@ -270,7 +270,7 @@ const dragOptions = {
               <label class="font-semibold">Placa-Mãe</label>
               <draggable v-model="kitPlacaMae" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
                  <template #item="{element}">
-                    <LegoBrick :peca="element" />
+                    <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
@@ -279,7 +279,7 @@ const dragOptions = {
               <label class="font-semibold">Memória RAM</label>
               <draggable v-model="kitRam" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1" :disabled="kitPlacaMae.length === 0">
                  <template #item="{element}">
-                    <LegoBrick :peca="element" />
+                    <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
@@ -288,7 +288,7 @@ const dragOptions = {
               <label class="font-semibold">Placa de Vídeo (GPU)</label>
               <draggable v-model="kitGpu" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
                  <template #item="{element}">
-                    <LegoBrick :peca="element" />
+                    <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
@@ -297,7 +297,7 @@ const dragOptions = {
               <label class="font-semibold">Armazenamento</label>
               <draggable v-model="kitArmazenamento" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
                  <template #item="{element}">
-                    <LegoBrick :peca="element" />
+                    <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
@@ -306,7 +306,7 @@ const dragOptions = {
               <label class="font-semibold">Fonte de Alimentação</label>
               <draggable v-model="kitFonte" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
                  <template #item="{element}">
-                    <LegoBrick :peca="element" />
+                    <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
@@ -315,7 +315,7 @@ const dragOptions = {
               <label class="font-semibold">Gabinete</label>
               <draggable v-model="kitGabinete" group="pecas" item-key="id" class="min-h-20 p-2 border-dashed border-border rounded-lg mt-1">
                  <template #item="{element}">
-                    <LegoBrick :peca="element" />
+                    <PecaChip :peca="element" />
                 </template>
               </draggable>
             </div>
