@@ -126,6 +126,7 @@ async function handleSubmit() {
       precoVenda.value = 0;
       socket.value = '';
       tipoRam.value = '';
+    }
   } catch (error) {
     console.error('Erro ao salvar peça: ', error);
   } finally {
