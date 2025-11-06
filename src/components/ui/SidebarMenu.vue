@@ -39,6 +39,12 @@
               Cadastrar Peça
             </Button>
           </RouterLink>
+          <RouterLink to="/inventario/importar-ia">
+            <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+              <Wand2 class="size-4" />
+              Importar com IA
+            </Button>
+          </RouterLink>
         </AccordionContent>
 
       </AccordionItem>
@@ -58,5 +64,5 @@
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Home, Users, Package, Archive, PlusCircle, Blocks } from 'lucide-vue-next'
+import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2 } from 'lucide-vue-next'
 </script>

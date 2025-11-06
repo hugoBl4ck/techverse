@@ -71,6 +71,12 @@ const routes = [
         meta: { title: 'Editar Peça' }
       },
       {
+        path: '/inventario/importar-ia',
+        name: 'InventarioImportarIA',
+        component: () => import('@/views/inventario/ImportadorIAView.vue'),
+        meta: { title: 'Importar com IA' }
+      },
+      {
         path: 'kits',
         name: 'KitsList',
         component: () => import('@/views/kits/KitListView.vue'),
