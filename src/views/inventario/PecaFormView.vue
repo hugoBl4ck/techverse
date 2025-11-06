@@ -1,5 +1,9 @@
+<script setup>
+import PecaForm from '@/components/PecaForm.vue';
+</script>
+
 <template>
-  <div>
-    <h1>Formulário de Peça</h1>
+  <div class="container mx-auto py-8">
+    <PecaForm />
   </div>
 </template>

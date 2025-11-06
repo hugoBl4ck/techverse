@@ -24,8 +24,11 @@ import {
 
 const nome = ref('');
 const quantidade = ref(0);
-const preco = ref(0);
-const tipo = ref(''); // Novo campo para o tipo da peça
+const precoCusto = ref(0);
+const precoVenda = ref(0);
+const tipo = ref('');
+const socket = ref('');
+const tipoRam = ref('');
 const isLoading = ref(false);
 
 const tiposPeca = [
@@ -49,14 +52,22 @@ async function handleSubmit() {
     await addDoc(collection(db, 'pecas'), {
       nome: nome.value,
       quantidade: quantidade.value,
-      preco: preco.value,
-      tipo: tipo.value, // Adiciona o tipo ao documento
+      precoCusto: precoCusto.value,
+      precoVenda: precoVenda.value,
+      tipo: tipo.value,
+      compatibilidade: {
+        socket: socket.value,
+        tipoRam: tipoRam.value,
+      },
     });
     console.log('Peça salva!');
     nome.value = '';
     quantidade.value = 0;
-    preco.value = 0;
+    precoCusto.value = 0;
+    precoVenda.value = 0;
     tipo.value = '';
+    socket.value = '';
+    tipoRam.value = '';
   } catch (error) {
     console.error('Erro ao salvar peça: ', error);
   } finally {
@@ -95,8 +106,20 @@ async function handleSubmit() {
           <Input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" />
         </div>
         <div class="grid gap-2">
-          <Label for="preco">Preço</Label>
-          <Input id="preco" v-model.number="preco" type="number" placeholder="0.00" />
+          <Label for="precoCusto">Preço de Custo</Label>
+          <Input id="precoCusto" v-model.number="precoCusto" type="number" placeholder="0.00" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="precoVenda">Preço de Venda</Label>
+          <Input id="precoVenda" v-model.number="precoVenda" type="number" placeholder="0.00" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="socket">Socket</Label>
+          <Input id="socket" v-model="socket" type="text" placeholder="Ex: AM4" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="tipoRam">Tipo de RAM</Label>
+          <Input id="tipoRam" v-model="tipoRam" type="text" placeholder="Ex: DDR4" />
         </div>
       </div>
     </CardContent>
