@@ -38,7 +38,8 @@ async function handleAnalisar() {
     if (!response.ok) {
       // Isso vai capturar o erro 400 da API e exibir
       const errorData = await response.json();
-      throw new Error(errorData.error || 'A API retornou um erro');
+      const errorMessage = errorData.details ? `${errorData.error}: ${JSON.stringify(errorData.details)}` : (errorData.error || 'A API retornou um erro');
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
