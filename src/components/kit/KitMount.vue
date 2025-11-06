@@ -5,7 +5,9 @@ import PecaChip from '@/components/kit/PecaChip.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Pin, PinOff, Trash2, AlertTriangle } from 'lucide-vue-next';
+import { Pin, PinOff, Trash2, AlertTriangle, Save } from 'lucide-vue-next'; // Added Save icon
+import { db } from '@/firebase/config'; // Added db import
+import { collection, addDoc } from 'firebase/firestore'; // Added collection and addDoc imports
 
 // --- PROPS & EMITS ---
 const props = defineProps({ kitId: Number });
@@ -23,6 +25,15 @@ const kitRam = ref([]);
 const kitGpu = ref([]);
 const kitArmazenamento = ref([]);
 const kitFonte = ref([]);
+const kitGabinete = ref([]);
+const kitWatercooler = ref([]);
+const kitAircooler = ref([]);
+const kitVentoinhas = ref([]);
+const kitPastaTermica = ref([]);
+const kitMouse = ref([]);
+const kitTeclado = ref([]);
+const kitControle = ref([]);
+const kitControladoras = ref([]);
 
 // Error State
 const erroCpu = ref(null);
@@ -88,6 +99,91 @@ function putGenerico(to, from, dragEl, tipo) {
     return dragEl.getAttribute('data-tipo') === tipo;
 }
 
+// --- METHODS ---
+async function saveKitToInventory() {
+  const assembledKit = {
+    placaMae: kitPlacaMae.value[0] || null,
+    cpu: kitCpu.value[0] || null,
+    ram: kitRam.value,
+    gpu: kitGpu.value[0] || null,
+    armazenamento: kitArmazenamento.value,
+    fonte: kitFonte.value[0] || null,
+    gabinete: kitGabinete.value[0] || null,
+    watercooler: kitWatercooler.value[0] || null,
+    aircooler: kitAircooler.value[0] || null,
+    ventoinhas: kitVentoinhas.value,
+    pastaTermica: kitPastaTermica.value[0] || null,
+    mouse: kitMouse.value[0] || null,
+    teclado: kitTeclado.value[0] || null,
+    controle: kitControle.value[0] || null,
+    controladoras: kitControladoras.value,
+  };
+
+  // Basic validation: ensure at least a motherboard is present
+  if (!assembledKit.placaMae) {
+    alert('Por favor, adicione uma Placa-Mãe ao kit antes de salvar no inventário.');
+    return;
+  }
+
+  let totalPrecoVenda = 0;
+  const pecasIds = [];
+  const pecasDetalhes = []; // To store details for the new peca's description
+
+  // Helper to process each piece or array of pieces
+  const processPiece = (pieceOrArray) => {
+    if (pieceOrArray) {
+      if (Array.isArray(pieceOrArray)) {
+        pieceOrArray.forEach(p => {
+          totalPrecoVenda += p.precoVenda || 0;
+          pecasIds.push(p.id);
+          pecasDetalhes.push(`${p.nome} (${p.tipo})`);
+        });
+      } else {
+        totalPrecoVenda += pieceOrArray.precoVenda || 0;
+        pecasIds.push(pieceOrArray.id);
+        pecasDetalhes.push(`${pieceOrArray.nome} (${pieceOrArray.tipo})`);
+      }
+    }
+  };
+
+  // Process all slots
+  processPiece(assembledKit.placaMae);
+  processPiece(assembledKit.cpu);
+  processPiece(assembledKit.ram);
+  processPiece(assembledKit.gpu);
+  processPiece(assembledKit.armazenamento);
+  processPiece(assembledKit.fonte);
+  processPiece(assembledKit.gabinete);
+  processPiece(assembledKit.watercooler);
+  processPiece(assembledKit.aircooler);
+  processPiece(assembledKit.ventoinhas);
+  processPiece(assembledKit.pastaTermica);
+  processPiece(assembledKit.mouse);
+  processPiece(assembledKit.teclado);
+  processPiece(assembledKit.controle);
+  processPiece(assembledKit.controladoras);
+
+  const newPeca = {
+    nome: nomeKit.value,
+    tipo: 'kit', // Mark as a kit
+    precoVenda: totalPrecoVenda,
+    quantidade: 1,
+    pecasComponentes: pecasIds, // Store IDs of component pieces
+    descricao: `Kit montado: ${pecasDetalhes.join(', ')}.`,
+    createdAt: new Date(),
+  };
+
+  try {
+    await addDoc(collection(db, 'pecas'), newPeca);
+    alert('Kit salvo no inventário com sucesso!');
+    // Optionally, clear the kit after saving
+    // kitPlacaMae.value = [];
+    // ... clear other slots
+  } catch (error) {
+    console.error('Erro ao salvar kit no inventário:', error);
+    alert('Houve um erro ao salvar o kit no inventário.');
+  }
+}
 </script>
 
 <template>
@@ -95,6 +191,9 @@ function putGenerico(to, from, dragEl, tipo) {
     <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b">
       <Input v-model="nomeKit" class="text-lg font-semibold font-display bg-transparent border-none focus-visible:ring-0" />
       <div class="flex items-center gap-1">
+        <Button @click="saveKitToInventory" variant="ghost" size="icon" title="Salvar Kit no Inventário">
+          <Save class="size-5 text-green-500" />
+        </Button>
         <Button @click="isPinned = !isPinned" variant="ghost" size="icon">
           <Pin v-if="isPinned" class="size-5 text-primary" />
           <PinOff v-else class="size-5" />
@@ -168,6 +267,96 @@ function putGenerico(to, from, dragEl, tipo) {
         <div>
           <label class="text-sm font-medium">Fonte</label>
           <draggable v-model="kitFonte" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'fonte') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Gabinete -->
+        <div class="col-span-2">
+          <label class="text-sm font-medium">Gabinete</label>
+          <draggable v-model="kitGabinete" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'gabinete') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Watercooler -->
+        <div>
+          <label class="text-sm font-medium">Watercooler</label>
+          <draggable v-model="kitWatercooler" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'watercooler') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Air Cooler -->
+        <div>
+          <label class="text-sm font-medium">Air Cooler</label>
+          <draggable v-model="kitAircooler" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'aircooler') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Ventoinhas -->
+        <div>
+          <label class="text-sm font-medium">Ventoinhas</label>
+          <draggable v-model="kitVentoinhas" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'ventoinhas') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Pasta Térmica -->
+        <div>
+          <label class="text-sm font-medium">Pasta Térmica</label>
+          <draggable v-model="kitPastaTermica" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'pasta termica') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Mouse -->
+        <div>
+          <label class="text-sm font-medium">Mouse</label>
+          <draggable v-model="kitMouse" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'mouse') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Teclado -->
+        <div>
+          <label class="text-sm font-medium">Teclado</label>
+          <draggable v-model="kitTeclado" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'teclado') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Controle -->
+        <div>
+          <label class="text-sm font-medium">Controle</label>
+          <draggable v-model="kitControle" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'controle') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
+              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+            </template>
+          </draggable>
+        </div>
+
+        <!-- Slot Controladoras -->
+        <div>
+          <label class="text-sm font-medium">Controladoras</label>
+          <draggable v-model="kitControladoras" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'controladoras') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
               <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
             </template>

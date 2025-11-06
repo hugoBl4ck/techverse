@@ -13,15 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea'; // Added Textarea import
 
 const props = defineProps({
   id: { type: String, default: null },
@@ -40,6 +32,7 @@ const tipo = ref('');
 const socket = ref('');
 const tipoRam = ref('');
 const imageUrl = ref('');
+const descricao = ref(''); // Added description ref
 const isLoading = ref(false);
 
 const tiposPeca = [
@@ -50,6 +43,31 @@ const tiposPeca = [
   { value: 'armazenamento', label: 'Armazenamento' },
   { value: 'fonte', label: 'Fonte' },
   { value: 'gabinete', label: 'Gabinete' },
+  { value: 'watercooler', label: 'Watercooler' },
+  { value: 'aircooler', label: 'Air Cooler' },
+  { value: 'ventoinhas', label: 'Ventoinhas' },
+  { value: 'pasta termica', label: 'Pasta Térmica' },
+  { value: 'mouse', label: 'Mouse' },
+  { value: 'teclado', label: 'Teclado' },
+  { value: 'controle', label: 'Controle' },
+  { value: 'controladoras', label: 'Controladoras' },
+  { value: 'outro', label: 'Outro' },
+];
+
+const tipoRamOptions = [
+  { value: 'DDR3', label: 'DDR3' },
+  { value: 'DDR4', label: 'DDR4' },
+  { value: 'DDR5', label: 'DDR5' },
+];
+
+const socketOptions = [
+  { value: 'AM4', label: 'AM4' },
+  { value: 'AM5', label: 'AM5' },
+  { value: 'LGA1200', label: 'LGA1200' },
+  { value: 'LGA1700', label: 'LGA1700' },
+  { value: 'TR4', label: 'TR4' },
+  { value: 'sTRX4', label: 'sTRX4' },
+  { value: 'Outro', label: 'Outro' },
 ];
 
 async function fetchPeca(id) {
@@ -66,6 +84,7 @@ async function fetchPeca(id) {
     socket.value = data.compatibilidade?.socket || '';
     tipoRam.value = data.compatibilidade?.tipoRam || '';
     imageUrl.value = data.imageUrl || '';
+    descricao.value = data.descricao || ''; // Fetch description
   } else {
     console.error('No such document!');
     router.push('/inventario'); // Redirect if not found
@@ -87,6 +106,7 @@ watch(() => props.pecaPreenchida, (newPeca) => {
     socket.value = newPeca.compatibilidade?.socket || '';
     tipoRam.value = newPeca.compatibilidade?.tipoRam || '';
     imageUrl.value = newPeca.imageUrl || '';
+    descricao.value = newPeca.descricao || ''; // Set description
   }
 }, { deep: true, immediate: true });
 
@@ -104,12 +124,12 @@ async function handleSubmit() {
       precoCusto: precoCusto.value,
       precoVenda: precoVenda.value,
       tipo: tipo.value,
-      imageUrl: imageUrl.value, // Adicionando o campo da imagem
+      imageUrl: imageUrl.value,
+      descricao: descricao.value, // Added description
       compatibilidade: {
         socket: socket.value,
         tipoRam: tipoRam.value,
       },
-    };
 
     if (props.id) {
       // Update existing document
@@ -131,6 +151,7 @@ async function handleSubmit() {
       socket.value = '';
       tipoRam.value = '';
       imageUrl.value = '';
+      descricao.value = ''; // Reset description
     }
   } catch (error) {
     console.error('Erro ao salvar peça: ', error);
@@ -179,15 +200,37 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="socket">Socket</Label>
-          <Input id="socket" v-model="socket" type="text" placeholder="Ex: AM4" />
+          <Select v-model="socket">
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o Socket" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="s in socketOptions" :key="s.value" :value="s.value">
+                {{ s.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div class="grid gap-2">
           <Label for="tipoRam">Tipo de RAM</Label>
-          <Input id="tipoRam" v-model="tipoRam" type="text" placeholder="Ex: DDR4" />
+          <Select v-model="tipoRam">
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o Tipo de RAM" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="t in tipoRamOptions" :key="t.value" :value="t.value">
+                {{ t.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div class="grid gap-2">
           <Label for="imageUrl">URL da Imagem</Label>
           <Input id="imageUrl" v-model="imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="descricao">Descrição</Label>
+          <Textarea id="descricao" v-model="descricao" placeholder="Descrição detalhada da peça" />
         </div>
       </div>
     </CardContent>
