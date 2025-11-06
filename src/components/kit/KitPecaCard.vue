@@ -35,15 +35,41 @@ const categoryConfig = computed(() => {
     default: return { icon: HelpCircle, color: 'text-gray-300', border: 'border-gray-300' };
   }
 });
+
+const glowStyle = computed(() => {
+  const colorMap = {
+    'text-red-500': '255, 0, 0',
+    'text-blue-500': '0, 0, 255',
+    'text-yellow-500': '255, 255, 0',
+    'text-green-500': '0, 128, 0',
+    'text-purple-500': '128, 0, 128',
+    'text-gray-500': '128, 128, 128',
+    'text-indigo-500': '75, 0, 130',
+    'text-sky-500': '0, 191, 255',
+    'text-sky-300': '135, 206, 250',
+    'text-zinc-400': '161, 161, 170',
+    'text-zinc-600': '82, 82, 91',
+    'text-pink-500': '255, 105, 180',
+    'text-orange-500': '255, 165, 0',
+    'text-cyan-500': '0, 255, 255',
+    'text-teal-500': '0, 128, 128',
+    'text-gray-300': '209, 213, 219',
+  };
+  const rgb = colorMap[categoryConfig.value.color] || '0, 0, 0';
+  return {
+    '--glow-rgb': rgb,
+    'box-shadow': `0 0 8px 2px rgba(var(--glow-rgb), 0.6)`
+  };
+});
 </script>
 
 <template>
   <div
     :class="categoryConfig.border"
-    class="flex items-center gap-4 p-3 rounded-lg border-l-4 bg-card shadow-sm hover:bg-muted/80 cursor-grab transition-colors"
+    class="flex items-center gap-4 p-3 rounded-lg border-l-4 bg-white/10 shadow-sm hover:bg-white/20 cursor-grab transition-colors backdrop-blur-md"
   >
-    <component :is="categoryConfig.icon" :class="categoryConfig.color" class="size-6 shrink-0" />
-    <div class="flex-1 truncate">
+    <component :is="categoryConfig.icon" :class="categoryConfig.color" :style="glowStyle" class="size-6 shrink-0" />
+    <div class="flex-1 truncate min-w-0">
       <h3 class="font-semibold truncate text-sm text-foreground">{{ peca.nome }}</h3>
       <span class="text-xs uppercase opacity-70">{{ peca.tipo }}</span>
     </div>

@@ -130,6 +130,7 @@ async function handleSubmit() {
         socket: socket.value,
         tipoRam: tipoRam.value,
       },
+    }; // Added missing brace
 
     if (props.id) {
       // Update existing document
