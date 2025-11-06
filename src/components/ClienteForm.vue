@@ -77,3 +77,34 @@ async function handleSubmit() {
     isLoading.value = false;
   }
 }
+</script>
+
+<template>
+  <Card>
+    <CardHeader>
+      <CardTitle>Cadastrar Novo Cliente</CardTitle>
+      <CardDescription>Preencha os dados do novo cliente.</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <div class="grid gap-4">
+        <div class="grid gap-2">
+          <Label for="nome">Nome</Label>
+          <Input id="nome" v-model="nome" type="text" placeholder="Nome completo do cliente" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="telefone">Telefone</Label>
+          <Input id="telefone" v-model="telefone" type="tel" placeholder="(99) 99999-9999" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="email">Email</Label>
+          <Input id="email" v-model="email" type="email" placeholder="email@exemplo.com" />
+        </div>
+      </div>
+    </CardContent>
+    <CardFooter>
+      <Button @click="handleSubmit" :disabled="isLoading" class="w-full">
+        {{ isLoading ? 'Salvando...' : 'Salvar Cliente' }}
+      </Button>
+    </CardFooter>
+  </Card>
+</template>
