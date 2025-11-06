@@ -90,6 +90,8 @@
   --shadow-lg: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 4px 6px -1px hsl(0 0% 0% / 0.60);
   --shadow-xl: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 8px 10px -1px hsl(0 0% 0% / 0.60);
   --shadow-2xl: 0px 2px 5px 0px hsl(0 0% 0% / 1.50);
+  background-image: radial-gradient(at 20% 30%, hsla(260, 100%, 50%, 0.1) 0px, transparent 50%),
+                    radial-gradient(at 80% 70%, hsla(180, 100%, 50%, 0.1) 0px, transparent 50%);
 }
 
 body {

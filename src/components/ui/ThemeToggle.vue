@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { Moon, Sun } from 'lucide-vue-next'
 
 const isDark = ref(false)
+const emits = defineEmits(['theme-changed'])
 
 // Carrega o tema salvo no localStorage ao montar
 onMounted(() => {
@@ -12,6 +13,7 @@ onMounted(() => {
   if (isDark.value) {
     document.documentElement.classList.add('dark')
   }
+  emits('theme-changed', isDark.value)
 })
 
 function toggleTheme() {
@@ -24,6 +26,7 @@ function toggleTheme() {
     document.documentElement.classList.remove('dark')
     localStorage.setItem('theme', 'light')
   }
+  emits('theme-changed', isDark.value)
 }
 </script>
 
@@ -33,7 +36,8 @@ function toggleTheme() {
     role="switch"
     :aria-checked="isDark"
     :data-state="isDark ? 'checked' : 'unchecked'"
-    class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 bg-primary"
+    class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+    :class="isDark ? 'bg-primary' : 'bg-input'"
     @click="toggleTheme"
   >
     <span
