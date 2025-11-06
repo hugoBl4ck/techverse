@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Cpu, Motherboard, MemoryStick, HardDrive, Plug, Case, HelpCircle, Gpu } from 'lucide-vue-next';
+import { Cpu, CircuitBoard, MemoryStick, HardDrive, Plug, Case, HelpCircle, Gpu } from 'lucide-vue-next';
 
 const props = defineProps({
   peca: {
@@ -12,7 +12,7 @@ const props = defineProps({
 const chipConfig = computed(() => {
   switch (props.peca.tipo) {
     case 'cpu': return { icon: Cpu, color: 'border-l-red-500 bg-red-500/10' };
-    case 'placa-mae': return { icon: Motherboard, color: 'border-l-blue-500 bg-blue-500/10' };
+    case 'placa-mae': return { icon: CircuitBoard, color: 'border-l-blue-500 bg-blue-500/10' };
     case 'ram': return { icon: MemoryStick, color: 'border-l-yellow-500 bg-yellow-500/10' };
     case 'gpu': return { icon: Gpu, color: 'border-l-green-500 bg-green-500/10' };
     case 'armazenamento': return { icon: HardDrive, color: 'border-l-purple-500 bg-purple-500/10' };
