@@ -3,7 +3,8 @@ import { computed } from 'vue';
 import { getItemConfig } from '@/lib/item-config.js';
 
 const props = defineProps({
-  item: Object
+  item: Object,
+  isUsed: { type: Boolean, default: false },
 });
 
 const chipConfig = computed(() => getItemConfig(props.item?.tipo));
@@ -12,8 +13,8 @@ const chipConfig = computed(() => getItemConfig(props.item?.tipo));
 <template>
   <div
     class="relative flex items-center gap-3 p-3 w-full rounded-lg border-l-4 overflow-hidden 
-           bg-card/60 cursor-grab
-           hover:scale-[1.02] transition-transform duration-150"
+           bg-card/60 transition-transform duration-150"
+    :class="{ 'opacity-50 cursor-not-allowed': isUsed, 'cursor-grab hover:scale-[1.02]': !isUsed }"
     :style="{
       'border-left-color': chipConfig.colorHex,
     }"
