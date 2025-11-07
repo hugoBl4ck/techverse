@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import PecaChip from '@/components/kit/PecaChip.vue';
-import PecaForm from '@/components/PecaForm.vue';
+import ItemChip from '@/components/kit/ItemChip.vue';
+import ItemForm from '@/components/ItemForm.vue';
 
 const anuncioInput = ref('');
 const isLoadingIA = ref(false);

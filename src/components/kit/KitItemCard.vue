@@ -5,10 +5,10 @@ import {
   Mouse, Keyboard, Gamepad2, Waves, Wind, Fan, SquareTerminal, Brush, Gpu
 } from 'lucide-vue-next';
 
-const props = defineProps({ peca: Object });
+const props = defineProps({ item: Object });
 
 const categoryConfig = computed(() => {
-  const tipo = props.peca?.tipo || 'outro';
+  const tipo = props.item?.tipo || 'outro';
   switch (tipo) {
     // Hardware Principal
     case 'cpu': return { icon: Cpu, color: 'text-red-500', border: 'border-red-500' };
@@ -70,8 +70,8 @@ const glowStyle = computed(() => {
   >
     <component :is="categoryConfig.icon" :class="categoryConfig.color" :style="glowStyle" class="size-6 shrink-0" />
     <div class="flex-1 truncate min-w-0">
-      <h3 class="font-semibold truncate text-sm text-foreground max-w-full">{{ peca.nome }}</h3>
-      <span class="text-xs uppercase opacity-70">{{ peca.tipo }}</span>
+      <h3 class="font-semibold truncate text-sm text-foreground max-w-full">{{ item.nome }}</h3>
+      <span class="text-xs uppercase opacity-70">{{ item.tipo }}</span>
     </div>
   </div>
 </template>

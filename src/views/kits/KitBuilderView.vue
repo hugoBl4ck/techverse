@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { db } from '@/firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
 import draggable from 'vuedraggable';
-import PecaChip from '@/components/kit/PecaChip.vue';
+import ItemChip from '@/components/kit/ItemChip.vue';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';

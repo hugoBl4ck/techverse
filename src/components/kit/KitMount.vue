@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import draggable from 'vuedraggable';
-import PecaChip from '@/components/kit/PecaChip.vue';
+import ItemChip from '@/components/kit/ItemChip.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -40,12 +40,12 @@ const erroCpu = ref(null);
 const erroRam = ref(null);
 
 // --- WATCHERS ---
-watch(kitPlacaMae, (newPecas) => {
-  if (newPecas.length > 0) {
-    const peca = newPecas[0];
+watch(kitPlacaMae, (newItems) => {
+  if (newItems.length > 0) {
+    const item = newItems[0];
     isPinned.value = true;
-    regrasKit.value.socket = peca.compatibilidade?.socket || null;
-    regrasKit.value.tipoRam = peca.compatibilidade?.tipoRam || null;
+    regrasKit.value.socket = item.compatibilidade?.socket || null;
+    regrasKit.value.tipoRam = item.compatibilidade?.tipoRam || null;
   } else {
     isPinned.value = false;
     regrasKit.value = { socket: null, tipoRam: null };
@@ -70,8 +70,8 @@ function putCpu(to, from, dragEl) {
   if (kitCpu.value.length > 0) return false;
   if (dragEl.getAttribute('data-tipo') !== 'cpu') return false;
   
-  const pecaCpu = JSON.parse(dragEl.getAttribute('data-peca'));
-  if (pecaCpu.compatibilidade?.socket !== regrasKit.value.socket) {
+  const itemCpu = JSON.parse(dragEl.getAttribute('data-item'));
+  if (itemCpu.compatibilidade?.socket !== regrasKit.value.socket) {
     erroCpu.value = `Socket incompatível! (Requer: ${regrasKit.value.socket})`;
     return false;
   }
@@ -86,8 +86,8 @@ function putRam(to, from, dragEl) {
     }
     if (dragEl.getAttribute('data-tipo') !== 'ram') return false;
 
-    const pecaRam = JSON.parse(dragEl.getAttribute('data-peca'));
-    if (pecaRam.compatibilidade?.tipoRam !== regrasKit.value.tipoRam) {
+    const itemRam = JSON.parse(dragEl.getAttribute('data-item'));
+    if (itemRam.compatibilidade?.tipoRam !== regrasKit.value.tipoRam) {
         erroRam.value = `Tipo de RAM incompatível! (Requer: ${regrasKit.value.tipoRam})`;
         return false;
     }
@@ -126,8 +126,8 @@ async function saveKitToInventory() {
   }
 
   let totalPrecoVenda = 0;
-  const pecasIds = [];
-  const pecasDetalhes = []; // To store details for the new peca's description
+  const itemsIds = [];
+  const itemsDetalhes = []; // To store details for the new item's description
 
   // Helper to process each piece or array of pieces
   const processPiece = (pieceOrArray) => {
@@ -135,13 +135,13 @@ async function saveKitToInventory() {
       if (Array.isArray(pieceOrArray)) {
         pieceOrArray.forEach(p => {
           totalPrecoVenda += p.precoVenda || 0;
-          pecasIds.push(p.id);
-          pecasDetalhes.push(`${p.nome} (${p.tipo})`);
+          itemsIds.push(p.id);
+          itemsDetalhes.push(`${p.nome} (${p.tipo})`);
         });
       } else {
         totalPrecoVenda += pieceOrArray.precoVenda || 0;
-        pecasIds.push(pieceOrArray.id);
-        pecasDetalhes.push(`${pieceOrArray.nome} (${pieceOrArray.tipo})`);
+        itemsIds.push(pieceOrArray.id);
+        itemsDetalhes.push(`${pieceOrArray.nome} (${pieceOrArray.tipo})`);
       }
     }
   };
@@ -163,18 +163,18 @@ async function saveKitToInventory() {
   processPiece(assembledKit.controle);
   processPiece(assembledKit.controladoras);
 
-  const newPeca = {
+  const newItem = {
     nome: nomeKit.value,
     tipo: 'kit', // Mark as a kit
     precoVenda: totalPrecoVenda,
     quantidade: 1,
-    pecasComponentes: pecasIds, // Store IDs of component pieces
-    descricao: `Kit montado: ${pecasDetalhes.join(', ')}.`,
+    itemsComponentes: itemsIds, // Store IDs of component items
+    descricao: `Kit montado: ${itemsDetalhes.join(', ')}.`,
     createdAt: new Date(),
   };
 
   try {
-    await addDoc(collection(db, 'pecas'), newPeca);
+    await addDoc(collection(db, 'items'), newItem);
     alert('Kit salvo no inventário com sucesso!');
     // Optionally, clear the kit after saving
     // kitPlacaMae.value = [];
@@ -208,9 +208,9 @@ async function saveKitToInventory() {
         <!-- Slot Placa-Mãe -->
         <div class="col-span-2">
           <label class="text-sm font-medium">Placa-Mãe</label>
-          <draggable v-model="kitPlacaMae" :group="{ name: 'pecas', put: putPlacaMae }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1 transition-colors" :class="{'border-primary': isPinned}">
+          <draggable v-model="kitPlacaMae" :group="{ name: 'items', put: putPlacaMae }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1 transition-colors" :class="{'border-primary': isPinned}">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -218,9 +218,7 @@ async function saveKitToInventory() {
         <!-- Slot CPU -->
         <div>
           <label class="text-sm font-medium">CPU</label>
-          <draggable v-model="kitCpu" :group="{ name: 'pecas', put: putCpu }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
-            <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
           <div v-if="erroCpu" class="text-xs text-destructive mt-1 flex items-center gap-1">
@@ -232,11 +230,7 @@ async function saveKitToInventory() {
         <!-- Slot RAM -->
         <div>
           <label class="text-sm font-medium">Memória RAM</label>
-          <draggable v-model="kitRam" :group="{ name: 'pecas', put: putRam }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
-            <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
-            </template>
-          </draggable>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
            <div v-if="erroRam" class="text-xs text-destructive mt-1 flex items-center gap-1">
             <AlertTriangle class="size-4" />
             <span>{{ erroRam }}</span>
@@ -246,9 +240,9 @@ async function saveKitToInventory() {
          <!-- Slot GPU -->
         <div class="col-span-2">
           <label class="text-sm font-medium">Placa de Vídeo</label>
-          <draggable v-model="kitGpu" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'gpu') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitGpu" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'gpu') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -256,9 +250,9 @@ async function saveKitToInventory() {
         <!-- Slot Armazenamento -->
         <div>
           <label class="text-sm font-medium">Armazenamento</label>
-          <draggable v-model="kitArmazenamento" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'armazenamento') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitArmazenamento" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'armazenamento') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -266,9 +260,9 @@ async function saveKitToInventory() {
         <!-- Slot Fonte -->
         <div>
           <label class="text-sm font-medium">Fonte</label>
-          <draggable v-model="kitFonte" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'fonte') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitFonte" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'fonte') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -276,9 +270,9 @@ async function saveKitToInventory() {
         <!-- Slot Gabinete -->
         <div class="col-span-2">
           <label class="text-sm font-medium">Gabinete</label>
-          <draggable v-model="kitGabinete" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'gabinete') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitGabinete" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'gabinete') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -286,19 +280,15 @@ async function saveKitToInventory() {
         <!-- Slot Watercooler -->
         <div>
           <label class="text-sm font-medium">Watercooler</label>
-          <draggable v-model="kitWatercooler" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'watercooler') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
-            <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
-            </template>
-          </draggable>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
         </div>
 
         <!-- Slot Air Cooler -->
         <div>
           <label class="text-sm font-medium">Air Cooler</label>
-          <draggable v-model="kitAircooler" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'aircooler') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitAircooler" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'aircooler') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -306,9 +296,9 @@ async function saveKitToInventory() {
         <!-- Slot Ventoinhas -->
         <div>
           <label class="text-sm font-medium">Ventoinhas</label>
-          <draggable v-model="kitVentoinhas" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'ventoinhas') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitVentoinhas" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'ventoinhas') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -316,9 +306,9 @@ async function saveKitToInventory() {
         <!-- Slot Pasta Térmica -->
         <div>
           <label class="text-sm font-medium">Pasta Térmica</label>
-          <draggable v-model="kitPastaTermica" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'pasta termica') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitPastaTermica" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'pasta termica') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -326,9 +316,9 @@ async function saveKitToInventory() {
         <!-- Slot Mouse -->
         <div>
           <label class="text-sm font-medium">Mouse</label>
-          <draggable v-model="kitMouse" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'mouse') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitMouse" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'mouse') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -336,9 +326,8 @@ async function saveKitToInventory() {
         <!-- Slot Teclado -->
         <div>
           <label class="text-sm font-medium">Teclado</label>
-          <draggable v-model="kitTeclado" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'teclado') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
-            <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+          <draggable v-model="kitTeclado" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'teclado') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -346,9 +335,9 @@ async function saveKitToInventory() {
         <!-- Slot Controle -->
         <div>
           <label class="text-sm font-medium">Controle</label>
-          <draggable v-model="kitControle" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'controle') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitControle" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'controle') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>
@@ -356,9 +345,9 @@ async function saveKitToInventory() {
         <!-- Slot Controladoras -->
         <div>
           <label class="text-sm font-medium">Controladoras</label>
-          <draggable v-model="kitControladoras" :group="{ name: 'pecas', put: (to, from, el) => putGenerico(to, from, el, 'controladoras') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+          <draggable v-model="kitControladoras" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'controladoras') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
             <template #item="{ element }">
-              <PecaChip :peca="element" :data-tipo="element.tipo" :data-peca="JSON.stringify(element)"/>
+              <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
         </div>

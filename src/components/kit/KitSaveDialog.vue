@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
-import KitPecaCard from '@/components/kit/KitPecaCard.vue';
+import KitItemCard from '@/components/kit/KitItemCard.vue';
 
 const props = defineProps({
   isOpen: { type: Boolean, required: true },

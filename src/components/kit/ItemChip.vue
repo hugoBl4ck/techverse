@@ -6,11 +6,11 @@ import {
 } from 'lucide-vue-next'
 
 const props = defineProps({
-  peca: Object
+  item: Object
 })
 
 const chipConfig = computed(() => {
-  const tipo = props.peca?.tipo || 'outro';
+  const tipo = props.item?.tipo || 'outro';
   switch (tipo) {
     // Hardware Principal (Cores Vibrantes)
     case 'cpu': return { icon: Cpu, colorHex: '#ef4444' }; // red-500
@@ -59,9 +59,9 @@ const chipConfig = computed(() => {
       
       <div class="flex-1 min-w-0">
         <h3 class="font-semibold truncate text-sm text-foreground max-w-full">
-          {{ peca.nome }}
+          {{ item.nome }}
         </h3>
-        <p class="text-xs text-muted-foreground uppercase">{{ peca.tipo }}</p>
+        <p class="text-xs text-muted-foreground uppercase">{{ item.tipo }}</p>
       </div>
     </div>
     

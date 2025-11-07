@@ -59,16 +59,16 @@ const routes = [
       },
       {
         path: 'inventario/novo',
-        name: 'PecaNova',
-        component: () => import('@/views/inventario/PecaFormView.vue'),
-        meta: { title: 'Nova Peça' }
+        name: 'ItemNovo',
+        component: () => import('@/views/inventario/ItemFormView.vue'),
+        meta: { title: 'Novo Item' }
       },
       {
         path: 'inventario/:id/editar',
-        name: 'PecaEditar',
-        component: () => import('@/views/inventario/PecaFormView.vue'),
+        name: 'ItemEditar',
+        component: () => import('@/views/inventario/ItemFormView.vue'),
         props: true,
-        meta: { title: 'Editar Peça' }
+        meta: { title: 'Editar Item' }
       },
       {
         path: '/inventario/importar-ia',

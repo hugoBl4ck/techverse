@@ -17,10 +17,10 @@ import { Textarea } from '@/components/ui/textarea'; // Added Textarea import
 
 const props = defineProps({
   id: { type: String, default: null },
-  pecaPreenchida: { type: Object, default: null }
+  itemPreenchido: { type: Object, default: null }
 });
 
-const emit = defineEmits(['peca-salva']);
+const emit = defineEmits(['item-salvo']);
 
 const router = useRouter();
 
@@ -35,7 +35,7 @@ const imageUrl = ref('');
 const descricao = ref(''); // Added description ref
 const isLoading = ref(false);
 
-const tiposPeca = [
+const tiposItem = [
   { value: 'cpu', label: 'CPU' },
   { value: 'placa-mae', label: 'Placa-Mãe' },
   { value: 'ram', label: 'Memória RAM' },
@@ -70,9 +70,9 @@ const socketOptions = [
   { value: 'Outro', label: 'Outro' },
 ];
 
-async function fetchPeca(id) {
+async function fetchItem(id) {
   if (!id) return;
-  const docRef = doc(db, 'pecas', id);
+  const docRef = doc(db, 'items', id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const data = docSnap.data();
@@ -92,33 +92,33 @@ async function fetchPeca(id) {
 }
 
 watch(() => props.id, (newId) => {
-  fetchPeca(newId);
+  fetchItem(newId);
 }, { immediate: true });
 
-watch(() => props.pecaPreenchida, (newPeca) => {
-  if (newPeca) {
-    nome.value = newPeca.nome || '';
-    tipo.value = newPeca.tipo || '';
+watch(() => props.itemPreenchido, (newItem) => {
+  if (newItem) {
+    nome.value = newItem.nome || '';
+    tipo.value = newItem.tipo || '';
     // Reset other fields for the new entry
     quantidade.value = 1;
     precoCusto.value = 0;
     precoVenda.value = 0;
-    socket.value = newPeca.compatibilidade?.socket || '';
-    tipoRam.value = newPeca.compatibilidade?.tipoRam || '';
-    imageUrl.value = newPeca.imageUrl || '';
-    descricao.value = newPeca.descricao || ''; // Set description
+    socket.value = newItem.compatibilidade?.socket || '';
+    tipoRam.value = newItem.compatibilidade?.tipoRam || '';
+    imageUrl.value = newItem.imageUrl || '';
+    descricao.value = newItem.descricao || ''; // Set description
   }
 }, { deep: true, immediate: true });
 
 async function handleSubmit() {
   if (!nome.value || !tipo.value) {
-    console.error('Nome e Tipo da peça são obrigatórios.');
+    console.error('Nome e Tipo do item são obrigatórios.');
     return;
   }
 
   isLoading.value = true;
   try {
-    const pecaData = {
+    const itemData = {
       nome: nome.value,
       quantidade: quantidade.value,
       precoCusto: precoCusto.value,
@@ -134,15 +134,15 @@ async function handleSubmit() {
 
     if (props.id) {
       // Update existing document
-      const docRef = doc(db, 'pecas', props.id);
-      await updateDoc(docRef, pecaData);
-      console.log('Peça atualizada!');
+      const docRef = doc(db, 'items', props.id);
+      await updateDoc(docRef, itemData);
+      console.log('Item atualizado!');
       router.push('/inventario'); // Redirect to list after update
     } else {
       // Add new document
-      const docRef = await addDoc(collection(db, 'pecas'), pecaData);
-      console.log('Peça salva!');
-      emit('peca-salva', { id: docRef.id, ...pecaData });
+      const docRef = await addDoc(collection(db, 'items'), itemData);
+      console.log('Item salvo!');
+      emit('item-salvo', { id: docRef.id, ...itemData });
       // Reset form
       nome.value = '';
       tipo.value = '';
@@ -155,7 +155,7 @@ async function handleSubmit() {
       descricao.value = ''; // Reset description
     }
   } catch (error) {
-    console.error('Erro ao salvar peça: ', error);
+    console.error('Erro ao salvar item: ', error);
   } finally {
     isLoading.value = false;
   }
@@ -165,23 +165,23 @@ async function handleSubmit() {
 <template>
   <Card>
     <CardHeader>
-      <CardTitle>Cadastrar Nova Peça</CardTitle>
-      <CardDescription>Preencha os dados da nova peça.</CardDescription>
+      <CardTitle>Cadastrar Novo Item</CardTitle>
+      <CardDescription>Preencha os dados do novo item.</CardDescription>
     </CardHeader>
     <CardContent>
       <div class="grid gap-4">
         <div class="grid gap-2">
-          <Label for="nome">Nome da Peça</Label>
-          <Input id="nome" v-model="nome" type="text" placeholder="Nome da peça" />
+          <Label for="nome">Nome do Item</Label>
+          <Input id="nome" v-model="nome" type="text" placeholder="Nome do item" />
         </div>
         <div class="grid gap-2">
-          <Label for="tipo">Tipo da Peça</Label>
+          <Label for="tipo">Tipo do Item</Label>
           <Select v-model="tipo">
             <SelectTrigger>
               <SelectValue placeholder="Selecione o tipo" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem v-for="t in tiposPeca" :key="t.value" :value="t.value">
+              <SelectItem v-for="t in tiposItem" :key="t.value" :value="t.value">
                 {{ t.label }}
               </SelectItem>
             </SelectContent>
@@ -231,13 +231,13 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="descricao">Descrição</Label>
-          <Textarea id="descricao" v-model="descricao" placeholder="Descrição detalhada da peça" />
+          <Textarea id="descricao" v-model="descricao" placeholder="Descrição detalhada do item" />
         </div>
       </div>
     </CardContent>
     <CardFooter>
       <Button @click="handleSubmit" :disabled="isLoading" class="w-full">
-        {{ isLoading ? 'Salvando...' : 'Salvar Peça' }}
+        {{ isLoading ? 'Salvando...' : 'Salvar Item' }}
       </Button>
     </CardFooter>
   </Card>
