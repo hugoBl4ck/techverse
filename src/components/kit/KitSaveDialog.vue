@@ -10,7 +10,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'save']);
 
-const allParts = computed(() => {
+const allItems = computed(() => {
   if (!props.kit) return [];
   return [
     ...props.kit.placaMae,
@@ -20,7 +20,7 @@ const allParts = computed(() => {
     ...props.kit.armazenamento,
     ...props.kit.fonte,
     ...props.kit.gabinete
-  ].filter(p => p); // Filtra qualquer valor nulo/indefinido
+  ].filter(item => item); // Filtra qualquer valor nulo/indefinido
 });
 
 function handleSave() {
@@ -37,20 +37,20 @@ function handleClose() {
     <div class="bg-card text-card-foreground rounded-lg shadow-lg w-full max-w-md m-4">
       <div class="p-6">
         <h2 class="text-lg font-semibold">Salvar Kit</h2>
-        <p class="text-sm text-muted-foreground mt-1">Por favor, revise as peças do kit antes de salvar.</p>
+        <p class="text-sm text-muted-foreground mt-1">Por favor, revise os itens do kit antes de salvar.</p>
         
         <div class="mt-4 border rounded-lg p-4 max-h-60 overflow-y-auto">
-          <div v-if="allParts.length === 0" class="text-center text-muted-foreground">
-            Nenhuma peça no kit.
+          <div v-if="allItems.length === 0" class="text-center text-muted-foreground">
+            Nenhum item no kit.
           </div>
           <div v-else class="flex flex-wrap gap-2">
-            <KitPecaCard v-for="peca in allParts" :key="peca.id" :peca="peca" />
+            <KitItemCard v-for="item in allItems" :key="item.id" :item="item" />
           </div>
         </div>
 
         <div class="mt-6 flex justify-end space-x-4">
           <Button variant="outline" @click="handleClose">Cancelar</Button>
-          <Button @click="handleSave" :disabled="allParts.length === 0">Confirmar e Salvar</Button>
+          <Button @click="handleSave" :disabled="allItems.length === 0">Confirmar e Salvar</Button>
         </div>
       </div>
     </div>
