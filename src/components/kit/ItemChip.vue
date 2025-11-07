@@ -42,11 +42,10 @@ const chipConfig = computed(() => {
 <template>
   <div
     class="relative flex items-center gap-3 p-3 w-full rounded-lg border-l-4 overflow-hidden 
-           bg-card/60 backdrop-blur-sm shadow-md cursor-grab
+           bg-card/60 cursor-grab
            hover:scale-[1.02] transition-transform duration-150"
     :style="{
       'border-left-color': chipConfig.colorHex,
-      'box-shadow': `0 4px 12px -5px ${chipConfig.colorHex}`
     }"
   >
     

@@ -187,7 +187,7 @@ async function saveKitToInventory() {
 </script>
 
 <template>
-  <Card class="w-full max-w-md bg-card/80 backdrop-blur-sm">
+  <Card class="w-full max-w-md bg-card/80">
     <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b">
       <Input v-model="nomeKit" class="text-lg font-semibold font-display bg-transparent border-none focus-visible:ring-0" />
       <div class="flex items-center gap-1">

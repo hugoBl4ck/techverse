@@ -182,7 +182,7 @@ async function handleSubmit() {
       <div class="grid gap-4">
         <div class="grid gap-2">
           <Label for="nome">Nome do Item</Label>
-          <input id="nome" v-model="nome" type="text" placeholder="Nome do item" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" required />
+          <Input id="nome" v-model="nome" type="text" placeholder="Nome do item" required />
         </div>
         <div class="grid gap-2">
           <Label for="tipo">Tipo do Item</Label>
@@ -199,15 +199,15 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="quantidade">Quantidade</Label>
-          <input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" required />
+          <Input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" required />
         </div>
         <div class="grid gap-2">
           <Label for="precoCusto">Preço de Custo</Label>
-          <input id="precoCusto" v-model.number="precoCusto" type="number" placeholder="0.00" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
+          <Input id="precoCusto" v-model.number="precoCusto" type="number" placeholder="0.00" />
         </div>
         <div class="grid gap-2">
           <Label for="precoVenda">Preço de Venda</Label>
-          <input id="precoVenda" v-model.number="precoVenda" type="number" placeholder="0.00" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
+          <Input id="precoVenda" v-model.number="precoVenda" type="number" placeholder="0.00" />
         </div>
         <div class="grid gap-2">
           <Label for="socket">Socket</Label>
@@ -237,7 +237,7 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="imageUrl">URL da Imagem</Label>
-          <input id="imageUrl" v-model="imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
+          <Input id="imageUrl" v-model="imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" />
         </div>
         <div class="grid gap-2">
           <Label for="descricao">Descrição</Label>
