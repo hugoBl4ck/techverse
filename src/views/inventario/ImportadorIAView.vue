@@ -7,8 +7,8 @@ import ItemForm from '@/components/ItemForm.vue';
 
 const anuncioInput = ref('');
 const isLoadingIA = ref(false);
-const pecasEncontradas = ref([]);
-const pecaSelecionada = ref(null);
+const itemsEncontrados = ref([]);
+const itemSelecionado = ref(null);
 
 async function handleAnalisar() {
   if (!anuncioInput.value.trim()) {
@@ -17,7 +17,7 @@ async function handleAnalisar() {
   }
   
   isLoadingIA.value = true;
-  pecasEncontradas.value = []; 
+  itemsEncontrados.value = []; 
 
   try {
     const response = await fetch('/api/parse-kit', {
@@ -43,7 +43,7 @@ async function handleAnalisar() {
     }
 
     const data = await response.json();
-    pecasEncontradas.value = data.componentes || [];
+    itemsEncontrados.value = data.componentes || [];
 
   } catch (error) {
     console.error("Erro ao analisar anúncio:", error);
@@ -54,15 +54,15 @@ async function handleAnalisar() {
   }
 }
 
-function selecionarPeca(peca) {
-  pecaSelecionada.value = peca;
+function selecionarItem(item) {
+  itemSelecionado.value = item;
 }
 
-function onPecaSalva(pecaSalva) {
-  // Remove the saved piece from the list
-  pecasEncontradas.value = pecasEncontradas.value.filter(p => p.nome !== pecaSalva.nome);
+function onItemSalvo(itemSalvo) {
+  // Remove the saved item from the list
+  itemsEncontrados.value = itemsEncontrados.value.filter(p => p.nome !== itemSalvo.nome);
   // Clear the selection
-  pecaSelecionada.value = null;
+  itemSelecionado.value = null;
 }
 </script>
 
@@ -77,7 +77,7 @@ function onPecaSalva(pecaSalva) {
         <CardContent class="space-y-4">
           <textarea
             v-model="anuncioInput"
-            placeholder="Cole aqui o texto do anúncio do kit ou lista de peças..."
+            placeholder="Cole aqui o texto do anúncio do kit ou lista de itens..."
             class="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 min-h-[150px]"
             :disabled="isLoadingIA"
           />
@@ -86,16 +86,16 @@ function onPecaSalva(pecaSalva) {
             <span v-else>Analisar Anúncio</span>
           </Button>
 
-          <div v-if="pecasEncontradas.length > 0" class="pt-4">
-            <h3 class="font-semibold mb-2">Peças Encontradas (Clique para validar):</h3>
+          <div v-if="itemsEncontrados.length > 0" class="pt-4">
+            <h3 class="font-semibold mb-2">Itens Encontrados (Clique para validar):</h3>
             <div class="flex flex-col gap-2">
               <div
-                v-for="(peca, index) in pecasEncontradas"
+                v-for="(item, index) in itemsEncontrados"
                 :key="index"
-                @click="selecionarPeca(peca)"
+                @click="selecionarItem(item)"
                 class="cursor-pointer"
               >
-                <PecaChip :peca="peca" />
+                <ItemChip :item="item" />
               </div>
             </div>
           </div>
@@ -105,16 +105,16 @@ function onPecaSalva(pecaSalva) {
       <!-- Coluna 2: Validação e Cadastro -->
       <Card>
         <CardHeader>
-          <CardTitle>Validar e Salvar Peça</CardTitle>
+          <CardTitle>Validar e Salvar Item</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="!pecaSelecionada" class="text-center text-muted-foreground h-full flex items-center justify-center">
-            <p>Selecione uma peça da lista para validar e salvar.</p>
+          <div v-if="!itemSelecionado" class="text-center text-muted-foreground h-full flex items-center justify-center">
+            <p>Selecione um item da lista para validar e salvar.</p>
           </div>
-          <PecaForm
+          <ItemForm
             v-else
-            :peca-preenchida="pecaSelecionada"
-            @peca-salva="onPecaSalva"
+            :item-preenchido="itemSelecionado"
+            @item-salvo="onItemSalvo"
           />
         </CardContent>
       </Card>
