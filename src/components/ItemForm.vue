@@ -13,7 +13,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea'; // Added Textarea import
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input'; // Keep the custom Input for now, but ensure it's not the culprit
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const props = defineProps({
   id: { type: String, default: null },
@@ -32,7 +41,7 @@ const tipo = ref('');
 const socket = ref('');
 const tipoRam = ref('');
 const imageUrl = ref('');
-const descricao = ref(''); // Added description ref
+const descricao = ref('');
 const isLoading = ref(false);
 
 const tiposItem = [
@@ -86,10 +95,10 @@ async function fetchItem(id) {
     socket.value = data.compatibilidade?.socket || '';
     tipoRam.value = data.compatibilidade?.tipoRam || '';
     imageUrl.value = data.imageUrl || '';
-    descricao.value = data.descricao || ''; // Fetch description
+    descricao.value = data.descricao || '';
   } else {
     console.error('No such document!');
-    router.push('/inventario'); // Redirect if not found
+    router.push('/inventario');
   }
 }
 
@@ -101,14 +110,13 @@ watch(() => props.itemPreenchido, (newItem) => {
   if (newItem) {
     nome.value = newItem.nome || '';
     tipo.value = newItem.tipo || '';
-    // Reset other fields for the new entry
     quantidade.value = 1;
     precoCusto.value = 0;
     precoVenda.value = 0;
     socket.value = newItem.compatibilidade?.socket || '';
     tipoRam.value = newItem.compatibilidade?.tipoRam || '';
     imageUrl.value = newItem.imageUrl || '';
-    descricao.value = newItem.descricao || ''; // Set description
+    descricao.value = newItem.descricao || '';
   }
 }, { deep: true, immediate: true });
 
@@ -127,25 +135,22 @@ async function handleSubmit() {
       precoVenda: precoVenda.value,
       tipo: tipo.value,
       imageUrl: imageUrl.value,
-      descricao: descricao.value, // Added description
+      descricao: descricao.value,
       compatibilidade: {
         socket: socket.value,
         tipoRam: tipoRam.value,
       },
-    }; // Added missing brace
+    };
 
     if (props.id) {
-      // Update existing document
       const docRef = doc(db, 'items', props.id);
       await updateDoc(docRef, itemData);
       console.log('Item atualizado!');
-      router.push('/inventario'); // Redirect to list after update
+      router.push('/inventario');
     } else {
-      // Add new document
       const docRef = await addDoc(collection(db, 'items'), itemData);
       console.log('Item salvo!');
       emit('item-salvo', { id: docRef.id, ...itemData });
-      // Reset form
       nome.value = '';
       tipo.value = '';
       quantidade.value = 0;
@@ -154,7 +159,7 @@ async function handleSubmit() {
       socket.value = '';
       tipoRam.value = '';
       imageUrl.value = '';
-      descricao.value = ''; // Reset description
+      descricao.value = '';
     }
   } catch (error) {
     console.error('Erro ao salvar item: ', error);
@@ -174,7 +179,7 @@ async function handleSubmit() {
       <div class="grid gap-4">
         <div class="grid gap-2">
           <Label for="nome">Nome do Item</Label>
-          <Input id="nome" v-model="nome" type="text" placeholder="Nome do item" required />
+          <input id="nome" v-model="nome" type="text" placeholder="Nome do item" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" required />
         </div>
         <div class="grid gap-2">
           <Label for="tipo">Tipo do Item</Label>
@@ -191,15 +196,15 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="quantidade">Quantidade</Label>
-          <Input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" required />
+          <input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" required />
         </div>
         <div class="grid gap-2">
           <Label for="precoCusto">Preço de Custo</Label>
-          <Input id="precoCusto" v-model.number="precoCusto" type="number" placeholder="0.00" />
+          <input id="precoCusto" v-model.number="precoCusto" type="number" placeholder="0.00" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
         </div>
         <div class="grid gap-2">
           <Label for="precoVenda">Preço de Venda</Label>
-          <Input id="precoVenda" v-model.number="precoVenda" type="number" placeholder="0.00" />
+          <input id="precoVenda" v-model.number="precoVenda" type="number" placeholder="0.00" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
         </div>
         <div class="grid gap-2">
           <Label for="socket">Socket</Label>
@@ -229,7 +234,7 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="imageUrl">URL da Imagem</Label>
-          <Input id="imageUrl" v-model="imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" />
+          <input id="imageUrl" v-model="imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
         </div>
         <div class="grid gap-2">
           <Label for="descricao">Descrição</Label>
