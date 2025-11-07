@@ -45,10 +45,9 @@ const routes = [
         meta: { title: 'Todos os Serviços' }
       },
       {
-        path: 'servicos/novo/:clienteId',
+        path: 'servicos/novo',
         name: 'ServicoNovo',
         component: () => import('@/views/servicos/ServicoFormView.vue'),
-        props: true,
         meta: { title: 'Novo Serviço' }
       },
       {

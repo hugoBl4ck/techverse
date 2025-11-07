@@ -1,6 +1,9 @@
+<script setup>
+import ServicoForm from '@/components/ServicoForm.vue';
+</script>
+
 <template>
-  <div>
-    <h1>Novo Serviço</h1>
-    <p>ID do Cliente: {{ $route.params.clienteId }}</p>
+  <div class="container mx-auto py-8">
+    <ServicoForm />
   </div>
 </template>
