@@ -218,6 +218,8 @@ async function saveKitToInventory() {
         <!-- Slot CPU -->
         <div>
           <label class="text-sm font-medium">CPU</label>
+          <draggable v-model="kitCpu" :group="{ name: 'items', put: putCpu }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
               <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
@@ -230,7 +232,11 @@ async function saveKitToInventory() {
         <!-- Slot RAM -->
         <div>
           <label class="text-sm font-medium">Memória RAM</label>
+          <draggable v-model="kitRam" :group="{ name: 'items', put: putRam }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
               <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
+            </template>
+          </draggable>
            <div v-if="erroRam" class="text-xs text-destructive mt-1 flex items-center gap-1">
             <AlertTriangle class="size-4" />
             <span>{{ erroRam }}</span>
@@ -280,7 +286,11 @@ async function saveKitToInventory() {
         <!-- Slot Watercooler -->
         <div>
           <label class="text-sm font-medium">Watercooler</label>
+          <draggable v-model="kitWatercooler" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'watercooler') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
               <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
+            </template>
+          </draggable>
         </div>
 
         <!-- Slot Air Cooler -->
@@ -327,6 +337,7 @@ async function saveKitToInventory() {
         <div>
           <label class="text-sm font-medium">Teclado</label>
           <draggable v-model="kitTeclado" :group="{ name: 'items', put: (to, from, el) => putGenerico(to, from, el, 'teclado') }" item-key="id" class="min-h-20 p-2 border-2 border-dashed rounded-lg mt-1">
+            <template #item="{ element }">
               <ItemChip :item="element" :data-tipo="element.tipo" :data-item="JSON.stringify(element)"/>
             </template>
           </draggable>
