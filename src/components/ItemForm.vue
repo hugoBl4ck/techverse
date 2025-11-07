@@ -83,7 +83,7 @@ const socketOptions = [
 
 async function fetchItem(id) {
   if (!id) return;
-  const docRef = doc(db, 'items', id);
+  const docRef = doc(db, 'itens', id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const data = docSnap.data();

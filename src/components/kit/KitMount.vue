@@ -174,7 +174,7 @@ async function saveKitToInventory() {
   };
 
   try {
-    await addDoc(collection(db, 'items'), newItem);
+    await addDoc(collection(db, 'itens'), newItem);
     alert('Kit salvo no inventário com sucesso!');
     // Optionally, clear the kit after saving
     // kitPlacaMae.value = [];
