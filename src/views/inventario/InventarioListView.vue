@@ -5,7 +5,7 @@ import { collection, getDocs } from 'firebase/firestore'
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
 
-const pecas = ref([])
+const items = ref([])
 
 const colorMap = {
   cpu: { bg: 'bg-red-500', text: 'text-red-500' },
@@ -18,20 +18,20 @@ const colorMap = {
   outro: { bg: 'bg-gray-300', text: 'text-gray-300' },
 };
 
-function getCategoryColors(peca) {
-  const tipo = peca?.tipo || 'outro';
+function getCategoryColors(item) {
+  const tipo = item?.tipo || 'outro';
   return colorMap[tipo] || colorMap.outro;
 }
 
 
-// Agrupa as peças por categoria
-const pecasAgrupadas = computed(() => {
-  return pecas.value.reduce((acc, peca) => {
-    const tipo = peca.tipo || 'outro';
+// Agrupa os itens por categoria
+const itemsAgrupados = computed(() => {
+  return items.value.reduce((acc, item) => {
+    const tipo = item.tipo || 'outro';
     if (!acc[tipo]) {
       acc[tipo] = [];
     }
-    acc[tipo].push(peca);
+    acc[tipo].push(item);
     return acc;
   }, {});
 });
@@ -48,16 +48,16 @@ const nomesCategoria = {
   outro: 'Outros'
 };
 
-async function fetchPecas() {
-  const querySnapshot = await getDocs(collection(db, 'pecas'))
-  pecas.value = querySnapshot.docs.map(doc => ({
+async function fetchItems() {
+  const querySnapshot = await getDocs(collection(db, 'items'))
+  items.value = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
   }))
 }
 
 onMounted(() => {
-  fetchPecas()
+  fetchItems()
 })
 
 // Estilo para o padrão de pontos a ser injetado no head
@@ -78,33 +78,33 @@ const dotPatternStyle = `
     </Teleport>
 
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Inventário de Peças</h1>
+      <h1 class="text-2xl font-bold">Inventário de Itens</h1>
       <RouterLink to="/inventario/novo">
-        <Button>Nova Peça</Button>
+        <Button>Novo Item</Button>
       </RouterLink>
     </div>
 
-    <div v-if="!pecas.length" class="text-center text-muted-foreground">
-      Carregando peças...
+    <div v-if="!items.length" class="text-center text-muted-foreground">
+      Carregando itens...
     </div>
 
     <!-- Seções de Categoria -->
     <div v-else class="space-y-10">
-      <section v-for="(listaPecas, tipo) in pecasAgrupadas" :key="tipo">
+      <section v-for="(listaItems, tipo) in itemsAgrupados" :key="tipo">
         <h2 class="text-xl font-semibold mb-4 capitalize border-b pb-2">
           {{ nomesCategoria[tipo] || tipo }}
         </h2>
         <!-- Grid de Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <div v-for="peca in listaPecas" :key="peca.id"
+          <div v-for="item in listaItems" :key="item.id"
               class="group relative h-48 rounded-lg overflow-hidden shadow-md bg-card flex">
-              <div :class="getCategoryColors(peca).bg" class="w-2 h-full"></div>
+              <div :class="getCategoryColors(item).bg" class="w-2 h-full"></div>
               <div class="flex-1 relative">
                 <!-- Camada 1: Imagem de Fundo -->
                 <img
-                  v-if="peca.imageUrl"
-                  :src="peca.imageUrl"
-                  :alt="peca.nome"
+                  v-if="item.imageUrl"
+                  :src="item.imageUrl"
+                  :alt="item.nome"
                   class="absolute inset-0 z-0 w-full h-full object-cover opacity-30 transition-all duration-300 group-hover:opacity-75 group-hover:scale-110"
                 />
                 <div v-else class="absolute inset-0 z-0 w-full h-full bg-gray-800 opacity-30"></div>
@@ -121,15 +121,15 @@ const dotPatternStyle = `
                 <!-- Camada 4: Conteúdo -->
                 <div class="relative z-30 p-3 h-full flex flex-col justify-between text-foreground">
                   <div>
-                      <h3 :class="getCategoryColors(peca).text" class="font-bold truncate text-sm">{{ peca.nome }}</h3>
-                      <span class="text-xs uppercase opacity-70">{{ peca.tipo }}</span>
+                      <h3 :class="getCategoryColors(item).text" class="font-bold truncate text-sm">{{ item.nome }}</h3>
+                      <span class="text-xs uppercase opacity-70">{{ item.tipo }}</span>
                   </div>
                   <div>
                       <div class="text-sm opacity-90 mt-1">
-                          <p>Qtd: {{ peca.quantidade }}</p>
-                          <p>Venda: R$ {{ peca.precoVenda?.toFixed(2) }}</p>
+                          <p>Qtd: {{ item.quantidade }}</p>
+                          <p>Venda: R$ {{ item.precoVenda?.toFixed(2) }}</p>
                       </div>
-                      <RouterLink :to="`/inventario/${peca.id}/editar`" class="mt-2">
+                      <RouterLink :to="`/inventario/${item.id}/editar`" class="mt-2">
                           <Button variant="outline" size="sm" class="w-full bg-transparent border border-white/20 hover:bg-white/10">
                           Editar
                           </Button>
