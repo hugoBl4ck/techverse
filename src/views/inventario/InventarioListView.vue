@@ -48,6 +48,17 @@ const nomesCategoria = {
   outro: 'Outros'
 };
 
+const orderedCategories = [
+  'placa-mae',
+  'cpu',
+  'gpu',
+  'ram',
+  'armazenamento',
+  'fonte',
+  'gabinete',
+  'outro',
+];
+
 async function fetchItems() {
   const querySnapshot = await getDocs(collection(db, 'itens'))
   items.value = querySnapshot.docs.map(doc => ({
@@ -90,24 +101,32 @@ const dotPatternStyle = `
 
     <!-- Seções de Categoria -->
     <div v-else class="space-y-10">
-      <section v-for="(listaItems, tipo) in itemsAgrupados" :key="tipo">
+      <section v-for="tipo in orderedCategories" :key="tipo">
         <h2 class="text-xl font-semibold mb-4 capitalize border-b pb-2">
           {{ nomesCategoria[tipo] || tipo }}
         </h2>
         <!-- Grid de Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <div v-for="item in listaItems" :key="item.id"
+          <div v-for="item in itemsAgrupados[tipo]" :key="item.id"
               class="group relative h-48 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md flex">
               <div :class="getCategoryColors(item).bg" class="w-2 h-full relative z-20">
                 <!-- Blurred lighting effect -->
                 <div class="absolute inset-0 blur-md bg-current opacity-70 group-hover:opacity-90 transition-opacity duration-300"></div>
               </div>
               <div class="flex-1 relative">
+                <img
+                  v-if="item.imageUrl"
+                  :src="item.imageUrl"
+                  :alt="item.nome"
+                  class="absolute inset-0 z-10 w-full h-full object-cover opacity-70 transition-all duration-300 group-hover:opacity-90 group-hover:scale-110"
+                />
+                <div v-else class="absolute inset-0 z-10 w-full h-full bg-gray-800 opacity-70"></div>
+
                 <!-- Transparent black gradient -->
-                <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                <div class="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
 
                 <!-- Camada 2: Padrão de pontos estático e sutil para visibilidade do texto -->
-                <div class="absolute inset-0 z-20 pattern-dots opacity-5"></div>
+                <div class="absolute inset-0 z-30 pattern-dots opacity-5"></div>
 
                 <!-- Camada 4: Conteúdo -->
                 <div class="relative z-30 p-3 h-full flex flex-col justify-between text-white dark:text-gray-100">

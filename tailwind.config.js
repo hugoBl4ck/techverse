@@ -49,6 +49,7 @@ export default {
           DEFAULT: 'oklch(var(--color-card))',
           foreground: 'oklch(var(--color-card-foreground))',
         },
+        'sidebar-active-border': 'oklch(var(--color-sidebar-active-border))',
       },
       borderRadius: {
         lg: 'var(--radius)',

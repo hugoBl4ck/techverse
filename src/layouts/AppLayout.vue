@@ -5,16 +5,65 @@
 
     <header class="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-sm">
       <div class="container mx-auto flex h-16 items-center justify-between px-4">
-        <div class="font-display text-2xl font-bold">
-          TechVerse
+        <div class="flex items-center">
+          <Button v-if="isMobile" variant="ghost" size="icon" @click="showMobileSidebar = true" class="mr-2">
+            <Menu class="size-6" />
+          </Button>
+          <div class="font-display text-2xl font-bold">
+            TechVerse
+          </div>
         </div>
-        <Avatar>
-          <AvatarFallback>HL</AvatarFallback>
-        </Avatar>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
+            <a href="#" target="_blank" class="text-foreground hover:text-primary transition-colors">
+              <Telegram class="size-5" />
+              <!-- Insira o link do Telegram aqui -->
+            </a>
+            <a href="#" target="_blank" class="text-foreground hover:text-primary transition-colors">
+              <Discord class="size-5" />
+              <!-- Insira o link do Discord aqui -->
+            </a>
+            <a href="#" target="_blank" class="text-foreground hover:text-primary transition-colors">
+              <Instagram class="size-5" />
+              <!-- Insira o link do Instagram aqui -->
+            </a>
+            <a href="mailto:example@example.com" class="text-foreground hover:text-primary transition-colors">
+              <Mail class="size-5" />
+              <!-- Insira o endereço de e-mail aqui -->
+            </a>
+            <a href="https://wa.me/5511999999999" target="_blank" class="text-foreground hover:text-primary transition-colors">
+              <Whatsapp class="size-5" />
+              <!-- Insira o link do WhatsApp aqui -->
+            </a>
+          </div>
+          <Avatar>
+            <AvatarFallback>HL</AvatarFallback>
+          </Avatar>
+        </div>
       </div>
     </header>
 
-    <div class="border-b bg-muted/50 shadow-inner">
+    <!-- Mobile Sidebar Overlay -->
+    <Transition
+      enter-active-class="transition ease-out duration-200 transform"
+      enter-from-class="-translate-x-full opacity-0"
+      enter-to-class="translate-x-0 opacity-100"
+      leave-active-class="transition ease-in duration-200 transform"
+      leave-from-class="translate-x-0 opacity-100"
+      leave-to-class="-translate-x-full opacity-0"
+    >
+      <div v-if="isMobile && showMobileSidebar" class="fixed inset-0 z-50 bg-background p-4 pt-6 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Menu</h2>
+          <Button variant="ghost" size="icon" @click="showMobileSidebar = false">
+            <X class="size-6" />
+          </Button>
+        </div>
+        <SidebarMenu @click="showMobileSidebar = false" />
+      </div>
+    </Transition>
+
+    <div v-if="!isMobile" class="border-b bg-muted/50 shadow-inner">
       <div class="container mx-auto flex h-12 items-center justify-between px-4">
         <h1 class="text-lg font-display font-semibold">
           {{ $route.meta.title || 'Dashboard' }} 
@@ -22,7 +71,7 @@
       </div>
     </div>
 
-    <div class="border-b">
+    <div v-if="!isMobile" class="border-b">
       <div class="container mx-auto flex h-12 items-center justify-between px-4">
         <div class="flex-1">
           </div>
@@ -32,7 +81,7 @@
     </div>
 
     <div class="flex-1 overflow-hidden">
-      <SplitterGroup direction="horizontal" class="h-full">
+      <SplitterGroup v-if="!isMobile" direction="horizontal" class="h-full">
 
         <SplitterPanel 
           :default-size="20" 
@@ -56,13 +105,16 @@
         </SplitterPanel>
 
       </SplitterGroup>
+      <div v-else class="h-full overflow-y-auto p-6">
+        <RouterView />
+      </div>
     </div>
 
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterView } from 'vue-router'
 import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -70,14 +122,28 @@ import SidebarMenu from '@/components/ui/SidebarMenu.vue'
 
 // Importando o NOVO Toggle (Switch)
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
-import { GripVertical } from 'lucide-vue-next'
+import { GripVertical, Telegram, Discord, Instagram, Mail, Whatsapp, Menu, X } from 'lucide-vue-next'
 
 const isDark = ref(false)
+const isMobile = ref(false)
+const showMobileSidebar = ref(false)
 
 const handleThemeChange = (newIsDark) => {
   isDark.value = newIsDark
 }
-</script>
+
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768 // Tailwind's 'md' breakpoint is 768px
+}
+
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})</script>
 
 <style>
 /* Estilo global para forçar altura total */

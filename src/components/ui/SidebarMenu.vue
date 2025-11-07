@@ -7,7 +7,7 @@
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
-          'border-l-4 border-destructive shadow-lg': isExactActive,
+          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
       >
         <Home class="size-4" />
@@ -20,7 +20,7 @@
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
-          'border-l-4 border-destructive shadow-lg': isExactActive,
+          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
       >
         <Users class="size-4" />
@@ -84,12 +84,12 @@
           </AccordionItem>
         </Accordion>
     
-        <RouterLink to="/kits/builder" v-slot="{ isExactActive }">
+    <RouterLink to="/kits/builder" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
-          'border-l-4 border-destructive shadow-lg': isExactActive,
+          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
       >
         <Blocks class="size-4" />
