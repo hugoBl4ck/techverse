@@ -16,7 +16,7 @@ const kitsNaTela = ref([]);
 const kitCounter = ref(0);
 
 // --- LIFECYCLE ---
-onMounted(fetchPecas);
+onMounted(fetchItems);
 
 // --- COMPUTED ---
 const cpus = computed(() => inventario.value.filter(p => p.tipo === 'cpu'));
@@ -26,26 +26,26 @@ const gpus = computed(() => inventario.value.filter(p => p.tipo === 'gpu'));
 const armazenamentos = computed(() => inventario.value.filter(p => p.tipo === 'armazenamento'));
 const fontes = computed(() => inventario.value.filter(p => p.tipo === 'fonte'));
 const gabinetes = computed(() => inventario.value.filter(p => p.tipo === 'gabinete'));
-const outrasPecas = computed(() => inventario.value.filter(p => [
+const outrosItens = computed(() => inventario.value.filter(p => [
   'outro',
-  'Watercooler',
-  'Air Cooler',
-  'Ventoinhas',
-  'Pasta Térmica',
-  'Mouse',
-  'Teclado',
-  'Controle',
-  'Controladoras',
+  'watercooler',
+  'aircooler',
+  'ventoinhas',
+  'pasta termica',
+  'mouse',
+  'teclado',
+  'controle',
+  'controladoras',
 ].includes(p.tipo)));
 
 // --- METHODS ---
-async function fetchPecas() {
+async function fetchItems() {
   try {
-    const pecasCol = collection(db, 'pecas');
-    const pecasSnapshot = await getDocs(pecasCol);
-    inventario.value = pecasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const itemsCol = collection(db, 'items');
+    const itemsSnapshot = await getDocs(itemsCol);
+    inventario.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
-    console.error("Erro ao buscar peças:", error);
+    console.error("Erro ao buscar itens:", error);
   }
 }
 
@@ -61,74 +61,83 @@ function removerKit(index) {
 
 <template>
   <ResizablePanelGroup direction="horizontal" class="h-full w-full">
-    <!-- Coluna Esquerda: Estoque de Peças -->
+    <!-- Coluna Esquerda: Estoque de Itens -->
     <ResizablePanel :default-size="30" class="p-4">
       <Card class="h-full flex flex-col">
         <div class="p-4 border-b">
-          <h2 class="text-lg font-semibold font-display">Estoque de Peças</h2>
+          <h2 class="text-lg font-semibold font-display">Estoque de Itens</h2>
         </div>
         <ScrollArea class="flex-1">
           <div class="p-4 space-y-4">
             <!-- CPUs -->
             <div>
               <h3 class="font-semibold mb-2">CPUs</h3>
-              <draggable :list="cpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
+              <draggable :list="cpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
                 <template #item="{ element }">
-                  <PecaChip :peca="element" />
+                  <ItemChip :item="element" />
                 </template>
               </draggable>
             </div>
             <!-- Placas-Mãe -->
             <div>
               <h3 class="font-semibold mb-2">Placas-Mãe</h3>
-              <draggable :list="placasMae" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
+              <draggable :list="placasMae" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
                 <template #item="{ element }">
-                  <PecaChip :peca="element" />
+                  <ItemChip :item="element" />
                 </template>
               </draggable>
             </div>
             <!-- Memória RAM -->
             <div>
               <h3 class="font-semibold mb-2">Memória RAM</h3>
-              <draggable :list="rams" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
+              <draggable :list="rams" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
                 <template #item="{ element }">
-                  <PecaChip :peca="element" />
+                  <ItemChip :item="element" />
                 </template>
               </draggable>
             </div>
             <!-- Placas de Vídeo -->
             <div>
               <h3 class="font-semibold mb-2">Placas de Vídeo</h3>
-              <draggable :list="gpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
+              <draggable :list="gpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
                 <template #item="{ element }">
-                  <PecaChip :peca="element" />
+                  <ItemChip :item="element" />
                 </template>
               </draggable>
             </div>
             <!-- Armazenamento -->
             <div>
               <h3 class="font-semibold mb-2">Armazenamento</h3>
-              <draggable :list="armazenamentos" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
+              <draggable :list="armazenamentos" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
                 <template #item="{ element }">
-                  <PecaChip :peca="element" />
+                  <ItemChip :item="element" />
                 </template>
               </draggable>
             </div>
              <!-- Fontes -->
             <div>
               <h3 class="font-semibold mb-2">Fontes</h3>
-              <draggable :list="fontes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
+              <draggable :list="fontes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
                 <template #item="{ element }">
-                  <PecaChip :peca="element" />
+                  <ItemChip :item="element" />
                 </template>
               </draggable>
             </div>
              <!-- Gabinetes -->
             <div>
               <h3 class="font-semibold mb-2">Gabinetes</h3>
-              <draggable :list="gabinetes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'pecas', pull: true, put: false }">
+              <draggable :list="gabinetes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
                 <template #item="{ element }">
-                  <PecaChip :peca="element" />
+                  <ItemChip :item="element" />
+                </template>
+              </draggable>
+            </div>
+            <!-- Outros Itens -->
+            <div>
+              <h3 class="font-semibold mb-2">Outros Itens</h3>
+              <draggable :list="outrosItens" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
+                <template #item="{ element }">
+                  <ItemChip :item="element" />
                 </template>
               </draggable>
             </div>
