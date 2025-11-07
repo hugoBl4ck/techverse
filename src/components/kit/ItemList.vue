@@ -13,8 +13,8 @@ defineProps({
   <div>
     <h3 class="font-semibold mb-2">{{ title }}</h3>
     <draggable :list="list" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-      <template #item="{ element }">
-        <ItemChip :item="element" :is-used="usedItemIds.has(element.id)" />
+<template #item="{ element }">
+        <ItemChip :item="element" :is-used="usedItemIds.has(element.id)" :data-tipo="element.tipo" :data-item="JSON.stringify(element)" />
       </template>
     </draggable>
   </div>

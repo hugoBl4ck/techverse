@@ -77,14 +77,7 @@ function adicionarNovoKit() {
       armazenamento: [],
       fonte: [],
       gabinete: [],
-      watercooler: [],
-      aircooler: [],
-      ventoinhas: [],
-      pastaTermica: [],
-      mouse: [],
-      teclado: [],
-      controle: [],
-      controladoras: [],
+      outros: [],
     }
   });
 }
