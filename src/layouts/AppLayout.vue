@@ -6,39 +6,12 @@
     <header class="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-sm">
       <div class="container mx-auto flex h-16 items-center justify-between px-4">
         <div class="flex items-center">
-          <Button v-if="isMobile" variant="ghost" size="icon" @click="showMobileSidebar = true" class="mr-2">
-            <Menu class="size-6" />
-          </Button>
           <div class="font-display text-2xl font-bold">
             TechVerse
           </div>
         </div>
         <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-2">
-            <a href="#" target="_blank" class="text-foreground hover:text-primary transition-colors">
-              <Telegram class="size-5" />
-              <!-- Insira o link do Telegram aqui -->
-            </a>
-            <a href="#" target="_blank" class="text-foreground hover:text-primary transition-colors">
-              <Discord class="size-5" />
-              <!-- Insira o link do Discord aqui -->
-            </a>
-            <a href="#" target="_blank" class="text-foreground hover:text-primary transition-colors">
-              <Instagram class="size-5" />
-              <!-- Insira o link do Instagram aqui -->
-            </a>
-            <a href="mailto:example@example.com" class="text-foreground hover:text-primary transition-colors">
-              <Mail class="size-5" />
-              <!-- Insira o endereço de e-mail aqui -->
-            </a>
-            <a href="https://wa.me/5511999999999" target="_blank" class="text-foreground hover:text-primary transition-colors">
-              <Whatsapp class="size-5" />
-              <!-- Insira o link do WhatsApp aqui -->
-            </a>
-          </div>
-          <Avatar>
-            <AvatarFallback>HL</AvatarFallback>
-          </Avatar>
+          <ThemeToggle @theme-changed="handleThemeChange" />
         </div>
       </div>
     </header>
@@ -68,15 +41,6 @@
         <h1 class="text-lg font-display font-semibold">
           {{ $route.meta.title || 'Dashboard' }} 
         </h1>
-      </div>
-    </div>
-
-    <div v-if="!isMobile" class="border-b">
-      <div class="container mx-auto flex h-12 items-center justify-between px-4">
-        <div class="flex-1">
-          </div>
-        
-        <ThemeToggle @theme-changed="handleThemeChange" />
       </div>
     </div>
 
@@ -122,7 +86,7 @@ import SidebarMenu from '@/components/ui/SidebarMenu.vue'
 
 // Importando o NOVO Toggle (Switch)
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
-import { GripVertical, Telegram, Discord, Instagram, Mail, Whatsapp, Menu, X } from 'lucide-vue-next'
+import { GripVertical } from 'lucide-vue-next'
 
 const isDark = ref(false)
 const isMobile = ref(false)
