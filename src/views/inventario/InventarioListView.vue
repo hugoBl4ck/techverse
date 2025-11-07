@@ -97,7 +97,7 @@ const dotPatternStyle = `
         <!-- Grid de Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div v-for="item in listaItems" :key="item.id"
-              class="group relative h-48 rounded-lg overflow-hidden border border-gray-700 bg-card flex">
+              class="group relative h-48 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex">
               <div :class="getCategoryColors(item).bg" class="w-2 h-full"></div>
               <div class="flex-1 relative">
                 <!-- Camada 1: Imagem de Fundo -->
@@ -105,14 +105,14 @@ const dotPatternStyle = `
                   v-if="item.imageUrl"
                   :src="item.imageUrl"
                   :alt="item.nome"
-                  class="absolute inset-0 z-0 w-full h-full object-cover opacity-50 transition-all duration-300 group-hover:opacity-75 group-hover:scale-110"
+                  class="absolute inset-0 z-0 w-full h-full object-cover opacity-70 transition-all duration-300 group-hover:opacity-90 group-hover:scale-110"
                 />
-                <div v-else class="absolute inset-0 z-0 w-full h-full bg-gray-800 opacity-50"></div>
+                <div v-else class="absolute inset-0 z-0 w-full h-full bg-gray-800 opacity-70"></div>
 
                 <!-- Camada 4: Conteúdo -->
-                <div class="relative z-30 p-3 h-full flex flex-col justify-between text-foreground">
+                <div class="relative z-30 p-3 h-full flex flex-col justify-between text-white dark:text-gray-100">
                   <div>
-                      <h3 :class="getCategoryColors(item).text" class="font-bold truncate text-sm">{{ item.nome }}</h3>
+                      <h3 :class="getCategoryColors(item).text" class="font-bold text-sm">{{ item.nome }}</h3>
                       <span class="text-xs uppercase opacity-70">{{ item.tipo }}</span>
                   </div>
                   <div>
@@ -121,7 +121,7 @@ const dotPatternStyle = `
                           <p>Venda: R$ {{ item.precoVenda?.toFixed(2) }}</p>
                       </div>
                       <RouterLink :to="`/inventario/${item.id}/editar`" class="mt-2">
-                          <Button variant="outline" size="sm" class="w-full bg-transparent border border-white/20 hover:bg-white/10">
+                          <Button variant="outline" size="sm" class="w-full bg-transparent border border-white/50 hover:bg-white/20 text-white">
                           Editar
                           </Button>
                       </RouterLink>

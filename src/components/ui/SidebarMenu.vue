@@ -2,15 +2,27 @@
   <h2 class="mb-4 text-xl font-display font-semibold">Menu</h2>
   <nav class="flex flex-col gap-1">
     
-    <RouterLink to="/">
-      <Button variant="ghost" class="w-full justify-start gap-2">
+    <RouterLink to="/" v-slot="{ isExactActive }">
+      <Button
+        variant="ghost"
+        class="w-full justify-start gap-2"
+        :class="{
+          'bg-destructive text-destructive-foreground shadow-lg': isExactActive,
+        }"
+      >
         <Home class="size-4" />
         Dashboard
       </Button>
     </RouterLink>
 
-    <RouterLink to="/clientes">
-      <Button variant="ghost" class="w-full justify-start gap-2">
+    <RouterLink to="/clientes" v-slot="{ isExactActive }">
+      <Button
+        variant="ghost"
+        class="w-full justify-start gap-2"
+        :class="{
+          'bg-destructive text-destructive-foreground shadow-lg': isExactActive,
+        }"
+      >
         <Users class="size-4" />
         Clientes
       </Button>
@@ -72,7 +84,14 @@
           </AccordionItem>
         </Accordion>
     
-        <RouterLink to="/kits/builder">      <Button variant="ghost" class="w-full justify-start gap-2">
+        <RouterLink to="/kits/builder" v-slot="{ isExactActive }">
+      <Button
+        variant="ghost"
+        class="w-full justify-start gap-2"
+        :class="{
+          'bg-destructive text-destructive-foreground shadow-lg': isExactActive,
+        }"
+      >
         <Blocks class="size-4" />
         Montador de Kits
       </Button>

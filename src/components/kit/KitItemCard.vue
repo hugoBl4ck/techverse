@@ -69,8 +69,8 @@ const glowStyle = computed(() => {
     class="flex items-center gap-4 p-3 rounded-lg border-l-4 bg-white/10 hover:bg-white/20 cursor-grab transition-colors"
   >
     <component :is="categoryConfig.icon" :class="categoryConfig.color" :style="glowStyle" class="size-6 shrink-0" />
-    <div class="flex-1 truncate min-w-0">
-      <h3 class="font-semibold truncate text-sm text-foreground max-w-full">{{ item.nome }}</h3>
+    <div class="flex-1 min-w-0">
+      <h3 class="font-semibold text-sm text-foreground max-w-full">{{ item.nome }}</h3>
       <span class="text-xs uppercase opacity-70">{{ item.tipo }}</span>
     </div>
   </div>
