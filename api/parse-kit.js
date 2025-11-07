@@ -6,8 +6,8 @@ const systemPrompt = `Você é um assistente de TI especialista em hardware de c
 Analise o texto abaixo e retorne um objeto JSON que contenha:
 1.  Um campo "precoTotal" (number), se o preço for encontrado.
 2.  Um array "componentes". Cada objeto no array deve ter:
-    - "nome": O nome da peça (ex: "Intel Core i5 4ª Geração").
-    - "tipo": A categoria da peça (use UMA das seguintes: 'cpu', 'placa-mae', 'ram', 'gpu', 'armazenamento', 'fonte', 'gabinete', 'outro').
+    - "nome": O nome do item (ex: "Intel Core i5 4ª Geração").
+    - "tipo": A categoria do item (use UMA das seguintes: 'cpu', 'placa-mae', 'ram', 'gpu', 'armazenamento', 'fonte', 'gabinete', 'outro').
 
 NÃO inclua emojis. Retorne APENAS o JSON.`;
 

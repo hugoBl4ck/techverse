@@ -30,14 +30,14 @@
           <RouterLink to="/inventario">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
               <Archive class="size-4" />
-              Listar Peças
+              Listar Itens
             </Button>
           </RouterLink>
           <RouterLink to="/inventario/novo">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
               <PlusCircle class="size-4" />
-              Cadastrar Peça
-            </Button>
+              Cadastrar Itens
+                        </Button>
           </RouterLink>
           <RouterLink to="/inventario/importar-ia">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
