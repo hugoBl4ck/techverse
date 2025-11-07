@@ -49,7 +49,7 @@ const nomesCategoria = {
 };
 
 async function fetchItems() {
-  const querySnapshot = await getDocs(collection(db, 'items'))
+  const querySnapshot = await getDocs(collection(db, 'itens'))
   items.value = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()

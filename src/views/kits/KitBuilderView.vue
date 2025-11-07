@@ -41,7 +41,7 @@ const outrosItens = computed(() => inventario.value.filter(p => [
 // --- METHODS ---
 async function fetchItems() {
   try {
-    const itemsCol = collection(db, 'items');
+    const itemsCol = collection(db, 'itens');
     const itemsSnapshot = await getDocs(itemsCol);
     inventario.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {

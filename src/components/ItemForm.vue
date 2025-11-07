@@ -127,6 +127,7 @@ async function handleSubmit() {
   }
 
   isLoading.value = true;
+  console.log('Attempting to save item...');
   try {
     const itemData = {
       nome: nome.value,
@@ -143,13 +144,15 @@ async function handleSubmit() {
     };
 
     if (props.id) {
-      const docRef = doc(db, 'items', props.id);
+      console.log('Updating existing item:', props.id, itemData);
+      const docRef = doc(db, 'itens', props.id);
       await updateDoc(docRef, itemData);
-      console.log('Item atualizado!');
+      console.log('Item atualizado com sucesso!');
       router.push('/inventario');
     } else {
-      const docRef = await addDoc(collection(db, 'items'), itemData);
-      console.log('Item salvo!');
+      console.log('Adding new item:', itemData);
+      const docRef = await addDoc(collection(db, 'itens'), itemData);
+      console.log('Item salvo com sucesso! ID:', docRef.id);
       emit('item-salvo', { id: docRef.id, ...itemData });
       nome.value = '';
       tipo.value = '';
