@@ -63,10 +63,12 @@ const tipoRamOptions = [
 const socketOptions = [
   { value: 'AM4', label: 'AM4' },
   { value: 'AM5', label: 'AM5' },
+  { value: 'LGA1151', label: 'LGA1151' },
   { value: 'LGA1200', label: 'LGA1200' },
   { value: 'LGA1700', label: 'LGA1700' },
   { value: 'TR4', label: 'TR4' },
   { value: 'sTRX4', label: 'sTRX4' },
+  { value: 'Intel', label: 'Intel (Outros)' },
   { value: 'Outro', label: 'Outro' },
 ];
 
@@ -172,11 +174,11 @@ async function handleSubmit() {
       <div class="grid gap-4">
         <div class="grid gap-2">
           <Label for="nome">Nome do Item</Label>
-          <Input id="nome" v-model="nome" type="text" placeholder="Nome do item" />
+          <Input id="nome" v-model="nome" type="text" placeholder="Nome do item" required />
         </div>
         <div class="grid gap-2">
           <Label for="tipo">Tipo do Item</Label>
-          <Select v-model="tipo">
+          <Select v-model="tipo" required>
             <SelectTrigger>
               <SelectValue placeholder="Selecione o tipo" />
             </SelectTrigger>
@@ -189,7 +191,7 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="quantidade">Quantidade</Label>
-          <Input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" />
+          <Input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" required />
         </div>
         <div class="grid gap-2">
           <Label for="precoCusto">Preço de Custo</Label>
