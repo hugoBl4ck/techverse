@@ -1,8 +1,7 @@
 <script setup>
-import { ref, watch } from 'vue';
-import { db } from '@/firebase/config.js';
-import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useItem } from '@/composables/useItem.js';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input'; // Keep the custom Input for now, but ensure it's not the culprit
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -30,19 +29,44 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['item-salvo']);
-
 const router = useRouter();
 
-const nome = ref('');
-const quantidade = ref(0);
-const precoCusto = ref(0);
-const precoVenda = ref(0);
-const tipo = ref('');
-const socket = ref('');
-const tipoRam = ref('');
-const imageUrl = ref('');
-const descricao = ref('');
-const isLoading = ref(false);
+const { form, isLoading, error, saveItem } = useItem(props.id);
+
+watch(() => props.itemPreenchido, (newItem) => {
+  if (newItem) {
+    form.nome = newItem.nome || '';
+    form.tipo = newItem.tipo || '';
+    form.quantidade = 1;
+    form.precoCusto = 0;
+    form.precoVenda = 0;
+    form.compatibilidade = newItem.compatibilidade || { socket: '', tipoRam: '' };
+    form.imageUrl = newItem.imageUrl || '';
+    form.descricao = newItem.descricao || '';
+  }
+}, { deep: true, immediate: true });
+
+async function handleSubmit() {
+  await saveItem();
+  if (!error.value) {
+    if (props.id) {
+      router.push('/inventario');
+    } else {
+      emit('item-salvo', { ...form });
+      // Reset form
+      Object.assign(form, {
+        nome: '',
+        quantidade: 0,
+        precoCusto: 0,
+        precoVenda: 0,
+        tipo: '',
+        compatibilidade: { socket: '', tipoRam: '' },
+        imageUrl: '',
+        descricao: '',
+      });
+    }
+  }
+}
 
 const tiposItem = [
   { value: 'cpu', label: 'CPU' },
@@ -80,113 +104,23 @@ const socketOptions = [
   { value: 'Intel', label: 'Intel (Outros)' },
   { value: 'Outro', label: 'Outro' },
 ];
-
-async function fetchItem(id) {
-  if (!id) return;
-  const docRef = doc(db, 'itens', id);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    nome.value = data.nome;
-    quantidade.value = data.quantidade;
-    precoCusto.value = data.precoCusto;
-    precoVenda.value = data.precoVenda;
-    tipo.value = data.tipo;
-    socket.value = data.compatibilidade?.socket || '';
-    tipoRam.value = data.compatibilidade?.tipoRam || '';
-    imageUrl.value = data.imageUrl || '';
-    descricao.value = data.descricao || '';
-  } else {
-    console.error('No such document!');
-    router.push('/inventario');
-  }
-}
-
-watch(() => props.id, (newId) => {
-  fetchItem(newId);
-}, { immediate: true });
-
-watch(() => props.itemPreenchido, (newItem) => {
-  if (newItem) {
-    nome.value = newItem.nome || '';
-    tipo.value = newItem.tipo || '';
-    quantidade.value = 1;
-    precoCusto.value = 0;
-    precoVenda.value = 0;
-    socket.value = newItem.compatibilidade?.socket || '';
-    tipoRam.value = newItem.compatibilidade?.tipoRam || '';
-    imageUrl.value = newItem.imageUrl || '';
-    descricao.value = newItem.descricao || '';
-  }
-}, { deep: true, immediate: true });
-
-async function handleSubmit() {
-  if (!nome.value || !tipo.value) {
-    console.error('Nome e Tipo do item são obrigatórios.');
-    return;
-  }
-
-  isLoading.value = true;
-  console.log('Attempting to save item...');
-  try {
-    const itemData = {
-      nome: nome.value,
-      quantidade: quantidade.value,
-      precoCusto: precoCusto.value,
-      precoVenda: precoVenda.value,
-      tipo: tipo.value,
-      imageUrl: imageUrl.value,
-      descricao: descricao.value,
-      compatibilidade: {
-        socket: socket.value,
-        tipoRam: tipoRam.value,
-      },
-    };
-
-    if (props.id) {
-      console.log('Updating existing item:', props.id, itemData);
-      const docRef = doc(db, 'itens', props.id);
-      await updateDoc(docRef, itemData);
-      console.log('Item atualizado com sucesso!');
-      router.push('/inventario');
-    } else {
-      console.log('Adding new item:', itemData);
-      const docRef = await addDoc(collection(db, 'itens'), itemData);
-      console.log('Item salvo com sucesso! ID:', docRef.id);
-      emit('item-salvo', { id: docRef.id, ...itemData });
-      nome.value = '';
-      tipo.value = '';
-      quantidade.value = 0;
-      precoCusto.value = 0;
-      precoVenda.value = 0;
-      socket.value = '';
-      tipoRam.value = '';
-      imageUrl.value = '';
-      descricao.value = '';
-    }
-  } catch (error) {
-    console.error('Erro ao salvar item: ', error);
-  } finally {
-    isLoading.value = false;
-  }
-}
 </script>
 
 <template>
   <Card>
     <CardHeader>
-      <CardTitle>Cadastrar Novo Item</CardTitle>
-      <CardDescription>Preencha os dados do novo item.</CardDescription>
+      <CardTitle>{{ id ? 'Editar Item' : 'Cadastrar Novo Item' }}</CardTitle>
+      <CardDescription>Preencha os dados do item.</CardDescription>
     </CardHeader>
     <CardContent>
       <div class="grid gap-4">
         <div class="grid gap-2">
           <Label for="nome">Nome do Item</Label>
-          <Input id="nome" v-model="nome" type="text" placeholder="Nome do item" required />
+          <Input id="nome" v-model="form.nome" type="text" placeholder="Nome do item" required />
         </div>
         <div class="grid gap-2">
           <Label for="tipo">Tipo do Item</Label>
-          <Select v-model="tipo" required>
+          <Select v-model="form.tipo" required>
             <SelectTrigger>
               <SelectValue placeholder="Selecione o tipo" />
             </SelectTrigger>
@@ -199,19 +133,19 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="quantidade">Quantidade</Label>
-          <Input id="quantidade" v-model.number="quantidade" type="number" placeholder="0" required />
+          <Input id="quantidade" v-model.number="form.quantidade" type="number" placeholder="0" required />
         </div>
         <div class="grid gap-2">
           <Label for="precoCusto">Preço de Custo</Label>
-          <Input id="precoCusto" v-model.number="precoCusto" type="number" placeholder="0.00" />
+          <Input id="precoCusto" v-model.number="form.precoCusto" type="number" placeholder="0.00" />
         </div>
         <div class="grid gap-2">
           <Label for="precoVenda">Preço de Venda</Label>
-          <Input id="precoVenda" v-model.number="precoVenda" type="number" placeholder="0.00" />
+          <Input id="precoVenda" v-model.number="form.precoVenda" type="number" placeholder="0.00" />
         </div>
         <div class="grid gap-2">
           <Label for="socket">Socket</Label>
-          <Select v-model="socket">
+          <Select v-model="form.compatibilidade.socket">
             <SelectTrigger>
               <SelectValue placeholder="Selecione o Socket" />
             </SelectTrigger>
@@ -224,7 +158,7 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="tipoRam">Tipo de RAM</Label>
-          <Select v-model="tipoRam">
+          <Select v-model="form.compatibilidade.tipoRam">
             <SelectTrigger>
               <SelectValue placeholder="Selecione o Tipo de RAM" />
             </SelectTrigger>
@@ -237,17 +171,18 @@ async function handleSubmit() {
         </div>
         <div class="grid gap-2">
           <Label for="imageUrl">URL da Imagem</Label>
-          <Input id="imageUrl" v-model="imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" />
+          <Input id="imageUrl" v-model="form.imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" />
         </div>
         <div class="grid gap-2">
           <Label for="descricao">Descrição</Label>
-          <Textarea id="descricao" v-model="descricao" placeholder="Descrição detalhada do item" />
+          <Textarea id="descricao" v-model="form.descricao" placeholder="Descrição detalhada do item" />
         </div>
+        <div v-if="error" class="text-red-500 text-sm">{{ error }}</div>
       </div>
     </CardContent>
     <CardFooter>
       <Button @click="handleSubmit" :disabled="isLoading" class="w-full">
-        {{ isLoading ? 'Salvando...' : 'Salvar Item' }}
+        {{ isLoading ? 'Salvando...' : (id ? 'Salvar Alterações' : 'Salvar Item') }}
       </Button>
     </CardFooter>
   </Card>

@@ -2,44 +2,18 @@
 import { ref, computed, onMounted } from 'vue';
 import { db } from '@/firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
-import draggable from 'vuedraggable';
-import ItemChip from '@/components/kit/ItemChip.vue';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import KitMount from '@/components/kit/KitMount.vue';
+import ItemList from '@/components/kit/ItemList.vue';
 
-// --- STATE ---
 const inventario = ref([]);
 const kitsNaTela = ref([]);
 const kitCounter = ref(0);
 
-// --- LIFECYCLE ---
-onMounted(fetchItems);
-
-// --- COMPUTED ---
-const cpus = computed(() => inventario.value.filter(p => p.tipo === 'cpu'));
-const rams = computed(() => inventario.value.filter(p => p.tipo === 'ram'));
-const placasMae = computed(() => inventario.value.filter(p => p.tipo === 'placa-mae'));
-const gpus = computed(() => inventario.value.filter(p => p.tipo === 'gpu'));
-const armazenamentos = computed(() => inventario.value.filter(p => p.tipo === 'armazenamento'));
-const fontes = computed(() => inventario.value.filter(p => p.tipo === 'fonte'));
-const gabinetes = computed(() => inventario.value.filter(p => p.tipo === 'gabinete'));
-const outrosItens = computed(() => inventario.value.filter(p => [
-  'outro',
-  'watercooler',
-  'aircooler',
-  'ventoinhas',
-  'pasta termica',
-  'mouse',
-  'teclado',
-  'controle',
-  'controladoras',
-].includes(p.tipo)));
-
-// --- METHODS ---
-async function fetchItems() {
+onMounted(async () => {
   try {
     const itemsCol = collection(db, 'itens');
     const itemsSnapshot = await getDocs(itemsCol);
@@ -47,7 +21,30 @@ async function fetchItems() {
   } catch (error) {
     console.error("Erro ao buscar itens:", error);
   }
-}
+});
+
+const groupedItems = computed(() => {
+  const groups = {
+    cpu: { title: 'CPUs', items: [] },
+    'placa-mae': { title: 'Placas-Mãe', items: [] },
+    ram: { title: 'Memória RAM', items: [] },
+    gpu: { title: 'Placas de Vídeo', items: [] },
+    armazenamento: { title: 'Armazenamento', items: [] },
+    fonte: { title: 'Fontes', items: [] },
+    gabinete: { title: 'Gabinetes', items: [] },
+    outro: { title: 'Outros Itens', items: [] },
+  };
+
+  inventario.value.forEach(item => {
+    if (groups[item.tipo]) {
+      groups[item.tipo].items.push(item);
+    } else {
+      groups.outro.items.push(item);
+    }
+  });
+
+  return Object.values(groups);
+});
 
 function adicionarNovoKit() {
   kitCounter.value++;
@@ -61,7 +58,6 @@ function removerKit(index) {
 
 <template>
   <ResizablePanelGroup direction="horizontal" class="h-full w-full">
-    <!-- Coluna Esquerda: Estoque de Itens -->
     <ResizablePanel :default-size="30" class="p-4">
       <Card class="h-full flex flex-col">
         <div class="p-4 border-b">
@@ -69,78 +65,12 @@ function removerKit(index) {
         </div>
         <ScrollArea class="flex-1">
           <div class="p-4 space-y-4">
-            <!-- CPUs -->
-            <div>
-              <h3 class="font-semibold mb-2">CPUs</h3>
-              <draggable :list="cpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-                <template #item="{ element }">
-                  <ItemChip :item="element" />
-                </template>
-              </draggable>
-            </div>
-            <!-- Placas-Mãe -->
-            <div>
-              <h3 class="font-semibold mb-2">Placas-Mãe</h3>
-              <draggable :list="placasMae" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-                <template #item="{ element }">
-                  <ItemChip :item="element" />
-                </template>
-              </draggable>
-            </div>
-            <!-- Memória RAM -->
-            <div>
-              <h3 class="font-semibold mb-2">Memória RAM</h3>
-              <draggable :list="rams" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-                <template #item="{ element }">
-                  <ItemChip :item="element" />
-                </template>
-              </draggable>
-            </div>
-            <!-- Placas de Vídeo -->
-            <div>
-              <h3 class="font-semibold mb-2">Placas de Vídeo</h3>
-              <draggable :list="gpus" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-                <template #item="{ element }">
-                  <ItemChip :item="element" />
-                </template>
-              </draggable>
-            </div>
-            <!-- Armazenamento -->
-            <div>
-              <h3 class="font-semibold mb-2">Armazenamento</h3>
-              <draggable :list="armazenamentos" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-                <template #item="{ element }">
-                  <ItemChip :item="element" />
-                </template>
-              </draggable>
-            </div>
-             <!-- Fontes -->
-            <div>
-              <h3 class="font-semibold mb-2">Fontes</h3>
-              <draggable :list="fontes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-                <template #item="{ element }">
-                  <ItemChip :item="element" />
-                </template>
-              </draggable>
-            </div>
-             <!-- Gabinetes -->
-            <div>
-              <h3 class="font-semibold mb-2">Gabinetes</h3>
-              <draggable :list="gabinetes" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-                <template #item="{ element }">
-                  <ItemChip :item="element" />
-                </template>
-              </draggable>
-            </div>
-            <!-- Outros Itens -->
-            <div>
-              <h3 class="font-semibold mb-2">Outros Itens</h3>
-              <draggable :list="outrosItens" item-key="id" tag="div" class="flex flex-col gap-2" :group="{ name: 'items', pull: true, put: false }">
-                <template #item="{ element }">
-                  <ItemChip :item="element" />
-                </template>
-              </draggable>
-            </div>
+            <ItemList
+              v-for="group in groupedItems"
+              :key="group.title"
+              :title="group.title"
+              :list="group.items"
+            />
           </div>
         </ScrollArea>
       </Card>
@@ -148,7 +78,6 @@ function removerKit(index) {
 
     <ResizableHandle with-handle />
 
-    <!-- Coluna Direita: Área de Trabalho (Canvas) -->
     <ResizablePanel :default-size="70">
       <div class="flex flex-col h-full">
         <div class="flex justify-between items-center p-4 border-b">

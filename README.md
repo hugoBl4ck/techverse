@@ -80,3 +80,21 @@ Abra seu navegador e acesse `http://localhost:5173` (ou a porta indicada no term
 - `npm run dev`: Inicia o servidor de desenvolvimento com Vite.
 - `npm run build`: Compila o projeto para produção.
 - `npm run preview`: Serve a build de produção localmente para pré-visualização.
+
+## Versão Melhorada
+
+Recentemente, o código passou por um processo de refatoração significativo para melhorar a qualidade, manutenibilidade e performance. As principais mudanças incluem:
+
+- **Extração de Lógica para Composables:** A lógica de manipulação de dados do Firestore foi extraída de componentes para *composables* reutilizáveis. Por exemplo, `useItem.js` agora gerencia todas as operações relacionadas a itens (buscar, salvar, atualizar), limpando o componente `ItemForm.vue` de responsabilidades de back-end.
+
+- **Componentização e Redução de Duplicação:**
+  - **`KitBuilderView.vue`:** A exibição das listas de itens foi refatorada. Um componente `ItemList.vue` foi criado para renderizar cada categoria de item, e a lógica de agrupamento de itens foi centralizada em uma única propriedade computada (`groupedItems`), eliminando a repetição de código no template.
+  - **`KitMount.vue`:** A função `saveKitToInventory` foi otimizada para usar um loop, tornando o código mais limpo e fácil de manter.
+
+- **Centralização de Configurações:**
+  - **`ItemChip.vue`:** A configuração de aparência dos chips de itens (ícones e cores) foi movida para um arquivo de utilitário (`src/lib/item-config.js`). Isso desacopla a configuração do componente e facilita a manutenção e reutilização.
+
+- **Melhora na Estrutura de Dados:**
+  - **`ItemForm.vue`:** Os campos do formulário foram agrupados em um único objeto reativo (`form`), simplificando o gerenciamento do estado e a passagem de dados.
+
+Essas mudanças resultam em um código mais modular, legível e escalável, seguindo as melhores práticas do Vue 3.

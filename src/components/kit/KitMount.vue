@@ -119,7 +119,6 @@ async function saveKitToInventory() {
     controladoras: kitControladoras.value,
   };
 
-  // Basic validation: ensure at least a motherboard is present
   if (!assembledKit.placaMae) {
     alert('Por favor, adicione uma Placa-Mãe ao kit antes de salvar no inventário.');
     return;
@@ -127,58 +126,32 @@ async function saveKitToInventory() {
 
   let totalPrecoVenda = 0;
   const itemsIds = [];
-  const itemsDetalhes = []; // To store details for the new item's description
+  const itemsDetalhes = [];
 
-  // Helper to process each piece or array of pieces
-  const processPiece = (pieceOrArray) => {
-    if (pieceOrArray) {
-      if (Array.isArray(pieceOrArray)) {
-        pieceOrArray.forEach(p => {
-          totalPrecoVenda += p.precoVenda || 0;
-          itemsIds.push(p.id);
-          itemsDetalhes.push(`${p.nome} (${p.tipo})`);
-        });
-      } else {
-        totalPrecoVenda += pieceOrArray.precoVenda || 0;
-        itemsIds.push(pieceOrArray.id);
-        itemsDetalhes.push(`${pieceOrArray.nome} (${pieceOrArray.tipo})`);
-      }
-    }
-  };
+  Object.values(assembledKit).forEach(component => {
+    if (!component) return;
 
-  // Process all slots
-  processPiece(assembledKit.placaMae);
-  processPiece(assembledKit.cpu);
-  processPiece(assembledKit.ram);
-  processPiece(assembledKit.gpu);
-  processPiece(assembledKit.armazenamento);
-  processPiece(assembledKit.fonte);
-  processPiece(assembledKit.gabinete);
-  processPiece(assembledKit.watercooler);
-  processPiece(assembledKit.aircooler);
-  processPiece(assembledKit.ventoinhas);
-  processPiece(assembledKit.pastaTermica);
-  processPiece(assembledKit.mouse);
-  processPiece(assembledKit.teclado);
-  processPiece(assembledKit.controle);
-  processPiece(assembledKit.controladoras);
+    const items = Array.isArray(component) ? component : [component];
+    items.forEach(item => {
+      totalPrecoVenda += item.precoVenda || 0;
+      itemsIds.push(item.id);
+      itemsDetalhes.push(`${item.nome} (${item.tipo})`);
+    });
+  });
 
   const newItem = {
     nome: nomeKit.value,
-    tipo: 'kit', // Mark as a kit
+    tipo: 'kit',
     precoVenda: totalPrecoVenda,
     quantidade: 1,
-    itemsComponentes: itemsIds, // Store IDs of component items
-    descricao: `Kit montado: ${itemsDetalhes.join(', ')}.`,
+    itemsComponentes: itemsIds,
+    descricao: `Kit montado: ${itemsDetalhes.join(', ')}.`, 
     createdAt: new Date(),
   };
 
   try {
     await addDoc(collection(db, 'itens'), newItem);
     alert('Kit salvo no inventário com sucesso!');
-    // Optionally, clear the kit after saving
-    // kitPlacaMae.value = [];
-    // ... clear other slots
   } catch (error) {
     console.error('Erro ao salvar kit no inventário:', error);
     alert('Houve um erro ao salvar o kit no inventário.');
