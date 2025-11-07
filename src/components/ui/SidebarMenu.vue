@@ -7,7 +7,7 @@
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
-          'bg-destructive text-destructive-foreground shadow-lg': isExactActive,
+          'border-l-4 border-destructive shadow-lg': isExactActive,
         }"
       >
         <Home class="size-4" />
@@ -20,7 +20,7 @@
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
-          'bg-destructive text-destructive-foreground shadow-lg': isExactActive,
+          'border-l-4 border-destructive shadow-lg': isExactActive,
         }"
       >
         <Users class="size-4" />
@@ -89,7 +89,7 @@
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
-          'bg-destructive text-destructive-foreground shadow-lg': isExactActive,
+          'border-l-4 border-destructive shadow-lg': isExactActive,
         }"
       >
         <Blocks class="size-4" />
