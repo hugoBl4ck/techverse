@@ -48,10 +48,31 @@
         </AccordionContent>
 
       </AccordionItem>
-    </Accordion>
-
-    <RouterLink to="/kits/builder">
-      <Button variant="ghost" class="w-full justify-start gap-2">
+        <AccordionItem value="item-2" class="border-none">
+            <AccordionTrigger class="py-2.5 px-4 font-normal hover:bg-muted hover:no-underline rounded-md [&[data-state=open]>svg]:rotate-180">
+              <span class="flex items-center gap-2">
+                <Wrench class="size-4" />
+                Serviços
+              </span>
+            </AccordionTrigger>
+            <AccordionContent class="pl-6 pt-1">
+              <RouterLink to="/servicos/novo">
+                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+                  <PlusCircle class="size-4" />
+                  Registrar Serviço
+                </Button>
+              </RouterLink>
+              <RouterLink to="/servicos-predefinidos">
+                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+                  <ListChecks class="size-4" />
+                  Serviços Predefinidos
+                </Button>
+              </RouterLink>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+    
+        <RouterLink to="/kits/builder">      <Button variant="ghost" class="w-full justify-start gap-2">
         <Blocks class="size-4" />
         Montador de Kits
       </Button>
@@ -64,5 +85,5 @@
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2 } from 'lucide-vue-next'
+import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks } from 'lucide-vue-next'
 </script>

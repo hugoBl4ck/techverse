@@ -41,6 +41,7 @@ async function handleSubmit() {
       observations: observations.value.split('\n'),
       computerConfiguration: computerConfiguration.value,
     });
+    console.log('Serviço salvo com sucesso! Redirecionando para o dashboard.');
     router.push('/dashboard');
   } catch (error) {
     console.error('Erro ao salvar serviço: ', error);

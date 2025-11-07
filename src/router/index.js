@@ -51,6 +51,18 @@ const routes = [
         meta: { title: 'Novo Serviço' }
       },
       {
+        path: 'servicos-predefinidos',
+        name: 'ServicosPredefinidosList',
+        component: () => import('@/views/servicos-predefinidos/ServicoPredefinidoListView.vue'),
+        meta: { title: 'Serviços Predefinidos' }
+      },
+      {
+        path: 'servicos-predefinidos/novo',
+        name: 'ServicoPredefinidoNovo',
+        component: () => import('@/views/servicos-predefinidos/ServicoPredefinidoFormView.vue'),
+        meta: { title: 'Novo Serviço Predefinido' }
+      },
+      {
         path: 'inventario',
         name: 'InventarioList',
         component: () => import('@/views/inventario/InventarioListView.vue'),
