@@ -97,7 +97,7 @@ const dotPatternStyle = `
         <!-- Grid de Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div v-for="item in listaItems" :key="item.id"
-              class="group relative h-48 rounded-lg overflow-hidden shadow-md bg-card flex">
+              class="group relative h-48 rounded-lg overflow-hidden border border-gray-700 bg-card flex">
               <div :class="getCategoryColors(item).bg" class="w-2 h-full"></div>
               <div class="flex-1 relative">
                 <!-- Camada 1: Imagem de Fundo -->
@@ -105,18 +105,9 @@ const dotPatternStyle = `
                   v-if="item.imageUrl"
                   :src="item.imageUrl"
                   :alt="item.nome"
-                  class="absolute inset-0 z-0 w-full h-full object-cover opacity-30 transition-all duration-300 group-hover:opacity-75 group-hover:scale-110"
+                  class="absolute inset-0 z-0 w-full h-full object-cover opacity-50 transition-all duration-300 group-hover:opacity-75 group-hover:scale-110"
                 />
-                <div v-else class="absolute inset-0 z-0 w-full h-full bg-gray-800 opacity-30"></div>
-
-                <!-- Camada 2: Gradiente -->
-                <div class="absolute inset-0 z-10 bg-gradient-to-r from-background via-background/50 to-transparent transition-opacity duration-300 group-hover:opacity-0"></div>
-
-                <!-- Camada 3: Pattern (Listrinhas) -->
-                <div
-                  class="absolute inset-0 z-20 opacity-30"
-                  style="background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 6px);"
-                ></div>
+                <div v-else class="absolute inset-0 z-0 w-full h-full bg-gray-800 opacity-50"></div>
 
                 <!-- Camada 4: Conteúdo -->
                 <div class="relative z-30 p-3 h-full flex flex-col justify-between text-foreground">

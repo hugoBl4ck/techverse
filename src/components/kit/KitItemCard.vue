@@ -66,7 +66,7 @@ const glowStyle = computed(() => {
 <template>
   <div
     :class="categoryConfig.border"
-    class="flex items-center gap-4 p-3 rounded-lg border-l-4 bg-white/10 shadow-sm hover:bg-white/20 cursor-grab transition-colors backdrop-blur-md"
+    class="flex items-center gap-4 p-3 rounded-lg border-l-4 bg-white/10 hover:bg-white/20 cursor-grab transition-colors"
   >
     <component :is="categoryConfig.icon" :class="categoryConfig.color" :style="glowStyle" class="size-6 shrink-0" />
     <div class="flex-1 truncate min-w-0">
