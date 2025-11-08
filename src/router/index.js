@@ -25,6 +25,12 @@ const routes = [
         meta: { title: 'Dashboard' }
       },
       {
+        path: 'marketing',
+        name: 'Marketing',
+        component: () => import('@/views/marketing/SalesCopyGeneratorView.vue'),
+        meta: { title: 'Assistente de Marketing' }
+      },
+      {
         path: 'clientes',
         name: 'ClientesList',
         component: () => import('@/views/clientes/ClienteListView.vue'),

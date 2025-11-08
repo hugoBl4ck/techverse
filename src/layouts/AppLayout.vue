@@ -15,7 +15,7 @@
             <img :src="discordIcon" alt="Discord" class="h-6 w-6">
           </Button>
           <Button variant="ghost" size="icon" as="a" href="#">
-            <img :src="messageIcon" alt="Message" class="h-6 w-6">
+            <img :src="gmailIcon" alt="Gmail" class="h-6 w-6">
           </Button>
           <Button variant="ghost" size="icon" as="a" href="#">
             <img :src="telegramIcon" alt="Telegram" class="h-6 w-6">
@@ -106,7 +106,7 @@ import { useRouter } from 'vue-router'
 import { GripVertical, Menu, LogOut } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button';
 import discordIcon from '@/assets/images/discord.png'
-import messageIcon from '@/assets/images/message.png'
+import gmailIcon from '@/assets/images/gmail.png' // Changed from messageIcon
 import telegramIcon from '@/assets/images/telegram.png'
 import whatsappIcon from '@/assets/images/whatsapp.png'
 
