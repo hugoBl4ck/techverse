@@ -142,34 +142,50 @@ const router = createRouter({
   routes
 })
 
+const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const removeListener = onAuthStateChanged(
+      getAuth(),
+      (user) => {
+        removeListener();
+        resolve(user);
+      },
+      reject
+    );
+  });
+};
+
+
 router.beforeEach(async (to, from, next) => {
-  document.title = `TechVerse - ${to.meta.title || 'Gestão'}`
-  
+  document.title = `TechVerse - ${to.meta.title || 'Gestão'}`;
+  const currentUser = getAuth().currentUser;
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
-  const currentUser = getAuth().currentUser;
+
+  if (requiresAdmin) {
+    if (currentUser && currentUser.email === 'hugovieira.eng@gmail.com') {
+      next();
+    } else {
+      if (!currentUser) {
+        next('/login');
+      } else {
+        next('/');
+      }
+    }
+    return;
+  }
 
   if (requiresAuth && !currentUser) {
     next('/login');
-  } else if (to.path === '/login' && currentUser) {
-    next('/');
-  } else if (requiresAdmin) {
-    if (currentUser) {
-      // A verificação do e-mail é uma solução temporária e INSEGURA.
-      // A forma correta é usar Firebase Custom Claims.
-      // Ex: const idTokenResult = await currentUser.getIdTokenResult();
-      // if (idTokenResult.claims.admin) { next(); }
-      if (currentUser.email === 'hugovieira.eng@gmail.com') {
-        next();
-      } else {
-        next('/'); // Redireciona para o dashboard se não for admin
-      }
-    } else {
-      next('/login'); // Redireciona para o login se não estiver logado
-    }
-  } else {
-    next();
+    return;
   }
-})
+
+  if (to.path === '/login' && currentUser) {
+    next('/');
+    return;
+  }
+
+  next();
+});
 
 export default router
