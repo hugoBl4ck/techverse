@@ -73,14 +73,14 @@ import {
   GoogleAuthProvider, 
   signInWithPopup 
 } from 'firebase/auth'
-import { useTenant } from '@/composables/useTenant'
+// useTenant is no longer needed here
 import { auth } from '@/firebase/config'
 
 const emit = defineEmits(['loggedIn'])
 const email = ref('')
 const password = ref('')
 const error = ref(null)
-const { setTenant } = useTenant()
+// const { setTenant } = useTenant() // No longer needed
 const isLoginMode = ref(true) // State to toggle between login/signup
 
 // Main handler for the form submission
@@ -95,9 +95,8 @@ const handleSubmit = async () => {
 const handleLogin = async () => {
   error.value = null
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
-    const tenantId = userCredential.user.email.split('@')[1].split('.')[0]
-    setTenant(tenantId)
+    await signInWithEmailAndPassword(auth, email.value, password.value)
+    // The tenantId is now set in App.vue's onAuthStateChanged
     emit('loggedIn')
   } catch (err) {
     error.value = err.message
@@ -107,9 +106,8 @@ const handleLogin = async () => {
 const handleSignUp = async () => {
   error.value = null
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
-    const tenantId = userCredential.user.email.split('@')[1].split('.')[0]
-    setTenant(tenantId)
+    await createUserWithEmailAndPassword(auth, email.value, password.value)
+    // The tenantId is now set in App.vue's onAuthStateChanged
     emit('loggedIn')
   } catch (err) {
     error.value = err.message
@@ -119,10 +117,8 @@ const handleSignUp = async () => {
 const handleGoogleLogin = async () => {
   error.value = null
   try {
-    const provider = new GoogleAuthProvider()
-    const userCredential = await signInWithPopup(auth, provider)
-    const tenantId = userCredential.user.email.split('@')[1].split('.')[0]
-    setTenant(tenantId)
+    await signInWithPopup(auth, new GoogleAuthProvider())
+    // The tenantId is now set in App.vue's onAuthStateChanged
     emit('loggedIn')
   } catch (err) {
     error.value = err.message
