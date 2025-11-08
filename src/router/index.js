@@ -1,14 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import AppLayout from '@/layouts/AppLayout.vue'
 
 const routes = [
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/LoginView.vue'),
-    meta: { title: 'Login' }
-  },
   {
     path: '/admin',
     component: AppLayout, // Assuming admin panel uses the same layout
@@ -24,7 +17,6 @@ const routes = [
   {
     path: '/',
     component: AppLayout,
-    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -142,50 +134,10 @@ const router = createRouter({
   routes
 })
 
-const getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const removeListener = onAuthStateChanged(
-      getAuth(),
-      (user) => {
-        removeListener();
-        resolve(user);
-      },
-      reject
-    );
-  });
-};
-
-
 router.beforeEach(async (to, from, next) => {
   document.title = `TechVerse - ${to.meta.title || 'Gestão'}`;
-  const currentUser = getAuth().currentUser;
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
-
-  if (requiresAdmin) {
-    if (currentUser && currentUser.email === 'hugovieira.eng@gmail.com') {
-      next();
-    } else {
-      if (!currentUser) {
-        next('/login');
-      } else {
-        next('/');
-      }
-    }
-    return;
-  }
-
-  if (requiresAuth && !currentUser) {
-    next('/login');
-    return;
-  }
-
-  if (to.path === '/login' && currentUser) {
-    next('/');
-    return;
-  }
-
   next();
 });
 
 export default router
+
