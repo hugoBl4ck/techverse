@@ -141,7 +141,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  document.title = `TechVerse - ${to.meta.title || 'Gestão'}`;
+  document.title = `TechVerse - ${to.meta.title || 'Gestão'} | Criado por Hugo, BLK Studio`;
   next();
 });
 
