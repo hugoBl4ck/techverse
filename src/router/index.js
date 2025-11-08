@@ -142,25 +142,12 @@ const router = createRouter({
   routes
 })
 
-const getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const removeListener = onAuthStateChanged(
-      getAuth(),
-      (user) => {
-        removeListener();
-        resolve(user);
-      },
-      reject
-    );
-  });
-};
-
 router.beforeEach(async (to, from, next) => {
   document.title = `TechVerse - ${to.meta.title || 'Gestão'}`
   
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
-  const currentUser = await getCurrentUser();
+  const currentUser = getAuth().currentUser;
 
   if (requiresAuth && !currentUser) {
     next('/login');
