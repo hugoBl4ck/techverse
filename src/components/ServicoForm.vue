@@ -3,7 +3,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
-import { useStore } from '@/composables/useStore';
+import { useTenant } from '@/composables/useTenant';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,8 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const { storeId } = useStore();
+const { tenant } = useTenant();
+const storeId = tenant;
 
 const isEditMode = computed(() => !!props.id);
 

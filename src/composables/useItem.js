@@ -2,11 +2,12 @@ import { ref, reactive, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
-import { useStore } from './useStore';
+import { useTenant } from './useTenant'; // Correct import
 
 export function useItem(itemId = null) {
   const router = useRouter();
-  const { storeId } = useStore();
+  const { tenant } = useTenant(); // Correct composable call
+  const storeId = tenant; // Assign the tenant ref directly to storeId
 
   const form = reactive({
     nome: '',

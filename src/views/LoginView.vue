@@ -33,6 +33,15 @@
             Login
           </button>
         </div>
+        <div class="mt-4">
+          <button
+            type="button"
+            @click="handleGoogleLogin"
+            class="w-full px-4 py-2 font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Login com Google
+          </button>
+        </div>
         <div v-if="error" class="mt-4 text-sm text-red-600">
           {{ error }}
         </div>
@@ -43,8 +52,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth' // Added GoogleAuthProvider, signInWithPopup
 import { useTenant } from '@/composables/useTenant'
+import { auth } from '@/firebase/config' // Import auth from centralized config
 
 const emit = defineEmits(['loggedIn'])
 const email = ref('')
@@ -54,10 +64,22 @@ const { setTenant } = useTenant()
 
 const handleLogin = async () => {
   error.value = null
-  const auth = getAuth()
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
-    const tenantId = email.value.split('@')[1].split('.')[0]
+    const tenantId = userCredential.user.email.split('@')[1].split('.')[0] // Use userCredential.user.email
+    setTenant(tenantId)
+    emit('loggedIn')
+  } catch (err) {
+    error.value = err.message
+  }
+}
+
+const handleGoogleLogin = async () => {
+  error.value = null
+  try {
+    const provider = new GoogleAuthProvider()
+    const userCredential = await signInWithPopup(auth, provider)
+    const tenantId = userCredential.user.email.split('@')[1].split('.')[0]
     setTenant(tenantId)
     emit('loggedIn')
   } catch (err) {

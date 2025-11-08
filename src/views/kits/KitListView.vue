@@ -2,12 +2,13 @@
 import { ref, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs } from 'firebase/firestore';
-import { useStore } from '@/composables/useStore';
+import { useTenant } from '@/composables/useTenant';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RouterLink } from 'vue-router';
 
-const { storeId } = useStore();
+const { tenant } = useTenant();
+const storeId = tenant;
 const kits = ref([]);
 const isLoading = ref(true);
 

@@ -2,7 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { useStore } from '@/composables/useStore';
+import { useTenant } from '@/composables/useTenant';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +15,8 @@ import {
 } from '@/components/ui/table';
 import Calendar from '@/components/ui/calendar/Calendar.vue';
 
-const { storeId } = useStore();
+const { tenant } = useTenant();
+const storeId = tenant;
 const allServices = ref([]);
 const isLoading = ref(true);
 const selectedDate = ref(new Date());

@@ -3,12 +3,13 @@ import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { db } from '@/firebase/config.js';
 import { doc, getDoc } from 'firebase/firestore';
-import { useStore } from '@/composables/useStore';
+import { useTenant } from '@/composables/useTenant'; // Correct import
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 const route = useRoute();
-const { storeId } = useStore();
+const { tenant } = useTenant(); // Correct composable call
+const storeId = tenant; // Assign the tenant ref directly to storeId
 const client = ref(null);
 const isLoading = ref(true);
 

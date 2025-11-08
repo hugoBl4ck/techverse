@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
-import { useStore } from '@/composables/useStore';
+import { useTenant } from '@/composables/useTenant';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,8 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const { storeId } = useStore();
+const { tenant } = useTenant();
+const storeId = tenant;
 
 const nome = ref('');
 const telefone = ref('');
