@@ -3,21 +3,21 @@ import { ref, computed, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { useStore } from '@/composables/useStore';
+import { useTenant } from '@/composables/useTenant';
 import Calendar from '@/components/ui/calendar/Calendar.vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-vue-next';
 
-const { storeId } = useStore();
+const { tenant } = useTenant();
 const services = ref([]);
 const isLoading = ref(true);
 const selectedDate = ref(new Date());
 
 const loadServices = async () => {
-  if (!storeId.value) return;
+  if (!tenant.value) return;
   isLoading.value = true;
-  const servicesCol = collection(db, 'stores', storeId.value, 'servicos');
+  const servicesCol = collection(db, 'stores', tenant.value, 'servicos');
   const servicesSnapshot = await getDocs(servicesCol);
   services.value = servicesSnapshot.docs.map(doc => ({
     id: doc.id,
@@ -27,8 +27,8 @@ const loadServices = async () => {
   isLoading.value = false;
 };
 
-watch(storeId, (newStoreId) => {
-  if (newStoreId) {
+watch(tenant, (newTenant) => {
+  if (newTenant) {
     loadServices();
   }
 }, { immediate: true });
