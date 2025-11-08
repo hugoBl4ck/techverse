@@ -25,6 +25,7 @@ const fetchClient = async () => {
       client.value = docSnap.data();
     } else {
       console.error('Cliente não encontrado.');
+      router.push('/clientes'); // Corrected redirection
     }
   } catch (error) {
     console.error('Erro ao buscar cliente:', error);
