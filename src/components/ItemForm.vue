@@ -31,7 +31,7 @@ const props = defineProps({
 const emit = defineEmits(['item-salvo']);
 const router = useRouter();
 
-const { form, isLoading, error, saveItem } = useItem(props.id);
+const { form, isLoading, error, saveItem, uploadImage } = useItem(props.id);
 
 watch(() => props.itemPreenchido, (newItem) => {
   if (newItem) {
@@ -45,6 +45,16 @@ watch(() => props.itemPreenchido, (newItem) => {
     form.descricao = newItem.descricao || '';
   }
 }, { deep: true, immediate: true });
+
+async function handleFileChange(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const imageUrl = await uploadImage(file);
+    if (imageUrl) {
+      form.imageUrl = imageUrl;
+    }
+  }
+}
 
 async function handleSubmit() {
   await saveItem();
@@ -172,6 +182,10 @@ const socketOptions = [
         <div class="grid gap-2">
           <Label for="imageUrl">URL da Imagem</Label>
           <Input id="imageUrl" v-model="form.imageUrl" type="text" placeholder="https://exemplo.com/imagem.png" />
+        </div>
+        <div class="grid gap-2">
+          <Label for="imageFile">Ou envie uma imagem</Label>
+          <Input id="imageFile" type="file" @change="handleFileChange" />
         </div>
         <div class="grid gap-2">
           <Label for="descricao">Descrição</Label>

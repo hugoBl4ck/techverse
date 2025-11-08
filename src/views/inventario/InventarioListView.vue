@@ -1,11 +1,15 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs } from 'firebase/firestore'
+import { useStore } from '@/composables/useStore'
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
+import { Pencil } from 'lucide-vue-next'
 
+const { storeId } = useStore()
 const items = ref([])
+const isLoading = ref(true)
 
 const colorMap = {
   cpu: { bg: 'bg-red-500', text: 'text-red-500' },
@@ -60,16 +64,22 @@ const orderedCategories = [
 ];
 
 async function fetchItems() {
-  const querySnapshot = await getDocs(collection(db, 'itens'))
+  if (!storeId.value) return;
+  isLoading.value = true;
+  const querySnapshot = await getDocs(collection(db, 'stores', storeId.value, 'itens'))
   items.value = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
   }))
+  isLoading.value = false;
 }
 
-onMounted(() => {
-  fetchItems()
-})
+watch(storeId, (newStoreId) => {
+  if (newStoreId) {
+    fetchItems()
+  }
+}, { immediate: true })
+
 
 // Estilo para o padrão de pontos a ser injetado no head
 const dotPatternStyle = `
@@ -141,7 +151,8 @@ const dotPatternStyle = `
                       </div>
                       <RouterLink :to="`/inventario/${item.id}/editar`" class="mt-2">
                           <Button variant="outline" size="sm" class="w-full bg-transparent border border-white/50 hover:bg-white/20 text-white">
-                          Editar
+                            <Pencil class="h-4 w-4 mr-2" />
+                            Editar
                           </Button>
                       </RouterLink>
                   </div>

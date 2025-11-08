@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs } from 'firebase/firestore'
+import { useStore } from '@/composables/useStore'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -13,20 +14,28 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { RouterLink } from 'vue-router'
+import { Pencil } from 'lucide-vue-next'
 
+const { storeId } = useStore()
 const clients = ref([])
+const isLoading = ref(true)
 
 async function fetchClients() {
-  const querySnapshot = await getDocs(collection(db, 'clientes'))
+  if (!storeId.value) return;
+  isLoading.value = true;
+  const querySnapshot = await getDocs(collection(db, 'stores', storeId.value, 'clientes'))
   clients.value = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
   }))
+  isLoading.value = false;
 }
 
-onMounted(() => {
-  fetchClients()
-})
+watch(storeId, (newStoreId) => {
+  if (newStoreId) {
+    fetchClients()
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -56,7 +65,10 @@ onMounted(() => {
           <TableCell>{{ client.telefone }}</TableCell>
           <TableCell class="text-right">
             <RouterLink :to="`/clientes/${client.id}/editar`">
-              <Button variant="outline" size="sm">Editar</Button>
+              <Button variant="outline" size="sm">
+                <Pencil class="h-4 w-4 mr-2" />
+                Editar
+              </Button>
             </RouterLink>
           </TableCell>
         </TableRow>

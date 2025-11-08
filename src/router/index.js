@@ -1,10 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import AppLayout from '@/layouts/AppLayout.vue'
 
 const routes = [
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/LoginView.vue'),
+    meta: { title: 'Login' }
+  },
+  {
+    path: '/admin',
+    component: AppLayout, // Assuming admin panel uses the same layout
+    children: [
+      {
+        path: '',
+        name: 'Admin',
+        component: () => import('@/views/AdminView.vue'),
+        meta: { title: 'Painel Administrativo', requiresAdmin: true }
+      }
+    ]
+  },
+  {
     path: '/',
     component: AppLayout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -49,6 +69,13 @@ const routes = [
         name: 'ServicoNovo',
         component: () => import('@/views/servicos/ServicoFormView.vue'),
         meta: { title: 'Novo Serviço' }
+      },
+      {
+        path: 'servicos/:id/editar',
+        name: 'ServicoEditar',
+        component: () => import('@/views/servicos/ServicoFormView.vue'),
+        props: true,
+        meta: { title: 'Editar Serviço' }
       },
       {
         path: 'servicos-predefinidos',
@@ -115,9 +142,47 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const removeListener = onAuthStateChanged(
+      getAuth(),
+      (user) => {
+        removeListener();
+        resolve(user);
+      },
+      reject
+    );
+  });
+};
+
+router.beforeEach(async (to, from, next) => {
   document.title = `TechVerse - ${to.meta.title || 'Gestão'}`
-  next()
+  
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
+  const currentUser = await getCurrentUser();
+
+  if (requiresAuth && !currentUser) {
+    next('/login');
+  } else if (to.path === '/login' && currentUser) {
+    next('/');
+  } else if (requiresAdmin) {
+    if (currentUser) {
+      // A verificação do e-mail é uma solução temporária e INSEGURA.
+      // A forma correta é usar Firebase Custom Claims.
+      // Ex: const idTokenResult = await currentUser.getIdTokenResult();
+      // if (idTokenResult.claims.admin) { next(); }
+      if (currentUser.email === 'hugovieira.eng@gmail.com') {
+        next();
+      } else {
+        next('/'); // Redireciona para o dashboard se não for admin
+      }
+    } else {
+      next('/login'); // Redireciona para o login se não estiver logado
+    }
+  } else {
+    next();
+  }
 })
 
 export default router

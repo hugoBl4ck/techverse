@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { useStore } from '@/composables/useStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,12 +13,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import Calendar from '@/components/ui/calendar/Calendar.vue';
 
+const { storeId } = useStore();
 const allServices = ref([]);
 const isLoading = ref(true);
+const selectedDate = ref(new Date());
+const promotions = ref([]);
 
-onMounted(async () => {
-  const servicesCol = collection(db, 'servicos');
+const loadServices = async () => {
+  if (!storeId.value) return;
+  isLoading.value = true;
+  const servicesCol = collection(db, 'stores', storeId.value, 'servicos');
   const q = query(servicesCol, orderBy('date', 'desc'));
   const servicesSnapshot = await getDocs(q);
   allServices.value = servicesSnapshot.docs.map(doc => ({
@@ -26,6 +33,35 @@ onMounted(async () => {
     date: doc.data().date.toDate(), // Convert Firestore Timestamp to JavaScript Date
   }));
   isLoading.value = false;
+};
+
+const fetchPromotions = async () => {
+  const promotionsCol = collection(db, 'promocoes');
+  const q = query(promotionsCol, orderBy('createdAt', 'desc'));
+  const snapshot = await getDocs(q);
+  promotions.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+watch(storeId, (newStoreId) => {
+  if (newStoreId) {
+    loadServices();
+  }
+}, { immediate: true });
+
+onMounted(() => {
+  fetchPromotions();
+});
+
+const monthlyRevenue = computed(() => {
+  if (!allServices.value) return 0;
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  return allServices.value
+    .filter(service => {
+      const serviceDate = new Date(service.date);
+      return serviceDate.getMonth() === currentMonth && serviceDate.getFullYear() === currentYear;
+    })
+    .reduce((total, service) => total + service.price, 0);
 });
 </script>
 
@@ -82,10 +118,18 @@ onMounted(async () => {
       <div class="lg:col-span-1 grid gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Notícias</CardTitle>
+            <CardTitle>Faturamento Mensal</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Em breve: Últimas notícias e atualizações!</p>
+            <p class="text-2xl font-bold">R$ {{ monthlyRevenue.toFixed(2) }}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Calendário</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Calendar v-model="selectedDate" />
           </CardContent>
         </Card>
         <Card>
@@ -93,7 +137,13 @@ onMounted(async () => {
             <CardTitle>Promoções</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Em breve: Promoções e ofertas especiais!</p>
+            <div v-if="promotions.length > 0" class="space-y-4">
+              <div v-for="promo in promotions" :key="promo.id">
+                <h3 class="font-semibold">{{ promo.title }}</h3>
+                <p class="text-sm text-muted-foreground">{{ promo.description }}</p>
+              </div>
+            </div>
+            <p v-else class="text-muted-foreground">Nenhuma promoção ativa no momento.</p>
           </CardContent>
         </Card>
       </div>

@@ -1,40 +1,48 @@
 <script setup>
-import { ref, computed } from 'vue'
-import Calendar from '@/components/ui/calendar/Calendar.vue'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { ref, computed, watch } from 'vue';
+import { RouterLink } from 'vue-router';
+import { db } from '@/firebase/config.js';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useStore } from '@/composables/useStore';
+import Calendar from '@/components/ui/calendar/Calendar.vue';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Pencil } from 'lucide-vue-next';
 
-const selectedDate = ref(new Date())
+const { storeId } = useStore();
+const services = ref([]);
+const isLoading = ref(true);
+const selectedDate = ref(new Date());
 
-const services = [
-  {
-    id: '1',
-    client: 'John Doe',
-    service: 'Troca de óleo',
-    date: '2025-11-06'
-  },
-  {
-    id: '2',
-    client: 'Jane Smith',
-    service: 'Alinhamento e balanceamento',
-    date: '2025-11-06'
-  },
-  {
-    id: '3',
-    client: 'Peter Jones',
-    service: 'Troca de pastilhas de freio',
-    date: '2025-11-07'
+const loadServices = async () => {
+  if (!storeId.value) return;
+  isLoading.value = true;
+  const servicesCol = collection(db, 'stores', storeId.value, 'servicos');
+  const servicesSnapshot = await getDocs(servicesCol);
+  services.value = servicesSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+    date: doc.data().date.toDate(),
+  }));
+  isLoading.value = false;
+};
+
+watch(storeId, (newStoreId) => {
+  if (newStoreId) {
+    loadServices();
   }
-]
+}, { immediate: true });
 
 const filteredServices = computed(() => {
-  return services.filter((service) => {
-    const serviceDate = new Date(service.date)
-    serviceDate.setUTCHours(0, 0, 0, 0)
-    const selected = new Date(selectedDate.value)
-    selected.setUTCHours(0, 0, 0, 0)
-    return serviceDate.getTime() === selected.getTime()
-  })
-})
+  if (!services.value) return [];
+  return services.value.filter((service) => {
+    const serviceDate = new Date(service.date);
+    serviceDate.setUTCHours(0, 0, 0, 0);
+    const selected = new Date(selectedDate.value);
+    selected.setUTCHours(0, 0, 0, 0);
+    return serviceDate.getTime() === selected.getTime();
+  });
+});
 </script>
 
 <template>
@@ -57,8 +65,15 @@ const filteredServices = computed(() => {
         </CardHeader>
         <CardContent>
           <ul v-if="filteredServices.length > 0" class="space-y-2">
-            <li v-for="service in filteredServices" :key="service.id">
-              <strong>{{ service.client }}</strong> - {{ service.service }}
+            <li v-for="service in filteredServices" :key="service.id" class="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg">
+              <div>
+                <strong>{{ service.client }}</strong> - {{ service.service }}
+              </div>
+              <router-link :to="{ name: 'ServicoEditar', params: { id: service.id } }">
+                <Button variant="ghost" size="icon">
+                  <Pencil class="h-4 w-4" />
+                </Button>
+              </router-link>
             </li>
           </ul>
           <p v-else class="text-muted-foreground">Nenhum serviço agendado para esta data.</p>

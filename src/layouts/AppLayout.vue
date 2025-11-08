@@ -11,7 +11,14 @@
           </div>
         </div>
         <div class="flex items-center space-x-4">
+          <a href="#"><img :src="discordIcon" alt="Discord" class="h-6 w-6"></a>
+          <a href="#"><img :src="messageIcon" alt="Message" class="h-6 w-6"></a>
+          <a href="#"><img :src="telegramIcon" alt="Telegram" class="h-6 w-6"></a>
+          <a href="#"><img :src="whatsappIcon" alt="Whatsapp" class="h-6 w-6"></a>
           <ThemeToggle @theme-changed="handleThemeChange" />
+          <Button variant="ghost" size="icon" @click="logout">
+            <LogOut class="h-6 w-6" />
+          </Button>
         </div>
       </div>
     </header>
@@ -86,7 +93,21 @@ import SidebarMenu from '@/components/ui/SidebarMenu.vue'
 
 // Importando o NOVO Toggle (Switch)
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
-import { GripVertical } from 'lucide-vue-next'
+import { getAuth, signOut } from 'firebase/auth'
+import { useRouter } from 'vue-router'
+import { GripVertical, Menu, LogOut } from 'lucide-vue-next'
+import discordIcon from '@/assets/images/discord.png'
+import messageIcon from '@/assets/images/message.png'
+import telegramIcon from '@/assets/images/telegram.png'
+import whatsappIcon from '@/assets/images/whatsapp.png'
+
+const router = useRouter()
+const auth = getAuth()
+
+const logout = async () => {
+  await signOut(auth)
+  router.push('/login')
+}
 
 const isDark = ref(false)
 const isMobile = ref(false)
