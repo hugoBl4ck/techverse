@@ -243,12 +243,12 @@ body {
   right: 0;
   bottom: 0;
   z-index: -2;
-  background: linear-gradient(150deg, hsl(var(--primary)) 15%, hsl(var(--accent)) 70%, hsl(var(--destructive)) 94%);
+  background: linear-gradient(150deg, oklch(var(--primary)) 15%, oklch(var(--accent)) 70%, oklch(var(--destructive)) 94%);
   transition: background 0.3s ease-in-out;
 }
 
 .dark .app-background-gradient {
-  background: linear-gradient(150deg, hsl(var(--primary)) 15%, hsl(var(--accent)) 70%, hsl(var(--destructive)) 94%);
+  background: linear-gradient(150deg, oklch(var(--primary)) 15%, oklch(var(--accent)) 70%, oklch(var(--destructive)) 94%);
 }
 
 .app-background-stripes {
