@@ -1,5 +1,4 @@
-'''<script setup>
-console.log('ServicoPredefinidoFormView component loaded');
+<script setup>
 import { ref } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, addDoc } from 'firebase/firestore';
@@ -23,7 +22,7 @@ async function handleSubmit() {
     await addDoc(collection(db, 'catalogo_servicos'), {
       nome: nome.value,
       descricao: descricao.value,
-      preco: preco.value,
+      preco: Number(preco.value) || 0,
     });
     router.push('/catalogo-servicos');
   } catch (error) {
@@ -62,4 +61,3 @@ async function handleSubmit() {
     </Card>
   </div>
 </template>
-'''

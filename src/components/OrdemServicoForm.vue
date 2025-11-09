@@ -1,4 +1,4 @@
-'''<script setup>
+<script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -22,16 +22,13 @@ const props = defineProps({
 
 const router = useRouter();
 
-
-
 const isEditMode = computed(() => !!props.id);
 
-// Add console.log here
 onMounted(() => {
   console.log('OrdemServicoForm Mounted:');
   console.log('  props.id:', props.id);
   console.log('  isEditMode:', isEditMode.value);
-  loadData(); // Added this line
+  loadData();
 });
 
 const clientes = ref([]);
@@ -42,12 +39,20 @@ const ordemServico = ref({
   price: 0,
   observations: '',
   computerConfiguration: '',
-  items: [], // Array to store added items
+  items: [],
 });
-const selectedCliente = ref(null);
+const selectedClienteId = ref('');
 const catalogoServicos = ref([]);
-const selectedServicoCatalogo = ref(null);
+const selectedServicoId = ref('');
 const isLoading = ref(false);
+
+const selectedCliente = computed(() => 
+  clientes.value.find(c => c.id === selectedClienteId.value) || null
+);
+
+const selectedServicoCatalogo = computed(() => 
+  catalogoServicos.value.find(s => s.id === selectedServicoId.value) || null
+);
 
 // Item management
 const inventoryItems = ref([]);
@@ -89,7 +94,7 @@ const loadData = async () => {
 
   // If in edit mode, load service order data
   if (isEditMode.value) {
-    console.log('loadData: Fetching existing service order with ID:', props.id); // Added log
+    console.log('loadData: Fetching existing service order with ID:', props.id);
     const osDocRef = doc(db, 'ordens_servico', props.id);
     const osDoc = await getDoc(osDocRef);
     if (osDoc.exists()) {
@@ -99,11 +104,11 @@ const loadData = async () => {
         observations: Array.isArray(osData.observations) ? osData.observations.join('\n') : osData.observations,
       };
       addedItems.value = osData.items || [];
-      selectedCliente.value = clientes.value.find(c => c.id === osData.customerId);
-      console.log('loadData: Service order data loaded successfully.'); // Added log
+      selectedClienteId.value = osData.customerId || '';
+      console.log('loadData: Service order data loaded successfully.');
     } else {
-      console.error('Ordem de Serviço não encontrada para ID:', props.id); // Modified log
-      router.push('/ordens-servico'); // Redirect if ID is invalid
+      console.error('Ordem de Serviço não encontrada para ID:', props.id);
+      router.push('/ordens-servico');
     }
   }
   isLoading.value = false;
@@ -111,7 +116,8 @@ const loadData = async () => {
 
 
 
-watch(selectedServicoCatalogo, (newServico) => {
+watch(selectedServicoId, (id) => {
+  const newServico = catalogoServicos.value.find(s => s.id === id);
   if (newServico) {
     ordemServico.value.observations = newServico.descricao || '';
     ordemServico.value.price = newServico.preco || 0;
@@ -147,7 +153,8 @@ function decreaseQuantity(itemId) {
 }
 
 async function handleSubmit() {
-  if (!selectedCliente.value) {
+  const cliente = selectedCliente.value;
+  if (!cliente) {
     alert('Por favor, selecione um cliente.');
     return;
   }
@@ -156,9 +163,9 @@ async function handleSubmit() {
   
   const osData = {
     ...ordemServico.value,
-    customerId: selectedCliente.value.id,
-    customerName: selectedCliente.value.nome,
-    observations: ordemServico.value.observations.split('\n'),
+    customerId: cliente.id,
+    customerName: cliente.nome,
+    observations: String(ordemServico.value.observations || '').split('\n'),
     items: addedItems.value,
     totalAmount: totalAmount.value,
   };
@@ -166,12 +173,12 @@ async function handleSubmit() {
   try {
     const osCol = collection(db, 'ordens_servico');
     if (isEditMode.value) {
-      console.log('handleSubmit: Updating service order with ID:', props.id); // Added log
+      console.log('handleSubmit: Updating service order with ID:', props.id);
       const osDocRef = doc(osCol, props.id);
       await updateDoc(osDocRef, osData);
       console.log('Ordem de Serviço atualizada com sucesso!');
     } else {
-      console.log('handleSubmit: Creating new service order.'); // Added log
+      console.log('handleSubmit: Creating new service order.');
       osData.date = new Date();
       await addDoc(osCol, osData);
       console.log('Ordem de Serviço salva com sucesso!');
@@ -199,12 +206,12 @@ async function handleSubmit() {
         <div class="grid gap-4">
           <div class="grid gap-2">
             <Label for="cliente">Cliente</Label>
-            <Select v-model="selectedCliente">
+            <Select v-model="selectedClienteId">
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um cliente" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem v-for="cliente in clientes" :key="cliente.id" :value="cliente">
+                <SelectItem v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">
                   {{ cliente.nome }}
                 </SelectItem>
               </SelectContent>
@@ -212,13 +219,13 @@ async function handleSubmit() {
           </div>
           <div class="grid gap-2">
             <Label for="servico-catalogo">Serviço do Catálogo (Opcional)</Label>
-            <Select v-model="selectedServicoCatalogo">
+            <Select v-model="selectedServicoId">
               <SelectTrigger>
                 <SelectValue placeholder="Selecione para preencher automaticamente" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem v-for="servico in catalogoServicos" :key="servico.id" :value="servico">
-                  {{ servico.nome }} - R$ {{ servico.preco.toFixed(2) }}
+                <SelectItem v-for="servico in catalogoServicos" :key="servico.id" :value="servico.id">
+                  {{ servico.nome }} - R$ {{ (servico.preco || 0).toFixed(2) }}
                 </SelectItem>
               </SelectContent>
             </Select>
