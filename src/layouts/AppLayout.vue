@@ -7,7 +7,7 @@
     <div class="app-background-gradient"></div>
     <div class="app-background-stripes"></div>
 
-    <header class="sticky top-0 z-40 w-full border-b border-white/10 bg-transparent backdrop-blur-sm">
+    <header class="sticky top-0 z-40 w-full border-b border-white/10 bg-primary">
       <div class="container mx-auto flex h-16 items-center justify-between px-4">
         <div class="flex items-center gap-4">
           <Button v-if="isMobile" variant="ghost" size="icon" @click="showMobileSidebar = !showMobileSidebar">
