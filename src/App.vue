@@ -10,18 +10,22 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { useRouter } from 'vue-router'
 import LoginView from './views/LoginView.vue'
 
-import { useFontSize } from '@/composables/useFontSize' // Import useFontSize
+import { useFontSize } from '@/composables/useFontSize'
 
+const router = useRouter()
 const loggedIn = ref(false)
 
-useFontSize() // Initialize the font size composable
+useFontSize()
 
 const onLoggedIn = () => {
-  // This function might become redundant, but we'll keep it for now
-  // as the login view emits an event.
   loggedIn.value = true
+  // Redirecionar para dashboard após login
+  setTimeout(() => {
+    router.push('/').catch(() => {})
+  }, 100)
 }
 
 onMounted(() => {

@@ -34,9 +34,9 @@ onMounted(async () => {
 <template>
   <div class="container mx-auto py-8">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">Serviços Predefinidos</h1>
-      <router-link to="/servicos-predefinidos/novo">
-        <Button>+ Novo Serviço Predefinido</Button>
+      <h1 class="text-2xl font-bold">Catálogo de Serviços</h1>
+      <router-link to="/catalogo-servicos/novo">
+        <Button>+ Novo Serviço</Button>
       </router-link>
     </div>
     <Card>
