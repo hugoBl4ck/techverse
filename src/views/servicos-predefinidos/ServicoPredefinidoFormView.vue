@@ -19,7 +19,7 @@ const isLoading = ref(false);
 async function handleSubmit() {
   isLoading.value = true;
   try {
-    await addDoc(collection(db, 'servicos_predefinidos'), {
+    await addDoc(collection(db, 'catalogo_servicos'), {
       nome: nome.value,
       descricao: descricao.value,
       preco: preco.value,

@@ -7,7 +7,7 @@
     <div class="app-background-gradient"></div>
     <div class="app-background-stripes"></div>
 
-    <header class="sticky top-0 z-40 w-full border-b border-white/10 bg-primary">
+    <header class="sticky top-0 z-40 w-full border-b border-white/10 bg-background">
       <div class="container mx-auto flex h-16 items-center justify-between px-4">
         <div class="flex items-center gap-4">
           <Button v-if="isMobile" variant="ghost" size="icon" @click="showMobileSidebar = !showMobileSidebar">
@@ -60,7 +60,7 @@
       </div>
     </Transition>
 
-    <div v-if="!isMobile" class="border-b border-white/10 bg-black/10 shadow-inner">
+    <div v-if="!isMobile" class="border-b border-white/10 bg-primary shadow-inner">
       <div class="container mx-auto flex h-12 items-center justify-between px-4">
         <h1 class="text-lg font-display font-semibold">
           {{ $route.meta.title || 'Dashboard' }} 
