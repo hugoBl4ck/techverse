@@ -118,45 +118,36 @@ const dotPatternStyle = `
         <!-- Grid de Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div v-for="item in itemsAgrupados[tipo]" :key="item.id"
-              class="group relative h-48 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md flex">
-              <div :class="getCategoryColors(item).bg" class="w-2 h-full relative z-20">
-                <!-- Blurred lighting effect -->
-                <div class="absolute inset-0 blur-md bg-current opacity-70 group-hover:opacity-90 transition-opacity duration-300"></div>
+              class="group rounded-lg overflow-hidden border bg-card shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col">
+              
+              <!-- Image Section -->
+              <div class="h-36 relative">
+                  <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.nome"
+                       class="w-full h-full object-cover">
+                  <div v-else class="w-full h-full bg-muted flex items-center justify-center">
+                      <Package class="size-12 text-muted-foreground" />
+                  </div>
+                  <!-- Category Tag -->
+                  <span :class="[getCategoryColors(item).bg, 'absolute top-2 right-2 text-xs font-bold text-white px-2 py-1 rounded-full']">
+                      {{ item.tipo }}
+                  </span>
               </div>
-              <div class="flex-1 relative">
-                <img
-                  v-if="item.imageUrl"
-                  :src="item.imageUrl"
-                  :alt="item.nome"
-                  class="absolute inset-0 z-10 w-full h-full object-cover opacity-70 transition-all duration-300 group-hover:opacity-90 group-hover:scale-110"
-                />
-                <div v-else class="absolute inset-0 z-10 w-full h-full bg-gray-800 opacity-70"></div>
 
-                <!-- Transparent black gradient -->
-                <div class="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-
-                <!-- Camada 2: Padrão de pontos estático e sutil para visibilidade do texto -->
-                <div class="absolute inset-0 z-30 pattern-dots opacity-5"></div>
-
-                <!-- Camada 4: Conteúdo -->
-                <div class="relative z-30 p-3 h-full flex flex-col justify-between text-white dark:text-gray-100">
+              <!-- Content Section -->
+              <div class="p-4 flex-1 flex flex-col justify-between">
                   <div>
-                      <h3 :class="getCategoryColors(item).text" class="font-bold text-sm">{{ item.nome }}</h3>
-                      <span class="text-xs uppercase opacity-70">{{ item.tipo }}</span>
-                  </div>
-                  <div>
-                      <div class="text-sm opacity-90 mt-1">
-                          <p>Qtd: {{ item.quantidade }}</p>
-                          <p>Venda: R$ {{ item.precoVenda?.toFixed(2) }}</p>
+                      <h3 class="font-bold text-base text-foreground mb-2 truncate" :title="item.nome">{{ item.nome }}</h3>
+                      <div class="text-sm text-muted-foreground space-y-1">
+                          <p><strong>Estoque:</strong> {{ item.quantidade }} unidades</p>
+                          <p><strong>Preço:</strong> R$ {{ item.precoVenda?.toFixed(2) }}</p>
                       </div>
-                      <RouterLink :to="`/inventario/${item.id}/editar`" class="mt-2">
-                          <Button variant="outline" size="sm" class="w-full bg-transparent border border-white/50 hover:bg-white/20 text-white">
-                            <Pencil class="h-4 w-4 mr-2" />
-                            Editar
-                          </Button>
-                      </RouterLink>
                   </div>
-                </div>
+                  <RouterLink :to="`/inventario/${item.id}/editar`" class="mt-4">
+                      <Button variant="outline" size="sm" class="w-full">
+                          <Pencil class="h-4 w-4 mr-2" />
+                          Editar
+                      </Button>
+                  </RouterLink>
               </div>
           </div>
         </div>
