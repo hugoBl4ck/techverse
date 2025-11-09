@@ -1,32 +1,38 @@
 <template>
-  <div class="flex flex-col h-screen overflow-hidden bg-background text-foreground">
+  <div 
+    class="flex flex-col h-screen overflow-hidden text-foreground relative"
+    :class="isDark ? 'dark' : 'light'"
+  >
+    <div class="app-background-gradient"></div>
+    <div class="app-background-stripes"></div>
 
-    <div v-if="isDark" class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_10%_70%,var(--muted),transparent_10%)] blur-3xl"></div>
-
-    <header class="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-sm">
+    <header class="sticky top-0 z-40 w-full border-b border-white/10 bg-transparent backdrop-blur-sm">
       <div class="container mx-auto flex h-16 items-center justify-between px-4">
-        <div class="flex items-center">
+        <div class="flex items-center gap-4">
+          <Button v-if="isMobile" variant="ghost" size="icon" @click="showMobileSidebar = !showMobileSidebar">
+            <Menu class="size-6" />
+          </Button>
           <div class="font-display text-2xl font-bold">
             TechVerse
           </div>
         </div>
         <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-1 bg-red-500 p-1 rounded-md">
-            <Button variant="ghost" size="icon" as="a" href="#" class="hover:bg-red-600">
-              <img :src="discordIcon" alt="Discord" class="h-6 w-6">
-            </Button>
-            <Button variant="ghost" size="icon" as="a" href="#" class="hover:bg-red-600">
-              <img :src="gmailIcon" alt="Gmail" class="h-6 w-6">
-            </Button>
-            <Button variant="ghost" size="icon" as="a" href="#" class="hover:bg-red-600">
-              <img :src="telegramIcon" alt="Telegram" class="h-6 w-6">
-            </Button>
-            <Button variant="ghost" size="icon" as="a" href="#" class="hover:bg-red-600">
-              <img :src="whatsappIcon" alt="Whatsapp" class="h-6 w-6">
-            </Button>
-            <Button variant="ghost" size="icon" @click="logout" class="text-white hover:bg-red-600 hover:text-white">
-              <LogOut class="h-6 w-6" />
-            </Button>
+          <div v-if="!isMobile" class="flex items-center space-x-2">
+            <a href="#" target="_blank" rel="noopener" class="btn-social" data-tooltip="Discord">
+              <i class="fa-brands fa-discord"></i>
+            </a>
+            <a href="#" target="_blank" rel="noopener" class="btn-social" data-tooltip="Gmail">
+              <i class="fa-regular fa-envelope"></i>
+            </a>
+            <a href="#" target="_blank" rel="noopener" class="btn-social" data-tooltip="Telegram">
+              <i class="fa-brands fa-telegram"></i>
+            </a>
+            <a href="#" target="_blank" rel="noopener" class="btn-social" data-tooltip="Whatsapp">
+              <i class="fa-brands fa-whatsapp"></i>
+            </a>
+            <button @click="logout" class="btn-social" data-tooltip="Sair">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
           </div>
           <ThemeToggle @theme-changed="handleThemeChange" />
         </div>
@@ -42,7 +48,7 @@
       leave-from-class="translate-x-0 opacity-100"
       leave-to-class="-translate-x-full opacity-0"
     >
-      <div v-if="isMobile && showMobileSidebar" class="fixed inset-0 z-50 bg-background p-4 pt-6 flex flex-col">
+      <div v-if="isMobile && showMobileSidebar" class="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 pt-6 flex flex-col">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-bold">Menu</h2>
           <Button variant="ghost" size="icon" @click="showMobileSidebar = false">
@@ -53,7 +59,7 @@
       </div>
     </Transition>
 
-    <div v-if="!isMobile" class="border-b bg-muted/50 shadow-inner">
+    <div v-if="!isMobile" class="border-b border-white/10 bg-black/10 shadow-inner">
       <div class="container mx-auto flex h-12 items-center justify-between px-4">
         <h1 class="text-lg font-display font-semibold">
           {{ $route.meta.title || 'Dashboard' }} 
@@ -68,7 +74,7 @@
           :default-size="20" 
           :min-size="15" 
           :max-size="30" 
-          class="p-4 pt-6"
+          class="p-4 pt-6 bg-black/20 rounded-lg m-2"
         >
           <SidebarMenu />
         </SplitterPanel>
@@ -105,12 +111,8 @@ import SidebarMenu from '@/components/ui/SidebarMenu.vue'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 import { getAuth, signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
-import { GripVertical, Menu, LogOut } from 'lucide-vue-next'
+import { GripVertical, Menu, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button';
-import discordIcon from '@/assets/images/discord.png'
-import gmailIcon from '@/assets/images/gmail.png' // Changed from messageIcon
-import telegramIcon from '@/assets/images/telegram.png'
-import whatsappIcon from '@/assets/images/whatsapp.png'
 
 const router = useRouter()
 const auth = getAuth()
@@ -126,6 +128,11 @@ const showMobileSidebar = ref(false)
 
 const handleThemeChange = (newIsDark) => {
   isDark.value = newIsDark
+  if (newIsDark) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
 }
 
 const checkMobile = () => {
@@ -133,13 +140,18 @@ const checkMobile = () => {
 }
 
 onMounted(() => {
+  // Set initial theme
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  handleThemeChange(prefersDark)
+  
   checkMobile()
   window.addEventListener('resize', checkMobile)
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
-})</script>
+})
+</script>
 
 <style>
 /* Estilo global para forçar altura total */
