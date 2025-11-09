@@ -1,4 +1,5 @@
 '''<script setup>
+console.log('ServicoPredefinidoFormView component loaded');
 import { ref } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, addDoc } from 'firebase/firestore';
