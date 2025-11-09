@@ -31,6 +31,7 @@ onMounted(() => {
   console.log('OrdemServicoForm Mounted:');
   console.log('  props.id:', props.id);
   console.log('  isEditMode:', isEditMode.value);
+  loadData(); // Added this line
 });
 
 const clientes = ref([]);

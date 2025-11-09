@@ -73,6 +73,10 @@ async function fetchItems() {
   isLoading.value = false;
 }
 
+onMounted(() => {
+  fetchItems();
+});
+
 
 
 

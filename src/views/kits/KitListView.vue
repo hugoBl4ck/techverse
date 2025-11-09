@@ -25,6 +25,10 @@ const fetchKits = async () => {
   }
 };
 
+onMounted(() => {
+  fetchKits();
+});
+
 
 </script>
 

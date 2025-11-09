@@ -76,6 +76,10 @@ const loadOrdensServico = async () => {
   isLoading.value = false;
 };
 
+onMounted(() => {
+  loadOrdensServico();
+});
+
 
 
 const filteredOrdensServico = computed(() => {

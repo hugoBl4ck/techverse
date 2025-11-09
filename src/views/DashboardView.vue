@@ -46,6 +46,7 @@ const fetchPromotions = async () => {
 
 onMounted(() => {
   fetchPromotions();
+  loadServices(); // Added this line
 });
 
 const monthlyRevenue = computed(() => {

@@ -30,6 +30,10 @@ const fetchItems = async () => {
   }
 };
 
+onMounted(() => {
+  fetchItems();
+});
+
 
 
 

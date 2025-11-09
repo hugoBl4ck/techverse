@@ -118,4 +118,8 @@ async function copyToClipboard(text) {
     alert('Não foi possível copiar o texto.');
   }
 }
+
+onMounted(() => {
+  fetchItems(); // Added this line
+});
 </script>

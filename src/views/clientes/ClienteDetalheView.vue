@@ -36,6 +36,10 @@ const fetchClient = async () => {
   }
 };
 
+onMounted(() => {
+  fetchClient();
+});
+
 
 </script>
 
