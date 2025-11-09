@@ -29,10 +29,7 @@ onMounted(() => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       // User is signed in, set the tenant ID here.
-      // TEMPORARY FIX: Hardcoding tenant ID for development/testing.
-      // In a real application, this should be dynamically set based on user profile, custom claims, or selection.
-      const tenantId = 'primeiraloja'; // REPLACE THIS WITH A REAL STORE ID FROM YOUR FIRESTORE 'stores' COLLECTION
-      console.warn('WARNING: Tenant ID is hardcoded in App.vue. This should be dynamically set in production.');
+      const tenantId = user.email.split('@')[1].split('.')[0]
       setTenant(tenantId)
       loggedIn.value = true
     } else {
