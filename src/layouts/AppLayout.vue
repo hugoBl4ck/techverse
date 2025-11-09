@@ -128,11 +128,6 @@ const showMobileSidebar = ref(false)
 
 const handleThemeChange = (newIsDark) => {
   isDark.value = newIsDark
-  if (newIsDark) {
-    document.documentElement.classList.add('dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-  }
 }
 
 const checkMobile = () => {
@@ -140,10 +135,6 @@ const checkMobile = () => {
 }
 
 onMounted(() => {
-  // Set initial theme
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  handleThemeChange(prefersDark)
-  
   checkMobile()
   window.addEventListener('resize', checkMobile)
 })

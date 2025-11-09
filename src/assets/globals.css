@@ -87,6 +87,10 @@
   --shadow-2xl: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.10);
   --tracking-normal: 0em;
   --spacing: 0.23rem;
+
+  --gradient-start: oklch(0.6333 0.0309 154.9039); /* primary */
+  --gradient-middle: oklch(0.8242 0.0221 136.6092); /* accent */
+  --gradient-end: oklch(0.5624 0.1743 26.1433); /* destructive */
 }
 
 .dark {
@@ -140,6 +144,10 @@
   --shadow-lg: 0px 1px 2px 0px hsl(0 0% 0% / 0.04), 0px 4px 6px -1px hsl(0 0% 0% / 0.04);
   --shadow-xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.04), 0px 8px 10px -1px hsl(0 0% 0% / 0.04);
   --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.10);
+
+  --gradient-start: oklch(0.6333 0.0309 154.9039); /* primary */
+  --gradient-middle: oklch(0.3709 0.0248 153.9823); /* accent */
+  --gradient-end: oklch(0.6368 0.2078 25.3313); /* destructive */
 }
 
 body {
@@ -243,12 +251,12 @@ body {
   right: 0;
   bottom: 0;
   z-index: -2;
-  background: linear-gradient(150deg, oklch(var(--primary)) 15%, oklch(var(--accent)) 70%, oklch(var(--destructive)) 94%);
+  background: linear-gradient(150deg, var(--gradient-start) 15%, var(--gradient-middle) 70%, var(--gradient-end) 94%);
   transition: background 0.3s ease-in-out;
 }
 
 .dark .app-background-gradient {
-  background: linear-gradient(150deg, oklch(var(--primary)) 15%, oklch(var(--accent)) 70%, oklch(var(--destructive)) 94%);
+  background: linear-gradient(150deg, var(--gradient-start) 15%, var(--gradient-middle) 70%, var(--gradient-end) 94%);
 }
 
 .app-background-stripes {
