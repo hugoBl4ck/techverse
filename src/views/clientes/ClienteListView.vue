@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs } from 'firebase/firestore'
+import { useCurrentStore } from '@/composables/useCurrentStore'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -16,25 +17,35 @@ import {
 import { RouterLink } from 'vue-router'
 import { Pencil } from 'lucide-vue-next'
 
-
+const { storeId } = useCurrentStore()
 const clients = ref([])
 const isLoading = ref(true)
 
 async function fetchClients() {
+  if (!storeId.value) {
+    console.error('StoreId não disponível');
+    isLoading.value = false;
+    return;
+  }
+
   isLoading.value = true;
-  const querySnapshot = await getDocs(collection(db, 'clientes'))
-  clients.value = querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }))
-  isLoading.value = false;
+  try {
+    const querySnapshot = await getDocs(collection(db, 'stores', storeId.value, 'clientes'))
+    clients.value = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+  } catch (error) {
+    console.error('Erro ao carregar clientes:', error);
+    alert('Erro ao carregar clientes: ' + error.message);
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 onMounted(() => {
   fetchClients();
 });
-
-
 </script>
 
 <template>

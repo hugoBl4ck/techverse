@@ -1,13 +1,14 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs } from 'firebase/firestore'
+import { useCurrentStore } from '@/composables/useCurrentStore'
 
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
 import { Pencil } from 'lucide-vue-next'
 
-
+const { storeId } = useCurrentStore()
 const items = ref([])
 const isLoading = ref(true)
 
@@ -64,13 +65,25 @@ const orderedCategories = [
 ];
 
 async function fetchItems() {
+  if (!storeId.value) {
+    console.error('StoreId não disponível');
+    isLoading.value = false;
+    return;
+  }
+
   isLoading.value = true;
-  const querySnapshot = await getDocs(collection(db, 'itens'))
-  items.value = querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }))
-  isLoading.value = false;
+  try {
+    const querySnapshot = await getDocs(collection(db, 'stores', storeId.value, 'items'))
+    items.value = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+  } catch (error) {
+    console.error('Erro ao carregar inventário:', error);
+    alert('Erro ao carregar inventário: ' + error.message);
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 onMounted(() => {

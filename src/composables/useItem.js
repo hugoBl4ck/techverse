@@ -1,13 +1,12 @@
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
-
+import { useCurrentStore } from './useCurrentStore';
 
 export function useItem(itemId = null) {
   const router = useRouter();
-  
-  
+  const { storeId } = useCurrentStore();
 
   const form = reactive({
     nome: '',
@@ -26,10 +25,10 @@ export function useItem(itemId = null) {
   const error = ref(null);
 
   async function fetchItem() {
-    if (!itemId) return;
+    if (!itemId || !storeId.value) return;
     isLoading.value = true;
     try {
-      const docRef = doc(db, 'itens', itemId);
+      const docRef = doc(db, 'stores', storeId.value, 'items', itemId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -43,11 +42,13 @@ export function useItem(itemId = null) {
         form.descricao = data.descricao || '';
       } else {
         error.value = 'Item não encontrado.';
+        alert('Item não encontrado!');
         router.push('/inventario');
       }
     } catch (e) {
       error.value = 'Erro ao buscar o item.';
       console.error(e);
+      alert('Erro ao buscar item: ' + e.message);
     } finally {
       isLoading.value = false;
     }
@@ -56,6 +57,13 @@ export function useItem(itemId = null) {
   async function saveItem() {
     if (!form.nome || !form.tipo) {
       error.value = 'Nome e Tipo são obrigatórios.';
+      alert('Nome e Tipo são obrigatórios.');
+      return;
+    }
+
+    if (!storeId.value) {
+      error.value = 'Usuário não autenticado.';
+      alert('Erro: Usuário não autenticado.');
       return;
     }
 
@@ -63,29 +71,24 @@ export function useItem(itemId = null) {
     error.value = null;
 
     try {
-      const itemCol = collection(db, 'itens');
+      const itemCol = collection(db, 'stores', storeId.value, 'items');
       if (itemId) {
         const docRef = doc(itemCol, itemId);
         await updateDoc(docRef, { ...form });
+        alert('Item atualizado com sucesso!');
       } else {
         await addDoc(itemCol, { ...form, createdAt: new Date() });
+        alert('Item cadastrado com sucesso!');
       }
     } catch (e) {
       error.value = 'Erro ao salvar o item.';
       console.error(e);
+      alert('Erro ao salvar item: ' + e.message);
     } finally {
       isLoading.value = false;
     }
   }
 
-  /**
-   * Handles the upload of a file to Vercel Storage.
-   * This is a placeholder function. For a real implementation, you would need a serverless function
-   * to handle the upload securely.
-   *
-   * @param {File} file The file to upload.
-   * @returns {Promise<string|null>} The URL of the uploaded file or null on error.
-   */
   async function uploadImage(file) {
     if (!file) return null;
 
@@ -93,35 +96,9 @@ export function useItem(itemId = null) {
     error.value = null;
 
     try {
-      // =================================================================
-      // INÍCIO DA IMPLEMENTAÇÃO REAL (exemplo)
-      // =================================================================
-      /*
-      // 1. Chamar uma função serverless para obter uma URL de upload segura
-      const response = await fetch('/api/upload-url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: file.name, contentType: file.type }),
-      });
-      const { url, downloadUrl } = await response.json();
-
-      // 2. Fazer o upload do arquivo para a URL retornada
-      await fetch(url, {
-        method: 'PUT',
-        body: file,
-        headers: { 'Content-Type': file.type },
-      });
-
-      // 3. Retornar a URL de download
-      return downloadUrl;
-      */
-      // =================================================================
-      // FIM DA IMPLEMENTAÇÃO REAL
-      // =================================================================
-
       // Simulação de upload para fins de desenvolvimento
       console.log(`[SIMULAÇÃO] Upload do arquivo: ${file.name}`);
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simula o tempo de upload
+      await new Promise(resolve => setTimeout(resolve, 1500));
       const fakeUrl = `https://fake-storage.vercel.app/${Date.now()}-${file.name}`;
       console.log(`[SIMULAÇÃO] Arquivo disponível em: ${fakeUrl}`);
       return fakeUrl;
@@ -134,9 +111,6 @@ export function useItem(itemId = null) {
       isLoading.value = false;
     }
   }
-
-
-  
 
   return {
     form,
