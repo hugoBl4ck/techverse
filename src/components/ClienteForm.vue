@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
-
+import { useCurrentStore } from '@/composables/useCurrentStore';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,8 +22,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
-
-
+const { storeId } = useCurrentStore();
 
 const nome = ref('');
 const telefone = ref('');
@@ -31,8 +30,8 @@ const email = ref('');
 const isLoading = ref(false);
 
 async function fetchCliente(id) {
-  if (!id) return;
-  const docRef = doc(db, 'clientes', id);
+  if (!id || !storeId.value) return;
+  const docRef = doc(db, 'stores', storeId.value, 'clientes', id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const data = docSnap.data();
@@ -40,13 +39,11 @@ async function fetchCliente(id) {
     telefone.value = data.telefone;
     email.value = data.email;
   } else {
-    console.error('No such document!');
-    router.push('/clientes'); // Redirect if not found
+    console.error('Cliente não encontrado!');
+    alert('Cliente não encontrado!');
+    router.push('/clientes');
   }
 }
-
-
-
 
 watch(() => props.id, (newId) => {
   fetchCliente(newId);
@@ -54,7 +51,12 @@ watch(() => props.id, (newId) => {
 
 async function handleSubmit() {
   if (!nome.value) {
-    console.error('O nome é obrigatório.');
+    alert('O nome é obrigatório.');
+    return;
+  }
+
+  if (!storeId.value) {
+    alert('Erro: Usuário não autenticado.');
     return;
   }
 
@@ -66,21 +68,22 @@ async function handleSubmit() {
       email: email.value,
     };
 
-    const clientesCol = collection(db, 'clientes');
+    const clientesCol = collection(db, 'stores', storeId.value, 'clientes');
 
     if (props.id) {
-      // Update existing document
       const docRef = doc(clientesCol, props.id);
       await updateDoc(docRef, clienteData);
       console.log('Cliente atualizado!');
+      alert('Cliente atualizado com sucesso!');
     } else {
-      // Add new document
       await addDoc(clientesCol, clienteData);
       console.log('Cliente salvo!');
+      alert('Cliente cadastrado com sucesso!');
     }
-    router.push('/clientes'); // Redirect to list after save/update
+    router.push('/clientes');
   } catch (error) {
-    console.error('Erro ao salvar cliente: ', error);
+    console.error('Erro ao salvar cliente:', error);
+    alert('Erro ao salvar cliente: ' + error.message);
   } finally {
     isLoading.value = false;
   }

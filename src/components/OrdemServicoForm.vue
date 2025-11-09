@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
+import { useCurrentStore } from '@/composables/useCurrentStore';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -21,13 +22,22 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const { storeId, isAuthenticated } = useCurrentStore();
 
 const isEditMode = computed(() => !!props.id);
 
 onMounted(() => {
-  console.log('OrdemServicoForm Mounted:');
+  console.log('OrdemServicoForm Mounted - Multi-tenant');
   console.log('  props.id:', props.id);
   console.log('  isEditMode:', isEditMode.value);
+  console.log('  storeId:', storeId.value);
+  
+  if (!storeId.value) {
+    console.error('Usuário não autenticado!');
+    router.push('/');
+    return;
+  }
+  
   loadData();
 });
 
@@ -72,49 +82,60 @@ const totalAmount = computed(() => {
 });
 
 const loadData = async () => {
-  isLoading.value = true;
-  // Add console.log here
-  console.log('loadData called:');
-  console.log('  isEditMode (inside loadData):', isEditMode.value);
-
-  // Load services from catalog (global)
-  const catalogoServicosCol = collection(db, 'catalogo_servicos');
-  const catalogoServicosSnapshot = await getDocs(catalogoServicosCol);
-  catalogoServicos.value = catalogoServicosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-  // Load clients
-  const clientesCol = collection(db, 'clientes');
-  const clientesSnapshot = await getDocs(clientesCol);
-  clientes.value = clientesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-  // Load inventory items
-  const inventoryCol = collection(db, 'items');
-  const inventorySnapshot = await getDocs(inventoryCol);
-  inventoryItems.value = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-  // If in edit mode, load service order data
-  if (isEditMode.value) {
-    console.log('loadData: Fetching existing service order with ID:', props.id);
-    const osDocRef = doc(db, 'ordens_servico', props.id);
-    const osDoc = await getDoc(osDocRef);
-    if (osDoc.exists()) {
-      const osData = osDoc.data();
-      ordemServico.value = {
-        ...osData,
-        observations: Array.isArray(osData.observations) ? osData.observations.join('\n') : osData.observations,
-      };
-      addedItems.value = osData.items || [];
-      selectedClienteId.value = osData.customerId || '';
-      console.log('loadData: Service order data loaded successfully.');
-    } else {
-      console.error('Ordem de Serviço não encontrada para ID:', props.id);
-      router.push('/ordens-servico');
-    }
+  if (!storeId.value) {
+    console.error('StoreId não disponível');
+    return;
   }
-  isLoading.value = false;
+
+  isLoading.value = true;
+  console.log('Carregando dados para store:', storeId.value);
+
+  try {
+    // Load services from catalog (per store)
+    const catalogoServicosCol = collection(db, 'stores', storeId.value, 'catalogo_servicos');
+    const catalogoServicosSnapshot = await getDocs(catalogoServicosCol);
+    catalogoServicos.value = catalogoServicosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log('Catálogo carregado:', catalogoServicos.value.length);
+
+    // Load clients
+    const clientesCol = collection(db, 'stores', storeId.value, 'clientes');
+    const clientesSnapshot = await getDocs(clientesCol);
+    clientes.value = clientesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log('Clientes carregados:', clientes.value.length);
+
+    // Load inventory items
+    const inventoryCol = collection(db, 'stores', storeId.value, 'items');
+    const inventorySnapshot = await getDocs(inventoryCol);
+    inventoryItems.value = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log('Inventário carregado:', inventoryItems.value.length);
+
+    // If in edit mode, load service order data
+    if (isEditMode.value) {
+      console.log('Modo edição: carregando ordem de serviço ID:', props.id);
+      const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', props.id);
+      const osDoc = await getDoc(osDocRef);
+      if (osDoc.exists()) {
+        const osData = osDoc.data();
+        ordemServico.value = {
+          ...osData,
+          observations: Array.isArray(osData.observations) ? osData.observations.join('\n') : osData.observations,
+        };
+        addedItems.value = osData.items || [];
+        selectedClienteId.value = osData.customerId || '';
+        console.log('Ordem de serviço carregada com sucesso');
+      } else {
+        console.error('Ordem de Serviço não encontrada');
+        alert('Ordem de serviço não encontrada!');
+        router.push('/ordens-servico');
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    alert('Erro ao carregar dados: ' + error.message);
+  } finally {
+    isLoading.value = false;
+  }
 };
-
-
 
 watch(selectedServicoId, (id) => {
   const newServico = catalogoServicos.value.find(s => s.id === id);
@@ -159,33 +180,42 @@ async function handleSubmit() {
     return;
   }
 
+  if (!storeId.value) {
+    alert('Erro: Usuário não autenticado.');
+    return;
+  }
+
   isLoading.value = true;
   
   const osData = {
-    ...ordemServico.value,
     customerId: cliente.id,
     customerName: cliente.nome,
-    observations: String(ordemServico.value.observations || '').split('\n'),
+    price: ordemServico.value.price || 0,
+    observations: String(ordemServico.value.observations || '').split('\n').filter(o => o.trim()),
+    computerConfiguration: ordemServico.value.computerConfiguration || '',
     items: addedItems.value,
     totalAmount: totalAmount.value,
+    date: ordemServico.value.date || new Date(),
   };
 
   try {
-    const osCol = collection(db, 'ordens_servico');
+    const osCol = collection(db, 'stores', storeId.value, 'ordens_servico');
     if (isEditMode.value) {
-      console.log('handleSubmit: Updating service order with ID:', props.id);
+      console.log('Atualizando ordem de serviço ID:', props.id);
       const osDocRef = doc(osCol, props.id);
       await updateDoc(osDocRef, osData);
       console.log('Ordem de Serviço atualizada com sucesso!');
+      alert('Ordem de serviço atualizada com sucesso!');
     } else {
-      console.log('handleSubmit: Creating new service order.');
-      osData.date = new Date();
+      console.log('Criando nova ordem de serviço');
       await addDoc(osCol, osData);
-      console.log('Ordem de Serviço salva com sucesso!');
+      console.log('Ordem de Serviço criada com sucesso!');
+      alert('Ordem de serviço criada com sucesso!');
     }
     router.push('/ordens-servico');
   } catch (error) {
-    console.error('Erro ao salvar Ordem de Serviço: ', error);
+    console.error('Erro ao salvar Ordem de Serviço:', error);
+    alert('Erro ao salvar ordem de serviço: ' + error.message);
   } finally {
     isLoading.value = false;
   }
@@ -198,8 +228,11 @@ async function handleSubmit() {
       <CardTitle>{{ isEditMode ? 'Editar Ordem de Serviço' : 'Registrar Nova Ordem de Serviço' }}</CardTitle>
     </CardHeader>
     <CardContent>
-      <div v-if="isLoading && isEditMode" class="text-center">
+      <div v-if="isLoading && isEditMode" class="text-center py-8">
         <p>Carregando dados da Ordem de Serviço...</p>
+      </div>
+      <div v-else-if="!storeId" class="text-center py-8">
+        <p class="text-destructive">Erro: Usuário não autenticado</p>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Coluna da Esquerda: Dados da OS -->
@@ -236,11 +269,11 @@ async function handleSubmit() {
           </div>
           <div class="grid gap-2">
             <Label for="observations">Observações e Serviços Realizados</Label>
-            <Textarea id="observations" v-model="ordemServico.observations" placeholder="Digite cada observação em uma nova linha." />
+            <Textarea id="observations" v-model="ordemServico.observations" placeholder="Digite cada observação em uma nova linha." rows="5" />
           </div>
           <div class="grid gap-2">
             <Label for="computerConfiguration">Configuração do Equipamento</Label>
-            <Textarea id="computerConfiguration" v-model="ordemServico.computerConfiguration" placeholder="Descreva a configuração do equipamento." />
+            <Textarea id="computerConfiguration" v-model="ordemServico.computerConfiguration" placeholder="Descreva a configuração do equipamento." rows="3" />
           </div>
         </div>
 
@@ -253,7 +286,7 @@ async function handleSubmit() {
               <div class="p-2">
                 <div v-for="item in filteredItems" :key="item.id" @click="addItem(item)" class="cursor-pointer p-2 hover:bg-muted rounded-md">
                   <p class="font-medium">{{ item.nome }}</p>
-                  <p class="text-sm text-muted-foreground">R$ {{ item.preco.toFixed(2) }} - Estoque: {{ item.estoque }}</p>
+                  <p class="text-sm text-muted-foreground">R$ {{ (item.preco || 0).toFixed(2) }} - Estoque: {{ item.estoque || 0 }}</p>
                 </div>
               </div>
             </ScrollArea>
@@ -267,7 +300,7 @@ async function handleSubmit() {
                 <div v-for="item in addedItems" :key="item.id" class="flex items-center justify-between mb-2 p-2 rounded-md bg-secondary/20">
                   <div>
                     <p class="font-semibold">{{ item.nome }}</p>
-                    <p class="text-sm">R$ {{ item.preco.toFixed(2) }}</p>
+                    <p class="text-sm">R$ {{ (item.preco || 0).toFixed(2) }}</p>
                   </div>
                   <div class="flex items-center gap-2">
                     <Button @click="decreaseQuantity(item.id)" variant="ghost" size="icon" class="h-7 w-7">
@@ -293,7 +326,7 @@ async function handleSubmit() {
             <span>Total: </span>
             <span>R$ {{ totalAmount.toFixed(2) }}</span>
         </div>
-        <Button @click="handleSubmit" :disabled="isLoading">
+        <Button @click="handleSubmit" :disabled="isLoading || !storeId">
           {{ isLoading ? (isEditMode ? 'Salvando...' : 'Criando...') : (isEditMode ? 'Salvar Alterações' : 'Salvar Ordem de Serviço') }}
         </Button>
     </CardFooter>

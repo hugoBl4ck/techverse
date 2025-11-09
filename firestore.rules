@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Regra global: negar tudo por padrão
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Regra para stores multi-tenant
+    // Cada usuário autenticado só pode acessar sua própria "loja"
+    match /stores/{storeId}/{collection}/{document=**} {
+      // Permitir acesso apenas se o storeId corresponder ao uid do usuário autenticado
+      allow read, write: if request.auth != null 
+                         && request.auth.uid == storeId;
+    }
+    
+    // Se você tiver um catálogo global (opcional - comentado por padrão)
+    // match /catalogo_servicos_global/{doc} {
+    //   allow read: if request.auth != null;
+    //   allow write: if false; // Apenas administradores via Functions
+    // }
+  }
+}

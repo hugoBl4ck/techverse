@@ -1,8 +1,9 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { db } from '@/firebase/config.js';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
+import { useCurrentStore } from '@/composables/useCurrentStore';
 
 import Calendar from '@/components/ui/calendar/Calendar.vue';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Pencil, ClipboardCopy, X } from 'lucide-vue-next';
 
+const { storeId } = useCurrentStore();
 
 const ordensServico = ref([]);
 const isLoading = ref(true);
@@ -65,30 +67,46 @@ async function copyToClipboard(text) {
 }
 
 const loadOrdensServico = async () => {
+  if (!storeId.value) {
+    console.error('StoreId não disponível');
+    isLoading.value = false;
+    return;
+  }
+
   isLoading.value = true;
-  const osCol = collection(db, 'ordens_servico');
-  const osSnapshot = await getDocs(osCol);
-  ordensServico.value = osSnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-    date: doc.data().date.toDate(),
-  }));
-  isLoading.value = false;
+  console.log('Carregando ordens de serviço para store:', storeId.value);
+
+  try {
+    const osCol = collection(db, 'stores', storeId.value, 'ordens_servico');
+    const osSnapshot = await getDocs(osCol);
+    ordensServico.value = osSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
+      };
+    });
+    console.log('Ordens carregadas:', ordensServico.value.length);
+  } catch (error) {
+    console.error('Erro ao carregar ordens de serviço:', error);
+    alert('Erro ao carregar ordens de serviço: ' + error.message);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 onMounted(() => {
   loadOrdensServico();
 });
 
-
-
 const filteredOrdensServico = computed(() => {
   if (!ordensServico.value) return [];
   return ordensServico.value.filter((os) => {
     const serviceDate = new Date(os.date);
-    serviceDate.setUTCHours(0, 0, 0, 0);
+    serviceDate.setHours(0, 0, 0, 0);
     const selected = new Date(selectedDate.value);
-    selected.setUTCHours(0, 0, 0, 0);
+    selected.setHours(0, 0, 0, 0);
     return serviceDate.getTime() === selected.getTime();
   });
 });
@@ -96,10 +114,22 @@ const filteredOrdensServico = computed(() => {
 
 <template>
   <main class="flex-1 p-4 md:p-6">
-    <div class="flex items-center mb-4">
+    <div class="flex items-center justify-between mb-4">
       <h1 class="text-2xl font-bold">Agenda de Ordens de Serviço</h1>
+      <RouterLink to="/ordens-servico/nova">
+        <Button>Nova Ordem de Serviço</Button>
+      </RouterLink>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <div v-if="!storeId" class="text-center py-8">
+      <p class="text-destructive">Erro: Usuário não autenticado</p>
+    </div>
+
+    <div v-else-if="isLoading" class="text-center py-8">
+      <p>Carregando ordens de serviço...</p>
+    </div>
+
+    <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card class="md:col-span-1">
         <CardHeader>
           <CardTitle>Selecione uma data</CardTitle>
@@ -110,28 +140,33 @@ const filteredOrdensServico = computed(() => {
       </Card>
       <Card class="md:col-span-2">
         <CardHeader>
-          <CardTitle>Ordens de Serviço para {{ selectedDate.toLocaleDateString() }}</CardTitle>
+          <CardTitle>Ordens de Serviço para {{ selectedDate.toLocaleDateString('pt-BR') }}</CardTitle>
         </CardHeader>
         <CardContent>
           <ul v-if="filteredOrdensServico.length > 0" class="space-y-2">
-            <li v-for="os in filteredOrdensServico" :key="os.id" class="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg">
+            <li v-for="os in filteredOrdensServico" :key="os.id" class="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg border">
               <div>
-                <strong>{{ os.customerName }}</strong>
-                <p class="text-sm text-muted-foreground">{{ (os.observations || []).join(', ') }}</p>
+                <strong class="text-lg">{{ os.customerName }}</strong>
+                <p class="text-sm text-muted-foreground mt-1">
+                  {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
+                </p>
+                <p class="text-sm font-semibold mt-1">Total: R$ {{ (os.totalAmount || 0).toFixed(2) }}</p>
               </div>
-              <div class="flex items-center flex-shrink-0">
-                <Button variant="outline" size="sm" @click="generateReceipt(os)" class="mr-2">
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <Button variant="outline" size="sm" @click="generateReceipt(os)">
                   Gerar Recibo
                 </Button>
-                <router-link :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }">
+                <RouterLink :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }">
                   <Button variant="ghost" size="icon">
                     <Pencil class="h-4 w-4" />
                   </Button>
-                </router-link>
+                </RouterLink>
               </div>
             </li>
           </ul>
-          <p v-else class="text-muted-foreground">Nenhuma Ordem de Serviço agendada para esta data.</p>
+          <p v-else class="text-muted-foreground text-center py-8">
+            Nenhuma Ordem de Serviço agendada para esta data.
+          </p>
         </CardContent>
       </Card>
     </div>
