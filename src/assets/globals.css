@@ -67,9 +67,9 @@
   --sidebar-accent-foreground: oklch(0.4244 0.1809 265.6377);
   --sidebar-border: oklch(0.9299 0.0334 272.7879);
   --sidebar-ring: oklch(0.6056 0.2189 292.7172);
-  --font-sans: Roboto, sans-serif;
-  --font-serif: Playfair Display, serif;
-  --font-mono: Fira Code, monospace;
+  --font-sans: Poppins, sans-serif;
+  --font-serif: Libre Baskerville, serif;
+  --font-mono: IBM Plex Mono, monospace;
   --radius: 0.625rem;
   --shadow-x: 2px;
   --shadow-y: 2px;
@@ -126,9 +126,9 @@
   --sidebar-accent-foreground: oklch(0.9299 0.0334 272.7879);
   --sidebar-border: oklch(0.2827 0.1351 291.0894);
   --sidebar-ring: oklch(0.6056 0.2189 292.7172);
-  --font-sans: Roboto, sans-serif;
-  --font-serif: Playfair Display, serif;
-  --font-mono: Fira Code, monospace;
+  --font-sans: Poppins, sans-serif;
+  --font-serif: Libre Baskerville, serif;
+  --font-mono: IBM Plex Mono, monospace;
   --radius: 0.625rem;
   --shadow-x: 2px;
   --shadow-y: 2px;
