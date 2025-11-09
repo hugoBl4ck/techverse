@@ -57,35 +57,35 @@ const routes = [
         meta: { title: 'Editar Cliente' }
       },
       {
-        path: 'servicos',
-        name: 'ServicosList',
-        component: () => import('@/views/servicos/ServicoListView.vue'),
-        meta: { title: 'Todos os Serviços' }
+        path: 'ordens-servico',
+        name: 'OrdensServicoList',
+        component: () => import('@/views/ordens-servico/OrdemServicoListView.vue'),
+        meta: { title: 'Ordens de Serviço' }
       },
       {
-        path: 'servicos/novo',
-        name: 'ServicoNovo',
-        component: () => import('@/views/servicos/ServicoFormView.vue'),
-        meta: { title: 'Novo Serviço' }
+        path: 'ordens-servico/nova',
+        name: 'OrdemServicoNova',
+        component: () => import('@/views/ordens-servico/OrdemServicoFormView.vue'),
+        meta: { title: 'Nova Ordem de Serviço' }
       },
       {
-        path: 'servicos/:id/editar',
-        name: 'ServicoEditar',
-        component: () => import('@/views/servicos/ServicoFormView.vue'),
+        path: 'ordens-servico/:id/editar',
+        name: 'OrdemServicoEditar',
+        component: () => import('@/views/ordens-servico/OrdemServicoFormView.vue'),
         props: true,
-        meta: { title: 'Editar Serviço' }
+        meta: { title: 'Editar Ordem de Serviço' }
       },
       {
-        path: 'servicos-predefinidos',
-        name: 'ServicosPredefinidosList',
+        path: 'catalogo-servicos',
+        name: 'CatalogoServicosList',
         component: () => import('@/views/servicos-predefinidos/ServicoPredefinidoListView.vue'),
-        meta: { title: 'Serviços Predefinidos' }
+        meta: { title: 'Catálogo de Serviços' }
       },
       {
-        path: 'servicos-predefinidos/novo',
-        name: 'ServicoPredefinidoNovo',
+        path: 'catalogo-servicos/novo',
+        name: 'CatalogoServicosNovo',
         component: () => import('@/views/servicos-predefinidos/ServicoPredefinidoFormView.vue'),
-        meta: { title: 'Novo Serviço Predefinido' }
+        meta: { title: 'Novo Serviço do Catálogo' }
       },
       {
         path: 'inventario',

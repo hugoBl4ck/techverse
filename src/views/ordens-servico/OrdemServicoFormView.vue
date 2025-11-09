@@ -1,9 +1,9 @@
 <script setup>
-import ServicoForm from '@/components/ServicoForm.vue';
+import OrdemServicoForm from '@/components/OrdemServicoForm.vue';
 </script>
 
 <template>
   <div class="container mx-auto py-8">
-    <ServicoForm />
+    <OrdemServicoForm />
   </div>
 </template>

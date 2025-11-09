@@ -63,21 +63,27 @@
         <AccordionItem value="item-2" class="border-none">
             <AccordionTrigger class="py-2.5 px-4 font-normal hover:bg-muted hover:no-underline rounded-md [&[data-state=open]>svg]:rotate-180">
               <span class="flex items-center gap-2">
-                <Wrench class="size-4" />
-                Serviços
+                <ClipboardList class="size-4" />
+                Ordens de Serviço
               </span>
             </AccordionTrigger>
             <AccordionContent class="pl-6 pt-1">
-              <RouterLink to="/servicos/novo">
+              <RouterLink to="/ordens-servico/nova">
                 <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
                   <PlusCircle class="size-4" />
-                  Registrar Serviço
+                  Nova Ordem de Serviço
                 </Button>
               </RouterLink>
-              <RouterLink to="/servicos-predefinidos">
+              <RouterLink to="/ordens-servico">
+                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+                  <List class="size-4" />
+                  Listar Ordens de Serviço
+                </Button>
+              </RouterLink>
+              <RouterLink to="/catalogo-servicos">
                 <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
                   <ListChecks class="size-4" />
-                  Serviços Predefinidos
+                  Catálogo de Serviços
                 </Button>
               </RouterLink>
             </AccordionContent>
@@ -132,7 +138,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles } from 'lucide-vue-next'
+import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List } from 'lucide-vue-next'
 
 const isAdmin = ref(false)
 const auth = getAuth()

@@ -11,35 +11,43 @@ import { Textarea } from '@/components/ui/textarea';
 import { Pencil, ClipboardCopy, X } from 'lucide-vue-next';
 
 const { tenant } = useTenant();
-const services = ref([]);
+const ordensServico = ref([]);
 const isLoading = ref(true);
 const selectedDate = ref(new Date());
 const receiptText = ref('');
 const showReceiptModal = ref(false);
 
-function generateReceipt(service) {
-  const serviceDate = new Date(service.date);
+function generateReceipt(os) {
+  const serviceDate = new Date(os.date);
   const warrantyDate = new Date(serviceDate);
   warrantyDate.setDate(serviceDate.getDate() + 15);
 
   const formattedServiceDate = serviceDate.toLocaleDateString('pt-BR');
   const formattedWarrantyDate = warrantyDate.toLocaleDateString('pt-BR');
 
-  const observations = Array.isArray(service.observations) 
-    ? service.observations.join('\n- ') 
-    : service.observations;
+  const observations = Array.isArray(os.observations) 
+    ? os.observations.join('\n- ') 
+    : os.observations;
+
+  const itemsList = (os.items || []).map(item => 
+    `- ${item.nome} (x${item.quantity}) - R$ ${(item.preco * item.quantity).toFixed(2)}`
+  ).join('\n');
 
   receiptText.value = `*RECIBO E GARANTIA DE SERVIÇO - TechVerse*
 
-*Cliente:* ${service.customerName}
+*Cliente:* ${os.customerName}
 *Data do Serviço:* ${formattedServiceDate}
-*Valor:* R$ ${service.price.toFixed(2)}
+*Valor Total:* R$ ${os.totalAmount.toFixed(2)}
 
 *Serviço(s) Realizado(s):*
 - ${observations}
 
----\n*Garantia:* Este serviço possui garantia de 15 dias, válida até ${formattedWarrantyDate}.
-A garantia cobre defeitos relacionados ao serviço prestado. Não cobre mau uso ou problemas não relacionados ao serviço original.
+${itemsList ? `*Peças/Produtos:*
+${itemsList}` : ''}
+
+---
+*Garantia:* Este serviço possui garantia de 15 dias, válida até ${formattedWarrantyDate}.
+A garantia cobre defeitos relacionados ao serviço prestado e às peças fornecidas. Não cobre mau uso ou problemas não relacionados ao serviço original.
 
 Agradecemos a preferência!`;
 
@@ -56,12 +64,12 @@ async function copyToClipboard(text) {
   }
 }
 
-const loadServices = async () => {
+const loadOrdensServico = async () => {
   if (!tenant.value) return;
   isLoading.value = true;
-  const servicesCol = collection(db, 'stores', tenant.value, 'servicos');
-  const servicesSnapshot = await getDocs(servicesCol);
-  services.value = servicesSnapshot.docs.map(doc => ({
+  const osCol = collection(db, 'stores', tenant.value, 'ordens_servico');
+  const osSnapshot = await getDocs(osCol);
+  ordensServico.value = osSnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
     date: doc.data().date.toDate(),
@@ -71,14 +79,14 @@ const loadServices = async () => {
 
 watch(tenant, (newTenant) => {
   if (newTenant) {
-    loadServices();
+    loadOrdensServico();
   }
 }, { immediate: true });
 
-const filteredServices = computed(() => {
-  if (!services.value) return [];
-  return services.value.filter((service) => {
-    const serviceDate = new Date(service.date);
+const filteredOrdensServico = computed(() => {
+  if (!ordensServico.value) return [];
+  return ordensServico.value.filter((os) => {
+    const serviceDate = new Date(os.date);
     serviceDate.setUTCHours(0, 0, 0, 0);
     const selected = new Date(selectedDate.value);
     selected.setUTCHours(0, 0, 0, 0);
@@ -90,7 +98,7 @@ const filteredServices = computed(() => {
 <template>
   <main class="flex-1 p-4 md:p-6">
     <div class="flex items-center mb-4">
-      <h1 class="text-2xl font-bold">Agenda de Serviços</h1>
+      <h1 class="text-2xl font-bold">Agenda de Ordens de Serviço</h1>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card class="md:col-span-1">
@@ -103,20 +111,20 @@ const filteredServices = computed(() => {
       </Card>
       <Card class="md:col-span-2">
         <CardHeader>
-          <CardTitle>Serviços para {{ selectedDate.toLocaleDateString() }}</CardTitle>
+          <CardTitle>Ordens de Serviço para {{ selectedDate.toLocaleDateString() }}</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul v-if="filteredServices.length > 0" class="space-y-2">
-            <li v-for="service in filteredServices" :key="service.id" class="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg">
+          <ul v-if="filteredOrdensServico.length > 0" class="space-y-2">
+            <li v-for="os in filteredOrdensServico" :key="os.id" class="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg">
               <div>
-                <strong>{{ service.customerName }}</strong>
-                <p class="text-sm text-muted-foreground">{{ (service.observations || []).join(', ') }}</p>
+                <strong>{{ os.customerName }}</strong>
+                <p class="text-sm text-muted-foreground">{{ (os.observations || []).join(', ') }}</p>
               </div>
               <div class="flex items-center flex-shrink-0">
-                <Button variant="outline" size="sm" @click="generateReceipt(service)" class="mr-2">
+                <Button variant="outline" size="sm" @click="generateReceipt(os)" class="mr-2">
                   Gerar Recibo
                 </Button>
-                <router-link :to="{ name: 'ServicoEditar', params: { id: service.id } }">
+                <router-link :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }">
                   <Button variant="ghost" size="icon">
                     <Pencil class="h-4 w-4" />
                   </Button>
@@ -124,7 +132,7 @@ const filteredServices = computed(() => {
               </div>
             </li>
           </ul>
-          <p v-else class="text-muted-foreground">Nenhum serviço agendado para esta data.</p>
+          <p v-else class="text-muted-foreground">Nenhuma Ordem de Serviço agendada para esta data.</p>
         </CardContent>
       </Card>
     </div>
