@@ -15,7 +15,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { RouterLink } from 'vue-router'
-import { Pencil } from 'lucide-vue-next'
+import { Pencil, Users, PlusCircle } from 'lucide-vue-next'
 
 const { storeId } = useCurrentStore()
 const clients = ref([])
@@ -50,13 +50,31 @@ onMounted(() => {
 
 <template>
   <div>
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-4 fade-in">
       <h1 class="text-2xl font-bold">Clientes</h1>
       <RouterLink to="/clientes/novo">
         <Button>Novo Cliente</Button>
       </RouterLink>
     </div>
-    <Table>
+
+    <!-- Empty State -->
+    <div v-if="!isLoading && clients.length === 0" class="text-center py-16 fade-in">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4">
+        <Users class="h-10 w-10 text-primary" />
+      </div>
+      <h3 class="text-xl font-semibold mb-2">Nenhum cliente cadastrado</h3>
+      <p class="text-muted-foreground mb-6 max-w-md mx-auto">
+        Comece adicionando seu primeiro cliente para gerenciar ordens de serviço e histórico de atendimentos
+      </p>
+      <Button size="lg" as-child>
+        <RouterLink to="/clientes/novo">
+          <PlusCircle class="mr-2 h-5 w-5" />
+          Cadastrar Primeiro Cliente
+        </RouterLink>
+      </Button>
+    </div>
+
+    <Table v-else>
       <TableCaption>Uma lista de seus clientes cadastrados.</TableCaption>
       <TableHeader>
         <TableRow>
@@ -67,7 +85,11 @@ onMounted(() => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow v-for="client in clients" :key="client.id">
+        <TableRow 
+          v-for="(client, index) in clients" 
+          :key="client.id"
+          :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} hover:bg-muted/50 transition-colors`"
+        >
           <TableCell class="font-medium">
             {{ client.nome }}
           </TableCell>

@@ -136,6 +136,12 @@ const routes = [
         name: 'ExportarDados',
         component: () => import('@/views/ExportadorDadosView.vue'),
         meta: { title: 'Exportar Dados' }
+      },
+      {
+        path: 'test-visuals',
+        name: 'TestVisuals',
+        component: () => import('@/views/TestVisualsView.vue'),
+        meta: { title: 'Teste de Melhorias Visuais' }
       }
     ]
   },

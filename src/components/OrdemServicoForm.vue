@@ -4,6 +4,7 @@ import { db } from '@/firebase/config.js';
 import { collection, getDocs, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import { useCurrentStore } from '@/composables/useCurrentStore';
+import { toast } from 'vue-sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -34,6 +35,7 @@ onMounted(() => {
   
   if (!storeId.value) {
     console.error('Usuário não autenticado!');
+    toast.error('Erro: Usuário não autenticado');
     router.push('/');
     return;
   }
@@ -125,13 +127,13 @@ const loadData = async () => {
         console.log('Ordem de serviço carregada com sucesso');
       } else {
         console.error('Ordem de Serviço não encontrada');
-        alert('Ordem de serviço não encontrada!');
+        toast.error('Ordem de serviço não encontrada!');
         router.push('/ordens-servico');
       }
     }
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
-    alert('Erro ao carregar dados: ' + error.message);
+    toast.error('Erro ao carregar dados: ' + error.message);
   } finally {
     isLoading.value = false;
   }
@@ -176,16 +178,17 @@ function decreaseQuantity(itemId) {
 async function handleSubmit() {
   const cliente = selectedCliente.value;
   if (!cliente) {
-    alert('Por favor, selecione um cliente.');
+    toast.error('Por favor, selecione um cliente.');
     return;
   }
 
   if (!storeId.value) {
-    alert('Erro: Usuário não autenticado.');
+    toast.error('Erro: Usuário não autenticado.');
     return;
   }
 
   isLoading.value = true;
+  const loadingToast = toast.loading(isEditMode.value ? 'Atualizando ordem...' : 'Criando ordem...');
   
   const osData = {
     customerId: cliente.id,
@@ -205,17 +208,17 @@ async function handleSubmit() {
       const osDocRef = doc(osCol, props.id);
       await updateDoc(osDocRef, osData);
       console.log('Ordem de Serviço atualizada com sucesso!');
-      alert('Ordem de serviço atualizada com sucesso!');
+      toast.success('Ordem de serviço atualizada!', { id: loadingToast });
     } else {
       console.log('Criando nova ordem de serviço');
       await addDoc(osCol, osData);
       console.log('Ordem de Serviço criada com sucesso!');
-      alert('Ordem de serviço criada com sucesso!');
+      toast.success('Ordem de serviço criada!', { id: loadingToast });
     }
     router.push('/ordens-servico');
   } catch (error) {
     console.error('Erro ao salvar Ordem de Serviço:', error);
-    alert('Erro ao salvar ordem de serviço: ' + error.message);
+    toast.error('Erro: ' + error.message, { id: loadingToast });
   } finally {
     isLoading.value = false;
   }
@@ -223,7 +226,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <Card>
+  <Card class="fade-in">
     <CardHeader>
       <CardTitle>{{ isEditMode ? 'Editar Ordem de Serviço' : 'Registrar Nova Ordem de Serviço' }}</CardTitle>
     </CardHeader>

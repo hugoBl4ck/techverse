@@ -6,7 +6,8 @@ import { useCurrentStore } from '@/composables/useCurrentStore'
 
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
-import { Pencil } from 'lucide-vue-next'
+import { Pencil, Package, PlusCircle } from 'lucide-vue-next'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const { storeId } = useCurrentStore()
 const items = ref([])
@@ -117,8 +118,31 @@ const dotPatternStyle = `
       </RouterLink>
     </div>
 
-    <div v-if="!items.length" class="text-center text-muted-foreground">
-      Carregando itens...
+    <!-- Loading State com Skeleton -->
+    <div v-if="isLoading" class="space-y-8">
+      <div v-for="i in 3" :key="i" class="space-y-4">
+        <Skeleton height="2rem" width="30%" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <Skeleton height="15rem" v-for="j in 4" :key="j" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="items.length === 0" class="text-center py-16 fade-in">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4">
+        <Package class="h-10 w-10 text-primary" />
+      </div>
+      <h3 class="text-xl font-semibold mb-2">Inventário vazio</h3>
+      <p class="text-muted-foreground mb-6 max-w-md mx-auto">
+        Adicione seus primeiros itens para começar a gerenciar seu estoque
+      </p>
+      <Button size="lg" as-child>
+        <RouterLink to="/inventario/novo">
+          <PlusCircle class="mr-2 h-5 w-5" />
+          Adicionar Primeiro Item
+        </RouterLink>
+      </Button>
     </div>
 
     <!-- Seções de Categoria -->
@@ -129,8 +153,11 @@ const dotPatternStyle = `
         </h2>
         <!-- Grid de Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <div v-for="item in itemsAgrupados[tipo]" :key="item.id"
-              class="group rounded-lg overflow-hidden border bg-card shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col">
+          <div 
+            v-for="(item, index) in itemsAgrupados[tipo]" 
+            :key="item.id"
+            :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} group rounded-lg overflow-hidden border bg-card shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 flex flex-col card-hover`"
+          >
               
               <!-- Image Section -->
               <div class="h-36 relative">

@@ -143,8 +143,12 @@ const filteredOrdensServico = computed(() => {
           <CardTitle>Ordens de Serviço para {{ selectedDate.toLocaleDateString('pt-BR') }}</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul v-if="filteredOrdensServico.length > 0" class="space-y-2">
-            <li v-for="os in filteredOrdensServico" :key="os.id" class="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg border">
+          <ul v-if="filteredOrdensServico.length > 0" class="space-y-3">
+            <li 
+              v-for="(os, index) in filteredOrdensServico" 
+              :key="os.id" 
+              :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} flex items-center justify-between p-4 hover:bg-muted/50 rounded-lg border card-hover cursor-pointer`"
+            >
               <div>
                 <strong class="text-lg">{{ os.customerName }}</strong>
                 <p class="text-sm text-muted-foreground mt-1">

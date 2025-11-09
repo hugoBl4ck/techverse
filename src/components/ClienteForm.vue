@@ -4,6 +4,7 @@ import { db } from '@/firebase/config.js';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import { useCurrentStore } from '@/composables/useCurrentStore';
+import { toast } from 'vue-sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -40,7 +41,7 @@ async function fetchCliente(id) {
     email.value = data.email;
   } else {
     console.error('Cliente não encontrado!');
-    alert('Cliente não encontrado!');
+    toast.error('Cliente não encontrado!');
     router.push('/clientes');
   }
 }
@@ -51,16 +52,18 @@ watch(() => props.id, (newId) => {
 
 async function handleSubmit() {
   if (!nome.value) {
-    alert('O nome é obrigatório.');
+    toast.error('O nome é obrigatório.');
     return;
   }
 
   if (!storeId.value) {
-    alert('Erro: Usuário não autenticado.');
+    toast.error('Erro: Usuário não autenticado.');
     return;
   }
 
   isLoading.value = true;
+  const loadingToast = toast.loading(props.id ? 'Atualizando cliente...' : 'Cadastrando cliente...');
+
   try {
     const clienteData = {
       nome: nome.value,
@@ -74,16 +77,16 @@ async function handleSubmit() {
       const docRef = doc(clientesCol, props.id);
       await updateDoc(docRef, clienteData);
       console.log('Cliente atualizado!');
-      alert('Cliente atualizado com sucesso!');
+      toast.success('Cliente atualizado com sucesso!', { id: loadingToast });
     } else {
       await addDoc(clientesCol, clienteData);
       console.log('Cliente salvo!');
-      alert('Cliente cadastrado com sucesso!');
+      toast.success('Cliente cadastrado com sucesso!', { id: loadingToast });
     }
     router.push('/clientes');
   } catch (error) {
     console.error('Erro ao salvar cliente:', error);
-    alert('Erro ao salvar cliente: ' + error.message);
+    toast.error('Erro ao salvar cliente: ' + error.message, { id: loadingToast });
   } finally {
     isLoading.value = false;
   }
@@ -91,10 +94,10 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <Card>
+  <Card class="fade-in">
     <CardHeader>
-      <CardTitle>Cadastrar Novo Cliente</CardTitle>
-      <CardDescription>Preencha os dados do novo cliente.</CardDescription>
+      <CardTitle>{{ props.id ? 'Editar Cliente' : 'Cadastrar Novo Cliente' }}</CardTitle>
+      <CardDescription>Preencha os dados do cliente.</CardDescription>
     </CardHeader>
     <CardContent>
       <div class="grid gap-4">
