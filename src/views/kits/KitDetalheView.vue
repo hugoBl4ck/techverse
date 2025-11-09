@@ -3,22 +3,22 @@ import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { db } from '@/firebase/config.js';
 import { doc, getDoc } from 'firebase/firestore';
-import { useTenant } from '@/composables/useTenant';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 const route = useRoute();
-const { tenant } = useTenant();
-const storeId = tenant;
+
+
 const kit = ref(null);
 const isLoading = ref(true);
 
 const fetchKit = async () => {
   const kitId = route.params.id;
-  if (!storeId.value || !kitId) return;
+  if (!kitId) return;
 
   isLoading.value = true;
   try {
-    const docRef = doc(db, 'stores', storeId.value, 'kits', kitId);
+    const docRef = doc(db, 'kits', kitId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       kit.value = docSnap.data();
@@ -32,11 +32,7 @@ const fetchKit = async () => {
   }
 };
 
-watch(storeId, (newStoreId) => {
-  if (newStoreId) {
-    fetchKit();
-  }
-}, { immediate: true });
+
 </script>
 
 <template>

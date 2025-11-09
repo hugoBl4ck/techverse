@@ -3,7 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
-import { useTenant } from '@/composables/useTenant';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -21,8 +21,8 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const { tenant } = useTenant();
-const storeId = tenant;
+
+
 
 const isEditMode = computed(() => !!props.id);
 
@@ -69,7 +69,6 @@ const loadData = async () => {
   isLoading.value = true;
   // Add console.log here
   console.log('loadData called:');
-  console.log('  storeId.value:', storeId.value);
   console.log('  isEditMode (inside loadData):', isEditMode.value);
 
   // Load services from catalog (global)
@@ -77,26 +76,20 @@ const loadData = async () => {
   const catalogoServicosSnapshot = await getDocs(catalogoServicosCol);
   catalogoServicos.value = catalogoServicosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-  if (!storeId.value) {
-    console.warn('loadData: storeId is null, returning early.'); // Added warning
-    isLoading.value = false;
-    return;
-  }
-
   // Load clients
-  const clientesCol = collection(db, 'stores', storeId.value, 'clientes');
+  const clientesCol = collection(db, 'clientes');
   const clientesSnapshot = await getDocs(clientesCol);
   clientes.value = clientesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   // Load inventory items
-  const inventoryCol = collection(db, 'stores', storeId.value, 'items');
+  const inventoryCol = collection(db, 'items');
   const inventorySnapshot = await getDocs(inventoryCol);
   inventoryItems.value = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   // If in edit mode, load service order data
   if (isEditMode.value) {
     console.log('loadData: Fetching existing service order with ID:', props.id); // Added log
-    const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', props.id);
+    const osDocRef = doc(db, 'ordens_servico', props.id);
     const osDoc = await getDoc(osDocRef);
     if (osDoc.exists()) {
       const osData = osDoc.data();
@@ -115,14 +108,7 @@ const loadData = async () => {
   isLoading.value = false;
 };
 
-watch(storeId, (newStoreId) => {
-  if (newStoreId) {
-    console.log('storeId changed to:', newStoreId, ' - calling loadData.'); // Added log
-    loadData();
-  } else {
-    console.log('storeId is null, not calling loadData.'); // Added log
-  }
-}, { immediate: true });
+
 
 watch(selectedServicoCatalogo, (newServico) => {
   if (newServico) {
@@ -160,8 +146,8 @@ function decreaseQuantity(itemId) {
 }
 
 async function handleSubmit() {
-  if (!selectedCliente.value || !storeId.value) {
-    alert('Por favor, selecione um cliente e verifique se a loja está configurada.');
+  if (!selectedCliente.value) {
+    alert('Por favor, selecione um cliente.');
     return;
   }
 
@@ -177,7 +163,7 @@ async function handleSubmit() {
   };
 
   try {
-    const osCol = collection(db, 'stores', storeId.value, 'ordens_servico');
+    const osCol = collection(db, 'ordens_servico');
     if (isEditMode.value) {
       console.log('handleSubmit: Updating service order with ID:', props.id); // Added log
       const osDocRef = doc(osCol, props.id);

@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
-import { useTenant } from '@/composables/useTenant';
+
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,8 +22,8 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const { tenant } = useTenant();
-const storeId = tenant;
+
+
 
 const nome = ref('');
 const telefone = ref('');
@@ -31,8 +31,8 @@ const email = ref('');
 const isLoading = ref(false);
 
 async function fetchCliente(id) {
-  if (!id || !storeId.value) return;
-  const docRef = doc(db, 'stores', storeId.value, 'clientes', id);
+  if (!id) return;
+  const docRef = doc(db, 'clientes', id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const data = docSnap.data();
@@ -45,22 +45,16 @@ async function fetchCliente(id) {
   }
 }
 
-watch(storeId, (newStoreId) => {
-  if (newStoreId) {
-    fetchCliente(props.id);
-  }
-}, { immediate: true });
+
 
 
 watch(() => props.id, (newId) => {
-  if (storeId.value) {
-    fetchCliente(newId);
-  }
+  fetchCliente(newId);
 }, { immediate: true });
 
 async function handleSubmit() {
-  if (!nome.value || !storeId.value) {
-    console.error('O nome é obrigatório e a loja precisa estar configurada.');
+  if (!nome.value) {
+    console.error('O nome é obrigatório.');
     return;
   }
 
@@ -72,7 +66,7 @@ async function handleSubmit() {
       email: email.value,
     };
 
-    const clientesCol = collection(db, 'stores', storeId.value, 'clientes');
+    const clientesCol = collection(db, 'clientes');
 
     if (props.id) {
       // Update existing document

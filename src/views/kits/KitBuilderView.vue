@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { db } from '@/firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
-import { useTenant } from '@/composables/useTenant';
+
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,18 +10,17 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import KitMount from '@/components/kit/KitMount.vue';
 import ItemList from '@/components/kit/ItemList.vue';
 
-const { tenant } = useTenant();
-const storeId = tenant;
+
+
 const inventario = ref([]);
 const kitsNaTela = ref([]);
 const kitCounter = ref(0);
 const isLoading = ref(true);
 
 const fetchItems = async () => {
-  if (!storeId.value) return;
   isLoading.value = true;
   try {
-    const itemsCol = collection(db, 'stores', storeId.value, 'itens');
+    const itemsCol = collection(db, 'itens');
     const itemsSnapshot = await getDocs(itemsCol);
     inventario.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
@@ -31,11 +30,7 @@ const fetchItems = async () => {
   }
 };
 
-watch(storeId, (newStoreId) => {
-  if (newStoreId) {
-    fetchItems();
-  }
-}, { immediate: true });
+
 
 
 const groupedItems = computed(() => {

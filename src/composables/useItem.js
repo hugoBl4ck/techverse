@@ -2,12 +2,12 @@ import { ref, reactive, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
-import { useTenant } from './useTenant'; // Correct import
+
 
 export function useItem(itemId = null) {
   const router = useRouter();
-  const { tenant } = useTenant(); // Correct composable call
-  const storeId = tenant; // Assign the tenant ref directly to storeId
+  
+  
 
   const form = reactive({
     nome: '',
@@ -26,10 +26,10 @@ export function useItem(itemId = null) {
   const error = ref(null);
 
   async function fetchItem() {
-    if (!itemId || !storeId.value) return;
+    if (!itemId) return;
     isLoading.value = true;
     try {
-      const docRef = doc(db, 'stores', storeId.value, 'itens', itemId);
+      const docRef = doc(db, 'itens', itemId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -54,8 +54,8 @@ export function useItem(itemId = null) {
   }
 
   async function saveItem() {
-    if (!form.nome || !form.tipo || !storeId.value) {
-      error.value = 'Nome, Tipo e Loja são obrigatórios.';
+    if (!form.nome || !form.tipo) {
+      error.value = 'Nome e Tipo são obrigatórios.';
       return;
     }
 
@@ -63,7 +63,7 @@ export function useItem(itemId = null) {
     error.value = null;
 
     try {
-      const itemCol = collection(db, 'stores', storeId.value, 'itens');
+      const itemCol = collection(db, 'itens');
       if (itemId) {
         const docRef = doc(itemCol, itemId);
         await updateDoc(docRef, { ...form });
@@ -136,11 +136,7 @@ export function useItem(itemId = null) {
   }
 
 
-  watch(storeId, (newStoreId) => {
-    if (newStoreId && itemId) {
-      fetchItem();
-    }
-  }, { immediate: true });
+  
 
   return {
     form,

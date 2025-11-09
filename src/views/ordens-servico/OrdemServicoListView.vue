@@ -3,14 +3,14 @@ import { ref, computed, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { useTenant } from '@/composables/useTenant';
+
 import Calendar from '@/components/ui/calendar/Calendar.vue';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Pencil, ClipboardCopy, X } from 'lucide-vue-next';
 
-const { tenant } = useTenant();
+
 const ordensServico = ref([]);
 const isLoading = ref(true);
 const selectedDate = ref(new Date());
@@ -65,9 +65,8 @@ async function copyToClipboard(text) {
 }
 
 const loadOrdensServico = async () => {
-  if (!tenant.value) return;
   isLoading.value = true;
-  const osCol = collection(db, 'stores', tenant.value, 'ordens_servico');
+  const osCol = collection(db, 'ordens_servico');
   const osSnapshot = await getDocs(osCol);
   ordensServico.value = osSnapshot.docs.map(doc => ({
     id: doc.id,
@@ -77,11 +76,7 @@ const loadOrdensServico = async () => {
   isLoading.value = false;
 };
 
-watch(tenant, (newTenant) => {
-  if (newTenant) {
-    loadOrdensServico();
-  }
-}, { immediate: true });
+
 
 const filteredOrdensServico = computed(() => {
   if (!ordensServico.value) return [];

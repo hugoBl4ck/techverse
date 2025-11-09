@@ -50,7 +50,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useTenant } from '@/composables/useTenant';
+
 import { db } from '@/firebase/config.js';
 import { collection, getDocs } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -59,7 +59,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Copy } from 'lucide-vue-next';
 
-const { tenant } = useTenant();
+
 const items = ref([]);
 const selectedItemId = ref(null);
 const isLoadingItems = ref(true);
@@ -67,10 +67,9 @@ const isGenerating = ref(false);
 const generatedCopy = ref(null);
 
 async function fetchItems() {
-  if (!tenant.value) return;
   isLoadingItems.value = true;
   try {
-    const itemsCol = collection(db, 'stores', tenant.value, 'itens');
+    const itemsCol = collection(db, 'itens');
     const itemsSnapshot = await getDocs(itemsCol);
     items.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
@@ -80,11 +79,7 @@ async function fetchItems() {
   }
 }
 
-watch(tenant, (newTenant) => {
-  if (newTenant) {
-    fetchItems();
-  }
-}, { immediate: true });
+
 
 async function handleGenerate() {
   if (!selectedItemId.value) return;

@@ -2,21 +2,20 @@
 import { ref, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs } from 'firebase/firestore';
-import { useTenant } from '@/composables/useTenant';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RouterLink } from 'vue-router';
 
-const { tenant } = useTenant();
-const storeId = tenant;
+
+
 const kits = ref([]);
 const isLoading = ref(true);
 
 const fetchKits = async () => {
-  if (!storeId.value) return;
   isLoading.value = true;
   try {
-    const kitsCol = collection(db, 'stores', storeId.value, 'kits');
+    const kitsCol = collection(db, 'kits');
     const kitsSnapshot = await getDocs(kitsCol);
     kits.value = kitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
@@ -26,11 +25,7 @@ const fetchKits = async () => {
   }
 };
 
-watch(storeId, (newStoreId) => {
-  if (newStoreId) {
-    fetchKits();
-  }
-}, { immediate: true });
+
 </script>
 
 <template>

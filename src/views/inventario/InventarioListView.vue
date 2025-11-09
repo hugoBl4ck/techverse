@@ -2,12 +2,12 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs } from 'firebase/firestore'
-import { useTenant } from '@/composables/useTenant'
+
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
 import { Pencil } from 'lucide-vue-next'
 
-const { tenant } = useTenant()
+
 const items = ref([])
 const isLoading = ref(true)
 
@@ -64,9 +64,8 @@ const orderedCategories = [
 ];
 
 async function fetchItems() {
-  if (!tenant.value) return;
   isLoading.value = true;
-  const querySnapshot = await getDocs(collection(db, 'stores', tenant.value, 'itens'))
+  const querySnapshot = await getDocs(collection(db, 'itens'))
   items.value = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
@@ -74,11 +73,7 @@ async function fetchItems() {
   isLoading.value = false;
 }
 
-watch(tenant, (newTenant) => {
-  if (newTenant) {
-    fetchItems()
-  }
-}, { immediate: true })
+
 
 
 // Estilo para o padrão de pontos a ser injetado no head

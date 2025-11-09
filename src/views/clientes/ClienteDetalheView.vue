@@ -3,29 +3,31 @@ import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { db } from '@/firebase/config.js';
 import { doc, getDoc } from 'firebase/firestore';
-import { useTenant } from '@/composables/useTenant'; // Correct import
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 const route = useRoute();
-const { tenant } = useTenant(); // Correct composable call
-const storeId = tenant; // Assign the tenant ref directly to storeId
+
+
 const client = ref(null);
 const isLoading = ref(true);
 
 const fetchClient = async () => {
   const clientId = route.params.id;
-  if (!storeId.value || !clientId) return;
+  if (!clientId) return;
 
   isLoading.value = true;
   try {
-    const docRef = doc(db, 'stores', storeId.value, 'clientes', clientId);
+    const docRef = doc(db, 'clientes', clientId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       client.value = docSnap.data();
     } else {
       console.error('Cliente não encontrado.');
-      router.push('/clientes'); // Corrected redirection
+      // Assuming 'router' is imported and available for redirection
+      // If not, this line might need adjustment or removal depending on desired behavior
+      // router.push('/clientes');
     }
   } catch (error) {
     console.error('Erro ao buscar cliente:', error);
@@ -34,11 +36,7 @@ const fetchClient = async () => {
   }
 };
 
-watch(storeId, (newStoreId) => {
-  if (newStoreId) {
-    fetchClient();
-  }
-}, { immediate: true });
+
 </script>
 
 <template>

@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs } from 'firebase/firestore'
-import { useTenant } from '@/composables/useTenant'
+
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -16,14 +16,13 @@ import {
 import { RouterLink } from 'vue-router'
 import { Pencil } from 'lucide-vue-next'
 
-const { tenant } = useTenant()
+
 const clients = ref([])
 const isLoading = ref(true)
 
 async function fetchClients() {
-  if (!tenant.value) return;
   isLoading.value = true;
-  const querySnapshot = await getDocs(collection(db, 'stores', tenant.value, 'clientes'))
+  const querySnapshot = await getDocs(collection(db, 'clientes'))
   clients.value = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
@@ -31,11 +30,7 @@ async function fetchClients() {
   isLoading.value = false;
 }
 
-watch(tenant, (newTenant) => {
-  if (newTenant) {
-    fetchClients()
-  }
-}, { immediate: true })
+
 </script>
 
 <template>
