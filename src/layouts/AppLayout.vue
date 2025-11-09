@@ -3,7 +3,7 @@
     class="flex flex-col h-screen overflow-hidden text-foreground relative"
     :class="isDark ? 'dark' : 'light'"
   >
-    <div class="app-background-gradient"></div>
+
     <div class="app-background-stripes"></div>
 
     <header class="sticky top-0 z-40 w-full border-b border-white/10 bg-transparent backdrop-blur-sm">
