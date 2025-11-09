@@ -34,11 +34,22 @@ const service = ref({
   computerConfiguration: '',
 });
 const selectedCliente = ref(null);
+const servicosPredefinidos = ref([]);
+const selectedServicoPredefinido = ref(null);
 const isLoading = ref(false);
 
 const loadData = async () => {
-  if (!storeId.value) return;
   isLoading.value = true;
+
+  // Carregar serviços predefinidos (são globais)
+  const servicosPredefinidosCol = collection(db, 'servicos_predefinidos');
+  const servicosPredefinidosSnapshot = await getDocs(servicosPredefinidosCol);
+  servicosPredefinidos.value = servicosPredefinidosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+  if (!storeId.value) {
+    isLoading.value = false;
+    return;
+  }
 
   // Carregar clientes
   const clientesCol = collection(db, 'stores', storeId.value, 'clientes');
@@ -70,6 +81,13 @@ watch(storeId, (newStoreId) => {
     loadData();
   }
 }, { immediate: true });
+
+watch(selectedServicoPredefinido, (newServico) => {
+  if (newServico) {
+    service.value.observations = newServico.descricao || '';
+    service.value.price = newServico.preco || 0;
+  }
+});
 
 async function handleSubmit() {
   if (!selectedCliente.value || !storeId.value) {
@@ -127,6 +145,19 @@ async function handleSubmit() {
             <SelectContent>
               <SelectItem v-for="cliente in clientes" :key="cliente.id" :value="cliente">
                 {{ cliente.nome }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="grid gap-2">
+          <Label for="servico-predefinido">Serviço Predefinido (Opcional)</Label>
+          <Select v-model="selectedServicoPredefinido">
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione para preencher automaticamente" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="servico in servicosPredefinidos" :key="servico.id" :value="servico">
+                {{ servico.nome }} - R$ {{ servico.preco.toFixed(2) }}
               </SelectItem>
             </SelectContent>
           </Select>

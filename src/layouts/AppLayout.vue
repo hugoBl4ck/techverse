@@ -10,23 +10,25 @@
             TechVerse
           </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" as="a" href="#">
-            <img :src="discordIcon" alt="Discord" class="h-6 w-6">
-          </Button>
-          <Button variant="ghost" size="icon" as="a" href="#">
-            <img :src="gmailIcon" alt="Gmail" class="h-6 w-6">
-          </Button>
-          <Button variant="ghost" size="icon" as="a" href="#">
-            <img :src="telegramIcon" alt="Telegram" class="h-6 w-6">
-          </Button>
-          <Button variant="ghost" size="icon" as="a" href="#">
-            <img :src="whatsappIcon" alt="Whatsapp" class="h-6 w-6">
-          </Button>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-1 bg-red-500 p-1 rounded-md">
+            <Button variant="ghost" size="icon" as="a" href="#" class="hover:bg-red-600">
+              <img :src="discordIcon" alt="Discord" class="h-6 w-6">
+            </Button>
+            <Button variant="ghost" size="icon" as="a" href="#" class="hover:bg-red-600">
+              <img :src="gmailIcon" alt="Gmail" class="h-6 w-6">
+            </Button>
+            <Button variant="ghost" size="icon" as="a" href="#" class="hover:bg-red-600">
+              <img :src="telegramIcon" alt="Telegram" class="h-6 w-6">
+            </Button>
+            <Button variant="ghost" size="icon" as="a" href="#" class="hover:bg-red-600">
+              <img :src="whatsappIcon" alt="Whatsapp" class="h-6 w-6">
+            </Button>
+            <Button variant="ghost" size="icon" @click="logout" class="text-white hover:bg-red-600 hover:text-white">
+              <LogOut class="h-6 w-6" />
+            </Button>
+          </div>
           <ThemeToggle @theme-changed="handleThemeChange" />
-          <Button variant="ghost" size="icon" @click="logout">
-            <LogOut class="h-6 w-6" />
-          </Button>
         </div>
       </div>
     </header>
