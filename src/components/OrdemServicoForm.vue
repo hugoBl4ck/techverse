@@ -1,5 +1,5 @@
 '''<script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
@@ -25,13 +25,6 @@ const { tenant } = useTenant();
 const storeId = tenant;
 
 const isEditMode = computed(() => !!props.id);
-
-// Add console.log here
-onMounted(() => {
-  console.log('OrdemServicoForm Mounted:');
-  console.log('  props.id:', props.id);
-  console.log('  isEditMode:', isEditMode.value);
-});
 
 const clientes = ref([]);
 const ordemServico = ref({
@@ -67,10 +60,6 @@ const totalAmount = computed(() => {
 
 const loadData = async () => {
   isLoading.value = true;
-  // Add console.log here
-  console.log('loadData called:');
-  console.log('  storeId.value:', storeId.value);
-  console.log('  isEditMode (inside loadData):', isEditMode.value);
 
   // Load services from catalog (global)
   const catalogoServicosCol = collection(db, 'catalogo_servicos');
@@ -78,7 +67,6 @@ const loadData = async () => {
   catalogoServicos.value = catalogoServicosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   if (!storeId.value) {
-    console.warn('loadData: storeId is null, returning early.'); // Added warning
     isLoading.value = false;
     return;
   }
@@ -95,7 +83,6 @@ const loadData = async () => {
 
   // If in edit mode, load service order data
   if (isEditMode.value) {
-    console.log('loadData: Fetching existing service order with ID:', props.id); // Added log
     const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', props.id);
     const osDoc = await getDoc(osDocRef);
     if (osDoc.exists()) {
@@ -106,9 +93,8 @@ const loadData = async () => {
       };
       addedItems.value = osData.items || [];
       selectedCliente.value = clientes.value.find(c => c.id === osData.customerId);
-      console.log('loadData: Service order data loaded successfully.'); // Added log
     } else {
-      console.error('Ordem de Serviço não encontrada para ID:', props.id); // Modified log
+      console.error('Ordem de Serviço não encontrada!');
       router.push('/ordens-servico'); // Redirect if ID is invalid
     }
   }
@@ -117,10 +103,7 @@ const loadData = async () => {
 
 watch(storeId, (newStoreId) => {
   if (newStoreId) {
-    console.log('storeId changed to:', newStoreId, ' - calling loadData.'); // Added log
     loadData();
-  } else {
-    console.log('storeId is null, not calling loadData.'); // Added log
   }
 }, { immediate: true });
 
@@ -179,12 +162,10 @@ async function handleSubmit() {
   try {
     const osCol = collection(db, 'stores', storeId.value, 'ordens_servico');
     if (isEditMode.value) {
-      console.log('handleSubmit: Updating service order with ID:', props.id); // Added log
       const osDocRef = doc(osCol, props.id);
       await updateDoc(osDocRef, osData);
       console.log('Ordem de Serviço atualizada com sucesso!');
     } else {
-      console.log('handleSubmit: Creating new service order.'); // Added log
       osData.date = new Date();
       await addDoc(osCol, osData);
       console.log('Ordem de Serviço salva com sucesso!');
