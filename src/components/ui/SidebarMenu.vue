@@ -116,6 +116,19 @@
       </Button>
     </RouterLink>
 
+    <RouterLink to="/exportar-dados" v-slot="{ isExactActive }">
+      <Button
+        variant="ghost"
+        class="w-full justify-start gap-2"
+        :class="{
+          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
+        }"
+      >
+        <Download class="size-4" />
+        Exportar Dados
+      </Button>
+    </RouterLink>
+
     <RouterLink v-if="isAdmin" to="/admin" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
@@ -138,7 +151,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List } from 'lucide-vue-next'
+import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List, Download } from 'lucide-vue-next'
 
 const isAdmin = ref(false)
 const auth = getAuth()

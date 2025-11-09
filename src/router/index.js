@@ -130,6 +130,12 @@ const routes = [
         component: () => import('@/views/kits/KitDetalheView.vue'),
         props: true,
         meta: { title: 'Detalhes do Kit' }
+      },
+      {
+        path: 'exportar-dados',
+        name: 'ExportarDados',
+        component: () => import('@/views/ExportadorDadosView.vue'),
+        meta: { title: 'Exportar Dados' }
       }
     ]
   },

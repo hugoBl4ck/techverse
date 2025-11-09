@@ -24,6 +24,11 @@ export function useItem(itemId = null) {
   const isLoading = ref(false);
   const error = ref(null);
 
+  // Carregar dados automaticamente se itemId existir
+  if (itemId) {
+    fetchItem();
+  }
+
   async function fetchItem() {
     if (!itemId || !storeId.value) return;
     isLoading.value = true;
