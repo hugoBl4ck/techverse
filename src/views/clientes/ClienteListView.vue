@@ -30,6 +30,10 @@ async function fetchClients() {
   isLoading.value = false;
 }
 
+onMounted(() => {
+  fetchClients();
+});
+
 
 </script>
 
