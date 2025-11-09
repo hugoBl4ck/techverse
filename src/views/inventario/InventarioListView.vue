@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, watchEffect, computed } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs } from 'firebase/firestore'
 import { useCurrentStore } from '@/composables/useCurrentStore'
@@ -87,8 +87,10 @@ async function fetchItems() {
   }
 }
 
-onMounted(() => {
-  fetchItems();
+watchEffect(() => {
+  if (storeId.value) {
+    fetchItems();
+  }
 });
 
 
