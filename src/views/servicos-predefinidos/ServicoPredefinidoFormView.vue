@@ -24,7 +24,7 @@ async function handleSubmit() {
       descricao: descricao.value,
       preco: preco.value,
     });
-    router.push('/catalogo-servicos');
+    router.push('/servicos-predefinidos');
   } catch (error) {
     console.error('Erro ao salvar serviço predefinido: ', error);
     alert('Erro ao salvar serviço predefinido. Verifique o console para mais detalhes.');

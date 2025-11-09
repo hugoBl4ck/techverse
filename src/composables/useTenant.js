@@ -1,9 +1,6 @@
 import { ref } from 'vue'
 
-// TEMPORARY FIX: Hardcoding tenant ID for development/testing.
-// In a real application, this should be dynamically set after user login or store selection.
-const tenant = ref('your_store_id_here') 
-console.warn('WARNING: Tenant ID is hardcoded in useTenant.js. This should be dynamically set in production.')
+const tenant = ref(null)
 
 export function useTenant() {
   const setTenant = (newTenant) => {
