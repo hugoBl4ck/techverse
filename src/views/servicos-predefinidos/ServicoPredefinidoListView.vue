@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 const servicosPredefinidos = ref([]);
 
 onMounted(async () => {
-  const servicosCol = collection(db, 'servicos_predefinidos');
+  const servicosCol = collection(db, 'catalogo_servicos');
   const servicosSnapshot = await getDocs(servicosCol);
   servicosPredefinidos.value = servicosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 });

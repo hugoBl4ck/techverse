@@ -132,6 +132,12 @@ const routes = [
         meta: { title: 'Detalhes do Kit' }
       }
     ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFoundView.vue'),
+    meta: { title: 'Página Não Encontrada' }
   }
 ]
 
