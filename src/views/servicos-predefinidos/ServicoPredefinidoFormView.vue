@@ -27,6 +27,7 @@ async function handleSubmit() {
     router.push('/servicos-predefinidos');
   } catch (error) {
     console.error('Erro ao salvar serviço predefinido: ', error);
+    alert('Erro ao salvar serviço predefinido. Verifique o console para mais detalhes.');
   } finally {
     isLoading.value = false;
   }
