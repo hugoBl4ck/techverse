@@ -4,8 +4,8 @@
 
     <Card class="mb-6">
       <CardHeader>
-        <CardTitle>Gerador de Textos de Venda</CardTitle>
-        <CardDescription>Selecione um item do seu inventário para gerar textos de venda otimizados para redes sociais.</CardDescription>
+        <CardTitle>Gerador de Conteúdo de Marketing Técnico</CardTitle>
+        <CardDescription>Crie anúncios profissionais e técnicos para componentes de hardware. Textos otimizados para Instagram, WhatsApp, Facebook e Email Marketing.</CardDescription>
       </CardHeader>
       <CardContent class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div class="flex-1 w-full">
@@ -32,16 +32,23 @@
       <p>Aguarde, a IA está criando os textos...</p>
     </div>
 
-    <div v-if="generatedCopy" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="generatedCopy" class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card v-for="(text, platform) in generatedCopy" :key="platform">
-        <CardHeader class="flex flex-row items-center justify-between">
-          <CardTitle class="capitalize">{{ platform.replace(/([A-Z])/g, ' $1') }}</CardTitle>
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle class="text-sm font-medium">
+            {{ getPlatformName(platform) }}
+          </CardTitle>
           <Button variant="ghost" size="icon" @click="copyToClipboard(text)">
             <Copy class="h-4 w-4" />
           </Button>
         </CardHeader>
         <CardContent>
-          <p class="text-sm whitespace-pre-wrap">{{ text }}</p>
+          <div class="text-xs text-muted-foreground mb-2">
+            {{ getPlatformDescription(platform) }}
+          </div>
+          <div class="mt-3 p-3 bg-muted/50 rounded-md max-h-96 overflow-y-auto">
+            <p class="text-sm whitespace-pre-wrap font-mono">{{ text }}</p>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -69,11 +76,14 @@ const generatedCopy = ref(null);
 async function fetchItems() {
   isLoadingItems.value = true;
   try {
+    // TEMPORÁRIO: Usar estrutura antiga até migrar este componente
+    // TODO: Migrar para stores/{storeId}/items
     const itemsCol = collection(db, 'itens');
     const itemsSnapshot = await getDocs(itemsCol);
     items.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error("Erro ao buscar itens do inventário:", error);
+    alert("Erro ao carregar inventário. Verifique se há itens cadastrados.");
   } finally {
     isLoadingItems.value = false;
   }
@@ -119,7 +129,27 @@ async function copyToClipboard(text) {
   }
 }
 
+function getPlatformName(platform) {
+  const names = {
+    instagramPost: '📸 Instagram Post',
+    whatsappStatus: '💬 WhatsApp Status',
+    facebookPost: '📘 Facebook Post',
+    emailMarketing: '📧 Email Marketing',
+  };
+  return names[platform] || platform;
+}
+
+function getPlatformDescription(platform) {
+  const descriptions = {
+    instagramPost: 'Post técnico com especificações e call-to-action',
+    whatsappStatus: 'Status curto e direto para conversão rápida',
+    facebookPost: 'Post detalhado com informações técnicas completas',
+    emailMarketing: 'Email profissional com consultoria técnica',
+  };
+  return descriptions[platform] || '';
+}
+
 onMounted(() => {
-  fetchItems(); // Added this line
+  fetchItems();
 });
 </script>
