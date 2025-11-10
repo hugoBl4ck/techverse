@@ -73,19 +73,19 @@ const selectedItemId = ref(null);
 const isLoadingItems = ref(true);
 const isGenerating = ref(false);
 const generatedCopy = ref(null);
-const { currentUser } = useCurrentStore();
+const { storeId, authReady } = useCurrentStore();
 
 async function fetchItems() {
   isLoadingItems.value = true;
   try {
-    const storeId = currentUser.value?.storeId;
-    if (!storeId) {
+    const currentStoreId = storeId.value;
+    if (!currentStoreId) {
       console.error("Nenhuma loja encontrada para o usuário");
       alert("Erro ao carregar inventário. Nenhuma loja encontrada.");
       return;
     }
 
-    const itemsCol = collection(db, `stores/${storeId}/itens`);
+    const itemsCol = collection(db, `stores/${currentStoreId}/itens`);
     const itemsSnapshot = await getDocs(itemsCol);
     items.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
@@ -160,7 +160,8 @@ function getPlatformDescription(platform) {
   return descriptions[platform] || '';
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await authReady;
   fetchItems();
 });
 </script>
