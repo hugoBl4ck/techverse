@@ -123,24 +123,28 @@ const loadData = async () => {
 
     // If in edit mode, load service order data
     if (isEditMode.value) {
-      console.log('Modo edição: carregando ordem de serviço ID:', props.id);
-      const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', props.id);
-      const osDoc = await getDoc(osDocRef);
-      if (osDoc.exists()) {
-        const osData = osDoc.data();
-        ordemServico.value = {
-          ...osData,
-          observations: Array.isArray(osData.observations) ? osData.observations.join('\n') : osData.observations,
-        };
-        addedItems.value = osData.items || [];
-        selectedClienteId.value = osData.customerId || '';
-        console.log('Ordem de serviço carregada com sucesso');
-      } else {
+    console.log('Modo edição: carregando ordem de serviço ID:', props.id);
+    const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', props.id);
+    const osDoc = await getDoc(osDocRef);
+    if (osDoc.exists()) {
+    const osData = osDoc.data();
+    ordemServico.value = {
+    ...osData,
+    observations: Array.isArray(osData.observations) ? osData.observations.join('\n') : osData.observations,
+    };
+    // Merge loaded items with inventory data to restore preco and estoque
+    addedItems.value = (osData.items || []).map(loadedItem => {
+      const inventoryItem = inventoryItems.value.find(inv => inv.id === loadedItem.id);
+        return inventoryItem ? { ...loadedItem, ...inventoryItem } : loadedItem;
+    });
+    selectedClienteId.value = osData.customerId || '';
+    console.log('Ordem de serviço carregada com sucesso');
+    } else {
         console.error('Ordem de Serviço não encontrada');
-        toast.error('Ordem de serviço não encontrada!');
-        router.push('/ordens-servico');
-      }
-    }
+         toast.error('Ordem de serviço não encontrada!');
+         router.push('/ordens-servico');
+       }
+     }
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
     toast.error('Erro ao carregar dados: ' + error.message);
