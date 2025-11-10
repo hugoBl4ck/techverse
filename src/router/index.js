@@ -185,7 +185,7 @@ router.beforeEach(async (to, from, next) => {
     // If user is authenticated, redirect away from login page
     next({ name: 'Dashboard' });
   } else {
-    // make sure to always call next()!
+    // make sure to always call next()!!!
     next();
   }
 });
