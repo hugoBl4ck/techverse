@@ -19,7 +19,7 @@ import { useCurrentStore } from '@/composables/useCurrentStore';
 
 const emits = defineEmits(['delete']);
 
-const { currentUser } = useCurrentStore();
+const { storeId } = useCurrentStore();
 const isPinned = ref(false);
 const regrasKit = ref({ socket: null, tipoRam: null });
 
@@ -178,13 +178,12 @@ async function saveKitToInventory() {
 
 
   try {
-    const storeId = currentUser.value?.storeId;
-    if (!storeId) {
+    if (!storeId.value) {
       alert('Erro: Nenhuma loja encontrada para o usuário.');
       return;
     }
 
-    await addDoc(collection(db, `stores/${storeId}/itens`), newItem);
+    await addDoc(collection(db, `stores/${storeId.value}/itens`), newItem);
 
     alert('Kit salvo no inventário com sucesso!');
 

@@ -19,31 +19,24 @@ const inventario = ref([]);
 const kitsNaTela = ref([]);
 const kitCounter = ref(0);
 const isLoading = ref(true);
-const { storeId, authReady } = useCurrentStore();
-
-// Watch para quando storeId está pronto
-watch(
-  storeId,
-  (newStoreId) => {
-    if (newStoreId) {
-      console.log("StoreId pronto:", newStoreId);
-      fetchItems();
-    }
-  },
-  { immediate: true }
-);
+const error = ref(null);
+const { storeId } = useCurrentStore();
 
 const fetchItems = async () => {
+  if (!storeId.value) {
+    const msg = "❌ KitBuilder - StoreId não disponível";
+    console.error(msg);
+    error.value = "Usuário não autenticado. StoreId não encontrado.";
+    isLoading.value = false;
+    return;
+  }
+
   isLoading.value = true;
+  error.value = null;
+  
   try {
     const currentStoreId = storeId.value;
     console.log("📊 KitBuilder - StoreId:", currentStoreId);
-
-    if (!currentStoreId) {
-      console.error("❌ Nenhuma loja encontrada para o usuário");
-      isLoading.value = false;
-      return;
-    }
 
     const itemsCol = collection(db, `stores/${currentStoreId}/itens`);
     console.log("🔍 Buscando itens de:", `stores/${currentStoreId}/itens`);
@@ -54,17 +47,29 @@ const fetchItems = async () => {
       id: doc.id,
       ...doc.data(),
     }));
-    console.log("📦 Inventário carregado:", inventario.value);
-  } catch (error) {
-    console.error("❌ Erro ao buscar itens:", error);
+    console.log("📦 Inventário carregado:", inventario.value.length, "itens");
+  } catch (err) {
+    console.error("❌ Erro ao buscar itens:", err);
+    error.value = `Erro ao carregar itens: ${err.message}`;
   } finally {
     isLoading.value = false;
   }
 };
 
-onMounted(async () => {
-  await authReady;
-  // fetchItems é chamado automaticamente pelo watch quando storeId está pronto
+// Watch para quando storeId está pronto
+watch(
+  () => storeId.value,
+  (newStoreId) => {
+    if (newStoreId) {
+      console.log("🎯 KitBuilder - StoreId pronto:", newStoreId);
+      fetchItems();
+    }
+  },
+  { immediate: true }
+);
+
+onMounted(() => {
+  console.log("🚀 KitBuilder montado");
 });
 
 const groupedItems = computed(() => {
@@ -135,42 +140,62 @@ function removerKit(index) {
 </script>
 
 <template>
-  <ResizablePanelGroup direction="horizontal" class="h-full w-full">
-    <ResizablePanel :default-size="30" class="p-4">
-      <Card class="h-full flex flex-col">
-        <div class="p-4 border-b">
-          <h2 class="text-lg font-semibold font-display">Estoque de Itens</h2>
-        </div>
-        <ScrollArea class="flex-1">
-          <div class="p-4 space-y-4">
-            <ItemList
-              v-for="group in groupedItems"
-              :key="group.title"
-              :title="group.title"
-              :list="group.items"
-              :used-item-ids="usedItemIds"
-            />
-          </div>
-        </ScrollArea>
-      </Card>
-    </ResizablePanel>
+  <div class="h-full w-full flex flex-col">
+    <!-- Mostra erro se houver -->
+    <div v-if="error" class="p-4 bg-destructive/10 text-destructive border-b border-destructive/20">
+      <p class="font-semibold">Erro ao carregar KitBuilder</p>
+      <p class="text-sm">{{ error }}</p>
+    </div>
 
-    <ResizableHandle with-handle />
-
-    <ResizablePanel :default-size="70">
-      <div class="flex flex-col h-full">
-        <div class="flex justify-between items-center p-4 border-b">
-          <h2 class="text-lg font-semibold font-display">Área de Trabalho</h2>
-          <Button @click="adicionarNovoKit">+ Adicionar Novo Kit</Button>
-        </div>
-        <ScrollArea class="flex-1 bg-muted/30">
-          <div class="flex flex-wrap gap-6 p-6">
-            <div v-for="(kit, index) in kitsNaTela" :key="kit.id">
-              <KitMount :kit="kit" @delete="removerKit(index)" />
-            </div>
-          </div>
-        </ScrollArea>
+    <!-- Mostra carregamento -->
+    <div v-if="isLoading && !error" class="flex-1 flex items-center justify-center">
+      <div class="text-center">
+        <p class="mb-4">Carregando itens do inventário...</p>
+        <p class="text-sm text-muted-foreground">StoreId: {{ storeId || 'não encontrado' }}</p>
       </div>
-    </ResizablePanel>
-  </ResizablePanelGroup>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div v-else-if="!error" class="flex-1">
+      <ResizablePanelGroup direction="horizontal" class="h-full w-full">
+        <ResizablePanel :default-size="30" class="p-4">
+          <Card class="h-full flex flex-col">
+            <div class="p-4 border-b">
+              <h2 class="text-lg font-semibold font-display">Estoque de Itens</h2>
+              <p class="text-xs text-muted-foreground mt-1">{{ inventario.length }} itens</p>
+            </div>
+            <ScrollArea class="flex-1">
+              <div class="p-4 space-y-4">
+                <ItemList
+                  v-for="group in groupedItems"
+                  :key="group.title"
+                  :title="group.title"
+                  :list="group.items"
+                  :used-item-ids="usedItemIds"
+                />
+              </div>
+            </ScrollArea>
+          </Card>
+        </ResizablePanel>
+
+        <ResizableHandle with-handle />
+
+        <ResizablePanel :default-size="70">
+          <div class="flex flex-col h-full">
+            <div class="flex justify-between items-center p-4 border-b">
+              <h2 class="text-lg font-semibold font-display">Área de Trabalho</h2>
+              <Button @click="adicionarNovoKit">+ Adicionar Novo Kit</Button>
+            </div>
+            <ScrollArea class="flex-1 bg-muted/30">
+              <div class="flex flex-wrap gap-6 p-6">
+                <div v-for="(kit, index) in kitsNaTela" :key="kit.id">
+                  <KitMount :kit="kit" @delete="removerKit(index)" />
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  </div>
 </template>
