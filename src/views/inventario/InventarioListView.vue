@@ -90,35 +90,24 @@ const groupedItems = computed(() => {
 
 async function fetchItems() {
   if (!storeId.value) {
-    console.error('❌ InventarioListView - StoreId não disponível');
     isLoading.value = false;
     return;
   }
 
   isLoading.value = true;
   try {
-    console.log('📊 InventarioListView - StoreId:', storeId.value);
     const itemsCol = collection(db, 'stores', storeId.value, 'itens');
-    console.log('🔍 Buscando itens de:', `stores/${storeId.value}/itens`);
-    
     const querySnapshot = await getDocs(itemsCol);
-    console.log('✅ Itens encontrados:', querySnapshot.size);
     
     items.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
-    console.log('📦 Inventário carregado:', items.value.length, 'itens');
   } catch (error) {
-    console.error('❌ Erro ao carregar inventário:', error);
+    console.error('Erro ao carregar inventário:', error);
     toast.error('Erro ao carregar inventário: ' + error.message);
   } finally {
     isLoading.value = false;
-    console.log('✅ Finalizado - isLoading setado para false');
-    // Logs APÓS isLoading ser false
-    console.log('📋 Itens:', items.value);
-    console.log('📊 isLoading:', isLoading.value);
-    console.log('🏷️ itemsAgrupados keys:', Object.keys(itemsAgrupados.value));
   }
 }
 
@@ -160,7 +149,6 @@ watch(
   () => storeId.value,
   (newStoreId) => {
     if (newStoreId) {
-      console.log('🎯 InventarioListView - StoreId pronto:', newStoreId);
       fetchItems();
     }
   },
