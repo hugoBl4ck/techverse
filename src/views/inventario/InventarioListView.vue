@@ -1,12 +1,13 @@
 <script setup>
 import { ref, watchEffect, computed } from 'vue'
 import { db } from '@/firebase/config.js'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore'
 import { useCurrentStore } from '@/composables/useCurrentStore'
+import { toast } from 'vue-sonner'
 
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
-import { Pencil, Package, PlusCircle } from 'lucide-vue-next'
+import { Pencil, Package, PlusCircle, Trash2 } from 'lucide-vue-next'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const { storeId } = useCurrentStore()
@@ -81,9 +82,37 @@ async function fetchItems() {
     }))
   } catch (error) {
     console.error('Erro ao carregar inventário:', error);
-    alert('Erro ao carregar inventário: ' + error.message);
+    toast.error('Erro ao carregar inventário: ' + error.message);
   } finally {
     isLoading.value = false;
+  }
+}
+
+async function deleteItem(itemId, itemName) {
+  const confirmDelete = window.confirm(
+    `Tem certeza que deseja deletar "${itemName}"?\n\nEsta ação não pode ser desfeita.`
+  );
+
+  if (!confirmDelete) return;
+
+  if (!storeId.value) {
+    toast.error('Erro: StoreId não disponível');
+    return;
+  }
+
+  const toastId = toast.loading('Deletando item...');
+
+  try {
+    const itemDocRef = doc(db, 'stores', storeId.value, 'itens', itemId);
+    await deleteDoc(itemDocRef);
+    
+    // Remove do array local
+    items.value = items.value.filter(item => item.id !== itemId);
+    
+    toast.success('Item deletado com sucesso!', { id: toastId });
+  } catch (error) {
+    console.error('Erro ao deletar item:', error);
+    toast.error('Erro ao deletar item: ' + error.message, { id: toastId });
   }
 }
 
@@ -177,18 +206,28 @@ const dotPatternStyle = `
               <!-- Content Section -->
               <div class="p-4 flex-1 flex flex-col justify-between">
                   <div>
-                      <h3 class="font-bold text-base text-foreground mb-2 truncate" :title="item.nome">{{ item.nome }}</h3>
-                      <div class="text-sm text-muted-foreground space-y-1">
-                          <p><strong>Estoque:</strong> {{ item.quantidade }} unidades</p>
-                          <p><strong>Preço:</strong> R$ {{ item.precoVenda?.toFixed(2) }}</p>
-                      </div>
+                  <h3 class="font-bold text-base text-foreground mb-2 truncate" :title="item.nome">{{ item.nome }}</h3>
+                  <div class="text-sm text-muted-foreground space-y-1">
+                  <p><strong>Estoque:</strong> {{ item.quantidade }} unidades</p>
+                  <p><strong>Preço:</strong> R$ {{ item.precoVenda?.toFixed(2) }}</p>
                   </div>
-                  <RouterLink :to="`/inventario/${item.id}/editar`" class="mt-4">
-                      <Button variant="outline" size="sm" class="w-full">
-                          <Pencil class="h-4 w-4 mr-2" />
+                  </div>
+                  <div class="flex gap-2 mt-4">
+                  <RouterLink :to="`/inventario/${item.id}/editar`" class="flex-1">
+                  <Button variant="outline" size="sm" class="w-full">
+                      <Pencil class="h-4 w-4 mr-2" />
                           Editar
-                      </Button>
-                  </RouterLink>
+                          </Button>
+                       </RouterLink>
+                       <Button 
+                           variant="destructive" 
+                           size="sm"
+                           @click="deleteItem(item.id, item.nome)"
+                           title="Deletar item"
+                       >
+                           <Trash2 class="h-4 w-4" />
+                       </Button>
+                   </div>
               </div>
           </div>
         </div>
