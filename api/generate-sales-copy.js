@@ -117,7 +117,7 @@ async function callPerplexity(prompt, apiKey) {
       'Authorization': `Bearer ${apiKey}`
     },
     body: JSON.stringify({
-      model: 'sonar-small-online',
+      model: 'sonar',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt }
