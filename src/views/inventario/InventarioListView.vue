@@ -87,11 +87,15 @@ async function fetchItems() {
       ...doc.data()
     }));
     console.log('📦 Inventário carregado:', items.value.length, 'itens');
+    console.log('📋 Itens:', items.value);
+    console.log('📊 isLoading:', isLoading.value);
+    console.log('🏷️ itemsAgrupados:', itemsAgrupados.value);
   } catch (error) {
     console.error('❌ Erro ao carregar inventário:', error);
     toast.error('Erro ao carregar inventário: ' + error.message);
   } finally {
     isLoading.value = false;
+    console.log('✅ Finalizado - isLoading setado para false');
   }
 }
 
@@ -195,6 +199,7 @@ const dotPatternStyle = `
 
     <!-- Loading State com Skeleton -->
     <div v-if="isLoading" class="space-y-8">
+      <p class="text-muted-foreground">Carregando inventário...</p>
       <div v-for="i in 3" :key="i" class="space-y-4">
         <Skeleton height="2rem" width="30%" />
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -205,6 +210,7 @@ const dotPatternStyle = `
 
     <!-- Empty State -->
     <div v-else-if="items.length === 0" class="text-center py-16 fade-in">
+      <p class="text-muted-foreground mb-4">items.length: {{ items.length }}</p>
       <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4">
         <Package class="h-10 w-10 text-primary" />
       </div>
