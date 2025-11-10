@@ -17,17 +17,17 @@ const inventario = ref([]);
 const kitsNaTela = ref([]);
 const kitCounter = ref(0);
 const isLoading = ref(true);
-const { currentUser } = useCurrentStore();
+const { storeId, authReady } = useCurrentStore();
 
 const fetchItems = async () => {
   isLoading.value = true;
   try {
-    const storeId = currentUser.value?.storeId;
-    if (!storeId) {
+    const currentStoreId = storeId.value;
+    if (!currentStoreId) {
       console.error("Nenhuma loja encontrada para o usuário");
       return;
     }
-    const itemsCol = collection(db, `stores/${storeId}/itens`);
+    const itemsCol = collection(db, `stores/${currentStoreId}/itens`);
     const itemsSnapshot = await getDocs(itemsCol);
     inventario.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
@@ -37,7 +37,8 @@ const fetchItems = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await authReady;
   fetchItems();
 });
 
