@@ -23,13 +23,19 @@ const fetchItems = async () => {
   isLoading.value = true;
   try {
     const currentStoreId = storeId.value;
+    console.log('StoreId:', currentStoreId);
+    
     if (!currentStoreId) {
       console.error("Nenhuma loja encontrada para o usuário");
       return;
     }
+    
     const itemsCol = collection(db, `stores/${currentStoreId}/itens`);
     const itemsSnapshot = await getDocs(itemsCol);
+    
+    console.log('Itens encontrados:', itemsSnapshot.size);
     inventario.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log('Inventário carregado:', inventario.value);
   } catch (error) {
     console.error("Erro ao buscar itens:", error);
   } finally {

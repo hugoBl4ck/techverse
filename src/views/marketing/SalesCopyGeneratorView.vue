@@ -32,13 +32,17 @@
       <p>Aguarde, a IA está criando os textos...</p>
     </div>
 
-    <div v-if="generatedCopy" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card v-for="(text, platform) in generatedCopy" :key="platform">
+    <div v-if="error" class="text-center text-red-500 p-4">
+      <p>{{ error }}</p>
+    </div>
+
+    <div v-if="generatedCopy && Object.keys(generatedCopy).length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Card v-for="platform in ['instagramPost', 'whatsappStatus', 'facebookPost', 'emailMarketing']" v-show="generatedCopy[platform]" :key="platform">
         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">
             {{ getPlatformName(platform) }}
           </CardTitle>
-          <Button variant="ghost" size="icon" @click="copyToClipboard(text)">
+          <Button variant="ghost" size="icon" @click="copyToClipboard(generatedCopy[platform])">
             <Copy class="h-4 w-4" />
           </Button>
         </CardHeader>
@@ -47,7 +51,7 @@
             {{ getPlatformDescription(platform) }}
           </div>
           <div class="mt-3 p-3 bg-muted/50 rounded-md max-h-96 overflow-y-auto">
-            <p class="text-sm whitespace-pre-wrap font-mono">{{ text }}</p>
+            <p class="text-sm whitespace-pre-wrap">{{ generatedCopy[platform] }}</p>
           </div>
         </CardContent>
       </Card>
@@ -73,6 +77,7 @@ const selectedItemId = ref(null);
 const isLoadingItems = ref(true);
 const isGenerating = ref(false);
 const generatedCopy = ref(null);
+const error = ref(null);
 const { storeId, authReady } = useCurrentStore();
 
 async function fetchItems() {
@@ -110,6 +115,7 @@ async function handleGenerate() {
 
   isGenerating.value = true;
   generatedCopy.value = null;
+  error.value = null;
   try {
     const response = await fetch('/api/generate-sales-copy', {
       method: 'POST',
@@ -121,10 +127,11 @@ async function handleGenerate() {
       throw new Error('A resposta da API não foi bem-sucedida.');
     }
 
-    generatedCopy.value = await response.json();
-  } catch (error) {
-    console.error("Erro ao gerar textos de venda:", error);
-    alert('Ocorreu um erro ao gerar os textos. Tente novamente.');
+    const data = await response.json();
+    generatedCopy.value = data;
+  } catch (err) {
+    console.error("Erro ao gerar textos de venda:", err);
+    error.value = 'Erro ao gerar os textos. Verifique o console para mais detalhes.';
   } finally {
     isGenerating.value = false;
   }
