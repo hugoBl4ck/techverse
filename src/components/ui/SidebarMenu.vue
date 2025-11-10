@@ -2,26 +2,28 @@
   <h2 class="mb-4 text-xl font-display font-semibold">Menu</h2>
   <nav class="flex flex-col gap-1">
     
-    <RouterLink to="/" v-slot="{ isExactActive }" @click="handleNavigate">
+    <RouterLink to="/" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
           'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
+        @click="handleNavigate"
       >
         <Home class="size-4" />
         Dashboard
       </Button>
     </RouterLink>
 
-    <RouterLink to="/clientes" v-slot="{ isExactActive }" @click="handleNavigate">
+    <RouterLink to="/clientes" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
           'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
+        @click="handleNavigate"
       >
         <Users class="size-4" />
         Clientes
@@ -39,20 +41,20 @@
         </AccordionTrigger>
 
         <AccordionContent class="pl-6 pt-1">
-          <RouterLink to="/inventario" @click="handleNavigate">
-            <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+          <RouterLink to="/inventario">
+            <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
               <Archive class="size-4" />
               Listar Itens
             </Button>
           </RouterLink>
-          <RouterLink to="/inventario/novo" @click="handleNavigate">
-            <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+          <RouterLink to="/inventario/novo">
+            <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
               <PlusCircle class="size-4" />
               Cadastrar Itens
             </Button>
           </RouterLink>
-          <RouterLink to="/inventario/importar-ia" @click="handleNavigate">
-            <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+          <RouterLink to="/inventario/importar-ia">
+            <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
               <Wand2 class="size-4" />
               Importar com IA
             </Button>
@@ -68,20 +70,20 @@
               </span>
             </AccordionTrigger>
             <AccordionContent class="pl-6 pt-1">
-              <RouterLink to="/ordens-servico/nova" @click="handleNavigate">
-                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+              <RouterLink to="/ordens-servico/nova">
+                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
                   <PlusCircle class="size-4" />
                   Nova Ordem de Serviço
                 </Button>
               </RouterLink>
-              <RouterLink to="/ordens-servico" @click="handleNavigate">
-                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+              <RouterLink to="/ordens-servico">
+                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
                   <List class="size-4" />
                   Listar Ordens de Serviço
                 </Button>
               </RouterLink>
-              <RouterLink to="/catalogo-servicos" @click="handleNavigate">
-                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
+              <RouterLink to="/catalogo-servicos">
+                <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
                   <ListChecks class="size-4" />
                   Catálogo de Serviços
                 </Button>
@@ -90,52 +92,56 @@
           </AccordionItem>
         </Accordion>
     
-    <RouterLink to="/kits/builder" v-slot="{ isExactActive }" @click="handleNavigate">
+    <RouterLink to="/kits/builder" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
           'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
+        @click="handleNavigate"
       >
         <Blocks class="size-4" />
         Montador de Kits
       </Button>
     </RouterLink>
 
-    <RouterLink to="/marketing" v-slot="{ isExactActive }" @click="handleNavigate">
+    <RouterLink to="/marketing" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
           'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
+        @click="handleNavigate"
       >
         <Sparkles class="size-4" />
         Assistente de Marketing
       </Button>
     </RouterLink>
 
-    <RouterLink to="/exportar-dados" v-slot="{ isExactActive }" @click="handleNavigate">
+    <RouterLink to="/exportar-dados" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
           'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
+        @click="handleNavigate"
       >
         <Download class="size-4" />
         Exportar Dados
       </Button>
     </RouterLink>
 
-    <RouterLink v-if="isAdmin" to="/admin" v-slot="{ isExactActive }" @click="handleNavigate">
+    <RouterLink v-if="isAdmin" to="/admin" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
         :class="{
           'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
         }"
+        @click="handleNavigate"
       >
         <Shield class="size-4" />
         Admin
