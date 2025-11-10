@@ -136,7 +136,7 @@ const routes = [
       {
         path: 'kits/:id',
         name: 'KitDetalhe',
-        component: () => import('@/views/kits/KitDetalheView..vue'),
+        component: () => import('@/views/kits/KitDetalheView.vue'),
         props: true,
         meta: { title: 'Detalhes do Kit' }
       },
