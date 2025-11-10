@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { db } from '@/firebase/config.js'
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore'
 import { useCurrentStore } from '@/composables/useCurrentStore'
@@ -7,12 +7,13 @@ import { toast } from 'vue-sonner'
 
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
-import { Pencil, Package, PlusCircle, Trash2 } from 'lucide-vue-next'
+import { Pencil, Package, PlusCircle, Trash2, List, Grid3X3 } from 'lucide-vue-next'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const { storeId } = useCurrentStore()
 const items = ref([])
 const isLoading = ref(true)
+const viewMode = ref(localStorage.getItem('inventarioViewMode') || 'cards')
 
 const colorMap = {
   cpu: { bg: 'bg-red-500', text: 'text-red-500' },
@@ -67,20 +68,27 @@ const orderedCategories = [
 
 async function fetchItems() {
   if (!storeId.value) {
-    console.error('StoreId não disponível');
+    console.error('❌ InventarioListView - StoreId não disponível');
     isLoading.value = false;
     return;
   }
 
   isLoading.value = true;
   try {
-    const querySnapshot = await getDocs(collection(db, 'stores', storeId.value, 'itens'))
+    console.log('📊 InventarioListView - StoreId:', storeId.value);
+    const itemsCol = collection(db, 'stores', storeId.value, 'itens');
+    console.log('🔍 Buscando itens de:', `stores/${storeId.value}/itens`);
+    
+    const querySnapshot = await getDocs(itemsCol);
+    console.log('✅ Itens encontrados:', querySnapshot.size);
+    
     items.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }))
+    }));
+    console.log('📦 Inventário carregado:', items.value.length, 'itens');
   } catch (error) {
-    console.error('Erro ao carregar inventário:', error);
+    console.error('❌ Erro ao carregar inventário:', error);
     toast.error('Erro ao carregar inventário: ' + error.message);
   } finally {
     isLoading.value = false;
@@ -115,11 +123,22 @@ async function deleteItem(itemId, itemName) {
   }
 }
 
-watchEffect(() => {
-  if (storeId.value) {
-    fetchItems();
-  }
-});
+function changeViewMode(mode) {
+  viewMode.value = mode;
+  localStorage.setItem('inventarioViewMode', mode);
+}
+
+// Watch para quando storeId está pronto
+watch(
+  () => storeId.value,
+  (newStoreId) => {
+    if (newStoreId) {
+      console.log('🎯 InventarioListView - StoreId pronto:', newStoreId);
+      fetchItems();
+    }
+  },
+  { immediate: true }
+);
 
 // Estilo para o padrão de pontos a ser injetado no head
 const dotPatternStyle = `
@@ -139,10 +158,39 @@ const dotPatternStyle = `
     </Teleport>
 
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Inventário de Itens</h1>
-      <RouterLink to="/inventario/novo">
-        <Button>Novo Item</Button>
-      </RouterLink>
+      <div>
+        <h1 class="text-2xl font-bold">Inventário de Itens</h1>
+        <p class="text-sm text-muted-foreground mt-1">{{ items.length }} itens no inventário</p>
+      </div>
+      <div class="flex gap-2 items-center">
+        <!-- View Mode Toggle -->
+        <div class="flex gap-1 bg-muted rounded-lg p-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            :class="{ 'bg-background': viewMode === 'cards' }"
+            @click="changeViewMode('cards')"
+            title="Visualizar como cards"
+          >
+            <Grid3X3 class="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            :class="{ 'bg-background': viewMode === 'list' }"
+            @click="changeViewMode('list')"
+            title="Visualizar como lista"
+          >
+            <List class="h-4 w-4" />
+          </Button>
+        </div>
+        <RouterLink to="/inventario/novo">
+          <Button>
+            <PlusCircle class="h-4 w-4 mr-2" />
+            Novo Item
+          </Button>
+        </RouterLink>
+      </div>
     </div>
 
     <!-- Loading State com Skeleton -->
@@ -176,10 +224,11 @@ const dotPatternStyle = `
     <div v-else class="space-y-10">
       <section v-for="tipo in orderedCategories" :key="tipo" v-if="itemsAgrupados[tipo]">
         <h2 class="text-xl font-semibold mb-4 capitalize border-b pb-2">
-          {{ nomesCategoria[tipo] || tipo }}
+          {{ nomesCategoria[tipo] || tipo }} ({{ itemsAgrupados[tipo].length }})
         </h2>
-        <!-- Grid de Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+        <!-- CARDS VIEW -->
+        <div v-if="viewMode === 'cards'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div 
             v-for="(item, index) in itemsAgrupados[tipo]" 
             :key="item.id"
@@ -227,6 +276,70 @@ const dotPatternStyle = `
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- LIST VIEW -->
+        <div v-else class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b bg-muted/50">
+                <th class="text-left p-3 font-semibold">Imagem</th>
+                <th class="text-left p-3 font-semibold">Nome</th>
+                <th class="text-left p-3 font-semibold">Estoque</th>
+                <th class="text-right p-3 font-semibold">Preço Custo</th>
+                <th class="text-right p-3 font-semibold">Preço Venda</th>
+                <th class="text-center p-3 font-semibold">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                v-for="item in itemsAgrupados[tipo]"
+                :key="item.id"
+                class="border-b hover:bg-muted/50 transition-colors"
+              >
+                <td class="p-3">
+                  <div class="h-12 w-12 rounded border bg-muted flex items-center justify-center overflow-hidden">
+                    <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.nome" class="h-full w-full object-cover">
+                    <Package v-else class="h-6 w-6 text-muted-foreground" />
+                  </div>
+                </td>
+                <td class="p-3">
+                  <div>
+                    <p class="font-medium">{{ item.nome }}</p>
+                    <span :class="[getCategoryColors(item).text, 'text-xs font-semibold capitalize']">
+                      {{ item.tipo }}
+                    </span>
+                  </div>
+                </td>
+                <td class="p-3">{{ item.quantidade }} un.</td>
+                <td class="p-3 text-right">
+                  <span v-if="item.precoCusto" class="text-muted-foreground">
+                    R$ {{ item.precoCusto?.toFixed(2) }}
+                  </span>
+                  <span v-else class="text-muted-foreground text-xs">—</span>
+                </td>
+                <td class="p-3 text-right">
+                  <span class="font-semibold">R$ {{ item.precoVenda?.toFixed(2) }}</span>
+                </td>
+                <td class="p-3">
+                  <div class="flex gap-2 justify-center">
+                    <RouterLink :to="`/inventario/${item.id}/editar`">
+                      <Button variant="outline" size="sm">
+                        <Pencil class="h-4 w-4" />
+                      </Button>
+                    </RouterLink>
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      @click="deleteItem(item.id, item.nome)"
+                    >
+                      <Trash2 class="h-4 w-4" />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
     </div>
