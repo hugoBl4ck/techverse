@@ -89,7 +89,7 @@ const filteredItems = computed(() => {
 });
 
 const totalAmount = computed(() => {
-  const itemsTotal = addedItems.value.reduce((total, item) => total + (item.preco * item.quantity), 0);
+  const itemsTotal = addedItems.value.reduce((total, item) => total + ((item.precoVenda || item.preco || 0) * item.quantity), 0);
   return (ordemServico.value.price || 0) + itemsTotal;
 });
 
@@ -301,10 +301,10 @@ async function handleSubmit() {
             <Input id="item-search" v-model="itemSearch" type="text" placeholder="Digite para buscar no inventário..." />
             <ScrollArea v-if="filteredItems.length > 0" class="h-40 w-full rounded-md border">
               <div class="p-2">
-                <div v-for="item in filteredItems" :key="item.id" @click="addItem(item)" class="cursor-pointer p-2 hover:bg-muted rounded-md">
-                  <p class="font-medium">{{ item.nome }}</p>
-                  <p class="text-sm text-muted-foreground">R$ {{ (item.preco || 0).toFixed(2) }} - Estoque: {{ item.estoque || 0 }}</p>
-                </div>
+              <div v-for="item in filteredItems" :key="item.id" @click="addItem(item)" class="cursor-pointer p-2 hover:bg-muted rounded-md">
+              <p class="font-medium">{{ item.nome }}</p>
+              <p class="text-sm text-muted-foreground">R$ {{ (item.precoVenda || item.preco || 0).toFixed(2) }} - Estoque: {{ item.quantidade || 0 }}</p>
+              </div>
               </div>
             </ScrollArea>
           </div>
@@ -315,10 +315,10 @@ async function handleSubmit() {
               <div class="p-4">
                 <p v-if="addedItems.length === 0" class="text-sm text-muted-foreground">Nenhuma peça adicionada.</p>
                 <div v-for="item in addedItems" :key="item.id" class="flex items-center justify-between mb-2 p-2 rounded-md bg-secondary/20">
-                  <div>
-                    <p class="font-semibold">{{ item.nome }}</p>
-                    <p class="text-sm">R$ {{ (item.preco || 0).toFixed(2) }}</p>
-                  </div>
+                <div>
+                <p class="font-semibold">{{ item.nome }}</p>
+                <p class="text-sm">R$ {{ (item.precoVenda || item.preco || 0).toFixed(2) }}</p>
+                </div>
                   <div class="flex items-center gap-2">
                     <Button @click="decreaseQuantity(item.id)" variant="ghost" size="icon" class="h-7 w-7">
                       <MinusCircle class="h-4 w-4" />
