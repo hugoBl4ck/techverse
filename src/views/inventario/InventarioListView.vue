@@ -30,7 +30,6 @@ function getCategoryColors(item) {
   return colorMap[tipo] || colorMap.outro;
 }
 
-
 // Agrupa os itens por categoria
 const itemsAgrupados = computed(() => {
   return items.value.reduce((acc, item) => {
@@ -122,9 +121,6 @@ watchEffect(() => {
   }
 });
 
-
-
-
 // Estilo para o padrão de pontos a ser injetado no head
 const dotPatternStyle = `
   .pattern-dots {
@@ -178,7 +174,7 @@ const dotPatternStyle = `
 
     <!-- Seções de Categoria -->
     <div v-else class="space-y-10">
-      <section v-for="tipo in orderedCategories" :key="tipo">
+      <section v-for="tipo in orderedCategories" :key="tipo" v-if="itemsAgrupados[tipo]">
         <h2 class="text-xl font-semibold mb-4 capitalize border-b pb-2">
           {{ nomesCategoria[tipo] || tipo }}
         </h2>
@@ -189,46 +185,47 @@ const dotPatternStyle = `
             :key="item.id"
             :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} group rounded-lg overflow-hidden border bg-card shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 flex flex-col card-hover`"
           >
-              
-              <!-- Image Section -->
-              <div class="h-36 relative">
-                  <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.nome"
-                       class="w-full h-full object-cover">
-                  <div v-else class="w-full h-full bg-muted flex items-center justify-center">
-                      <Package class="size-12 text-muted-foreground" />
-                  </div>
-                  <!-- Category Tag -->
-                  <span :class="[getCategoryColors(item).bg, 'absolute top-2 right-2 text-xs font-bold text-white px-2 py-1 rounded-full']">
-                      {{ item.tipo }}
-                  </span>
+            <!-- Image Section -->
+            <div class="h-36 relative">
+              <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.nome"
+                   class="w-full h-full object-cover">
+              <div v-else class="w-full h-full bg-muted flex items-center justify-center">
+                <Package class="size-12 text-muted-foreground" />
               </div>
+              <!-- Category Tag -->
+              <span :class="[getCategoryColors(item).bg, 'absolute top-2 right-2 text-xs font-bold text-white px-2 py-1 rounded-full']">
+                {{ item.tipo }}
+              </span>
+            </div>
 
-              <!-- Content Section -->
-              <div class="p-4 flex-1 flex flex-col justify-between">
-                  <div>
-                  <h3 class="font-bold text-base text-foreground mb-2 truncate" :title="item.nome">{{ item.nome }}</h3>
-                  <div class="text-sm text-muted-foreground space-y-1">
+            <!-- Content Section -->
+            <div class="p-4 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 class="font-bold text-base text-foreground mb-2 truncate" :title="item.nome">{{ item.nome }}</h3>
+                <div class="text-sm text-muted-foreground space-y-1">
                   <p><strong>Estoque:</strong> {{ item.quantidade }} unidades</p>
                   <p><strong>Preço:</strong> R$ {{ item.precoVenda?.toFixed(2) }}</p>
-                  </div>
-                  </div>
-                  <div class="flex gap-2 mt-4">
-                  <RouterLink :to="`/inventario/${item.id}/editar`" class="flex-1">
-                  <Button variant="outline" size="sm" class="w-full">
-                      <Pencil class="h-4 w-4 mr-2" />
-                          Editar
-                          </Button>
-                       </RouterLink>
-                       <Button 
-                           variant="destructive" 
-                           size="sm"
-                           @click="deleteItem(item.id, item.nome)"
-                           title="Deletar item"
-                       >
-                           <Trash2 class="h-4 w-4" />
-                       </Button>
-                   </div>
+                </div>
               </div>
+
+              <!-- Buttons -->
+              <div class="flex gap-2 mt-4">
+                <RouterLink :to="`/inventario/${item.id}/editar`" class="flex-1">
+                  <Button variant="outline" size="sm" class="w-full">
+                    <Pencil class="h-4 w-4 mr-2" />
+                    Editar
+                  </Button>
+                </RouterLink>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  @click="deleteItem(item.id, item.nome)"
+                  title="Deletar item"
+                >
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
