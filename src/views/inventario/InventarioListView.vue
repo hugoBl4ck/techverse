@@ -41,8 +41,6 @@ const itemsAgrupados = computed(() => {
     acc[tipo].push(item);
     return acc;
   }, {});
-  console.log('🔄 itemsAgrupados computado:', agrupados);
-  console.log('📊 items.value no computed:', items.value);
   return agrupados;
 });
 
@@ -90,15 +88,16 @@ async function fetchItems() {
       ...doc.data()
     }));
     console.log('📦 Inventário carregado:', items.value.length, 'itens');
-    console.log('📋 Itens:', items.value);
-    console.log('📊 isLoading:', isLoading.value);
-    console.log('🏷️ itemsAgrupados:', itemsAgrupados.value);
   } catch (error) {
     console.error('❌ Erro ao carregar inventário:', error);
     toast.error('Erro ao carregar inventário: ' + error.message);
   } finally {
     isLoading.value = false;
     console.log('✅ Finalizado - isLoading setado para false');
+    // Logs APÓS isLoading ser false
+    console.log('📋 Itens:', items.value);
+    console.log('📊 isLoading:', isLoading.value);
+    console.log('🏷️ itemsAgrupados keys:', Object.keys(itemsAgrupados.value));
   }
 }
 
@@ -143,6 +142,17 @@ watch(
       console.log('🎯 InventarioListView - StoreId pronto:', newStoreId);
       fetchItems();
     }
+  },
+  { immediate: true }
+);
+
+// Watch para quando items mudam
+watch(
+  () => items.value,
+  (newItems) => {
+    console.log('👀 Itens mudaram:', newItems.length, 'itens');
+    console.log('📊 isLoading agora é:', isLoading.value);
+    console.log('🗂️ Categorias encontradas:', Object.keys(itemsAgrupados.value));
   },
   { immediate: true }
 );
