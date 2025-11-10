@@ -19,6 +19,14 @@ const kitCounter = ref(0);
 const isLoading = ref(true);
 const { storeId, authReady } = useCurrentStore();
 
+// Watch para quando storeId está pronto
+watch(storeId, (newStoreId) => {
+  if (newStoreId) {
+    console.log('StoreId pronto:', newStoreId);
+    fetchItems();
+  }
+}, { immediate: true });
+
 const fetchItems = async () => {
   isLoading.value = true;
   try {
@@ -45,7 +53,7 @@ const fetchItems = async () => {
 
 onMounted(async () => {
   await authReady;
-  fetchItems();
+  // fetchItems é chamado automaticamente pelo watch quando storeId está pronto
 });
 
 

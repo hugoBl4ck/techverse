@@ -71,7 +71,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Copy } from 'lucide-vue-next';
 
-
 const items = ref([]);
 const selectedItemId = ref(null);
 const isLoadingItems = ref(true);
@@ -79,6 +78,14 @@ const isGenerating = ref(false);
 const generatedCopy = ref(null);
 const error = ref(null);
 const { storeId, authReady } = useCurrentStore();
+
+// Watch para quando storeId está pronto
+watch(storeId, (newStoreId) => {
+  if (newStoreId) {
+    console.log('Marketing: StoreId pronto:', newStoreId);
+    fetchItems();
+  }
+}, { immediate: true });
 
 async function fetchItems() {
   isLoadingItems.value = true;
@@ -169,6 +176,6 @@ function getPlatformDescription(platform) {
 
 onMounted(async () => {
   await authReady;
-  fetchItems();
+  // fetchItems é chamado automaticamente pelo watch quando storeId está pronto
 });
 </script>
