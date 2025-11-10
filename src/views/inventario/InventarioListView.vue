@@ -33,7 +33,7 @@ function getCategoryColors(item) {
 
 // Agrupa os itens por categoria
 const itemsAgrupados = computed(() => {
-  return items.value.reduce((acc, item) => {
+  const agrupados = items.value.reduce((acc, item) => {
     const tipo = item.tipo || 'outro';
     if (!acc[tipo]) {
       acc[tipo] = [];
@@ -41,6 +41,9 @@ const itemsAgrupados = computed(() => {
     acc[tipo].push(item);
     return acc;
   }, {});
+  console.log('🔄 itemsAgrupados computado:', agrupados);
+  console.log('📊 items.value no computed:', items.value);
+  return agrupados;
 });
 
 // Mapeia os tipos para nomes mais amigáveis
@@ -226,8 +229,13 @@ const dotPatternStyle = `
       </Button>
     </div>
 
+    <!-- Debug Info -->
+    <div v-if="!isLoading" class="mb-4 p-3 bg-blue-100 text-blue-900 rounded text-sm">
+      <p><strong>Debug:</strong> items.length={{ items.length }}, isLoading={{ isLoading }}, keys={{ Object.keys(itemsAgrupados).join(', ') }}</p>
+    </div>
+
     <!-- Seções de Categoria -->
-    <div v-else class="space-y-10">
+    <div v-if="!isLoading && items.length > 0" class="space-y-10">
       <section v-for="tipo in orderedCategories" :key="tipo" v-if="itemsAgrupados[tipo]">
         <h2 class="text-xl font-semibold mb-4 capitalize border-b pb-2">
           {{ nomesCategoria[tipo] || tipo }} ({{ itemsAgrupados[tipo].length }})
