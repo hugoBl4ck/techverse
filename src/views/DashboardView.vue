@@ -25,16 +25,21 @@ const promotions = ref([]);
 
 const loadServices = async () => {
   if (!storeId.value) {
-    console.error('StoreId não disponível');
+    console.error('StoreId não disponível no Dashboard');
     isLoading.value = false;
     return;
   }
 
   isLoading.value = true;
+  console.log('Dashboard - Carregando serviços para store:', storeId.value);
+
   try {
     const servicesCol = collection(db, 'stores', storeId.value, 'ordens_servico');
     const q = query(servicesCol, orderBy('date', 'desc'));
     const servicesSnapshot = await getDocs(q);
+    
+    console.log(`Dashboard - ${servicesSnapshot.docs.length} serviços carregados`);
+    
     allServices.value = servicesSnapshot.docs.map(doc => {
       const data = doc.data();
       return {
@@ -43,8 +48,9 @@ const loadServices = async () => {
         date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
       };
     });
+    console.log('Dashboard - Serviços processados:', allServices.value.length);
   } catch (error) {
-    console.error('Erro ao carregar serviços:', error);
+    console.error('Erro ao carregar serviços no Dashboard:', error);
   } finally {
     isLoading.value = false;
   }
@@ -61,8 +67,18 @@ const fetchPromotions = async () => {
 
 onMounted(() => {
   fetchPromotions();
-  loadServices(); // Added this line
 });
+
+// Monitora mudanças no storeId para carregar dados quando disponível
+watch(
+  () => storeId.value,
+  (newStoreId) => {
+    if (newStoreId) {
+      loadServices();
+    }
+  },
+  { immediate: true }
+);
 
 const monthlyRevenue = computed(() => {
   if (!allServices.value) return 0;
@@ -81,14 +97,16 @@ const monthlyRevenue = computed(() => {
   <div class="container mx-auto py-8">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">Serviços Realizados</h1>
-      <router-link to="/servicos/novo">
-        <Button>+ Novo Serviço</Button>
+      <router-link to="/ordens-servico/nova">
+        <Button>+ Nova Ordem de Serviço</Button>
       </router-link>
     </div>
-    <div v-if="isLoading" class="text-center">
-      <p>Carregando...</p>
+    
+    <div v-if="isLoading" class="text-center py-8">
+      <p>Carregando dados...</p>
     </div>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    
+    <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div class="lg:col-span-2">
         <Card>
           <CardHeader>
@@ -108,15 +126,16 @@ const monthlyRevenue = computed(() => {
                 </TableHeader>
                 <TableBody>
                 <TableRow v-for="service in allServices" :key="service.id">
-                <TableCell class="font-medium">{{ service.customerName }}</TableCell>
-                <TableCell>{{ service.date.toLocaleDateString() }}</TableCell>
-                <TableCell>R$ {{ (service.totalAmount || 0).toFixed(2) }}</TableCell>
-                <TableCell>
-                <ul class="list-disc list-inside">
-                <li v-for="(obs, index) in service.observations" :key="index">{{ obs }}</li>
-                </ul>
-                </TableCell>
-                <TableCell class="text-sm text-muted-foreground">{{ service.computerConfiguration }}</TableCell>
+                  <TableCell class="font-medium">{{ service.customerName }}</TableCell>
+                  <TableCell>{{ service.date?.toLocaleDateString?.() || 'N/A' }}</TableCell>
+                  <TableCell>R$ {{ (service.totalAmount || 0).toFixed(2) }}</TableCell>
+                  <TableCell>
+                    <ul v-if="service.observations" class="list-disc list-inside">
+                      <li v-for="(obs, index) in (Array.isArray(service.observations) ? service.observations : [service.observations])" :key="index">{{ obs }}</li>
+                    </ul>
+                    <span v-else class="text-muted-foreground text-sm">-</span>
+                  </TableCell>
+                  <TableCell class="text-sm text-muted-foreground">{{ service.computerConfiguration || '-' }}</TableCell>
                 </TableRow>
                 </TableBody>
               </Table>

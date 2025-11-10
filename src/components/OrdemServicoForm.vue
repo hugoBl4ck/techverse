@@ -43,6 +43,16 @@ onMounted(() => {
   loadData();
 });
 
+// Carrega dados novamente quando o ID muda (útil para edição)
+watch(
+  () => props.id,
+  (newId) => {
+    if (newId && storeId.value) {
+      loadData();
+    }
+  }
+);
+
 const clientes = ref([]);
 const ordemServico = ref({
   customerId: null,
