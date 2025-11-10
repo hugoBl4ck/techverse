@@ -57,7 +57,7 @@ const clientes = ref([]);
 const ordemServico = ref({
   customerId: null,
   customerName: '',
-  date: new Date().toISOString().slice(0, 16),
+  date: new Date(),
   price: 0,
   observations: '',
   computerConfiguration: '',
@@ -81,11 +81,31 @@ const selectedServicoCatalogo = computed(() =>
 // Format date for datetime-local input
 const dateForInput = computed({
   get() {
-    if (!ordemServico.value.date) return '';
-    const date = ordemServico.value.date instanceof Date 
-      ? ordemServico.value.date 
-      : new Date(ordemServico.value.date);
-    return date.toISOString().slice(0, 16);
+    try {
+      if (!ordemServico.value.date) return '';
+      
+      let date;
+      if (ordemServico.value.date instanceof Date) {
+        date = ordemServico.value.date;
+      } else if (typeof ordemServico.value.date === 'string') {
+        date = new Date(ordemServico.value.date);
+      } else if (ordemServico.value.date?.toDate) {
+        // Firebase Timestamp
+        date = ordemServico.value.date.toDate();
+      } else {
+        date = new Date(ordemServico.value.date);
+      }
+      
+      if (isNaN(date.getTime())) {
+        console.warn('Data inválida:', ordemServico.value.date);
+        return new Date().toISOString().slice(0, 16);
+      }
+      
+      return date.toISOString().slice(0, 16);
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return new Date().toISOString().slice(0, 16);
+    }
   },
   set(value) {
     ordemServico.value.date = value ? new Date(value) : new Date();
