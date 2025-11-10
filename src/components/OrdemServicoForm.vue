@@ -62,6 +62,8 @@ const ordemServico = ref({
   observations: '',
   computerConfiguration: '',
   items: [],
+  discount: 0,
+  surcharge: 0,
 });
 const selectedClienteId = ref('');
 const catalogoServicos = ref([]);
@@ -88,9 +90,15 @@ const filteredItems = computed(() => {
   );
 });
 
-const totalAmount = computed(() => {
+const subtotal = computed(() => {
   const itemsTotal = addedItems.value.reduce((total, item) => total + ((item.precoVenda || item.preco || 0) * item.quantity), 0);
   return (ordemServico.value.price || 0) + itemsTotal;
+});
+
+const totalAmount = computed(() => {
+  const discount = ordemServico.value.discount || 0;
+  const surcharge = ordemServico.value.surcharge || 0;
+  return Math.max(0, subtotal.value - discount + surcharge);
 });
 
 const loadData = async () => {
@@ -211,6 +219,9 @@ async function handleSubmit() {
     observations: String(ordemServico.value.observations || '').split('\n').filter(o => o.trim()),
     computerConfiguration: ordemServico.value.computerConfiguration || '',
     items: addedItems.value,
+    subtotal: subtotal.value,
+    discount: ordemServico.value.discount || 0,
+    surcharge: ordemServico.value.surcharge || 0,
     totalAmount: totalAmount.value,
     date: ordemServico.value.date || new Date(),
   };
@@ -292,6 +303,18 @@ async function handleSubmit() {
             <Label for="computerConfiguration">Configuração do Equipamento</Label>
             <Textarea id="computerConfiguration" v-model="ordemServico.computerConfiguration" placeholder="Descreva a configuração do equipamento." rows="3" />
           </div>
+
+          <div class="grid gap-4 pt-4 border-t">
+            <h3 class="font-semibold">Ajustes Financeiros</h3>
+            <div class="grid gap-2">
+              <Label for="discount">Desconto</Label>
+              <Input id="discount" v-model.number="ordemServico.discount" type="number" placeholder="0.00" min="0" step="0.01" />
+            </div>
+            <div class="grid gap-2">
+              <Label for="surcharge">Acréscimo</Label>
+              <Input id="surcharge" v-model.number="ordemServico.surcharge" type="number" placeholder="0.00" min="0" step="0.01" />
+            </div>
+          </div>
         </div>
 
         <!-- Coluna da Direita: Itens/Produtos -->
@@ -338,12 +361,26 @@ async function handleSubmit() {
         </div>
       </div>
     </CardContent>
-    <CardFooter class="flex justify-between items-center mt-4">
-        <div class="text-2xl font-bold">
-            <span>Total: </span>
+    <CardFooter class="flex flex-col gap-4 mt-4">
+        <div class="w-full">
+          <div class="flex justify-between text-sm mb-2">
+            <span>Subtotal:</span>
+            <span>R$ {{ subtotal.toFixed(2) }}</span>
+          </div>
+          <div v-if="ordemServico.discount > 0" class="flex justify-between text-sm mb-2 text-red-600">
+            <span>Desconto:</span>
+            <span>- R$ {{ ordemServico.discount.toFixed(2) }}</span>
+          </div>
+          <div v-if="ordemServico.surcharge > 0" class="flex justify-between text-sm mb-2 text-orange-600">
+            <span>Acréscimo:</span>
+            <span>+ R$ {{ ordemServico.surcharge.toFixed(2) }}</span>
+          </div>
+          <div class="flex justify-between text-2xl font-bold pt-2 border-t">
+            <span>Total:</span>
             <span>R$ {{ totalAmount.toFixed(2) }}</span>
+          </div>
         </div>
-        <Button @click="handleSubmit" :disabled="isLoading || !storeId">
+        <Button @click="handleSubmit" :disabled="isLoading || !storeId" class="w-full">
           {{ isLoading ? (isEditMode ? 'Salvando...' : 'Criando...') : (isEditMode ? 'Salvar Alterações' : 'Salvar Ordem de Serviço') }}
         </Button>
     </CardFooter>
