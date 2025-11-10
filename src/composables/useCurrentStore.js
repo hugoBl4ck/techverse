@@ -1,11 +1,15 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { auth } from '@/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 
 const currentUser = ref(null);
 const isLoading = ref(true);
+let authReadyResolver = null;
 
-// Initialize auth state listener (singleton)
+const authReady = new Promise(resolve => {
+  authReadyResolver = resolve;
+});
+
 let initialized = false;
 
 function initializeAuthListener() {
@@ -15,6 +19,10 @@ function initializeAuthListener() {
   onAuthStateChanged(auth, (user) => {
     currentUser.value = user;
     isLoading.value = false;
+    if (authReadyResolver) {
+      authReadyResolver(user);
+      authReadyResolver = null; // Resolve only once
+    }
   });
 }
 
@@ -34,5 +42,7 @@ export function useCurrentStore() {
     currentUser,
     isAuthenticated,
     isLoading,
+    authReady, // Expose the promise
   };
 }
+

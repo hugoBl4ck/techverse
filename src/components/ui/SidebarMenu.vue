@@ -2,7 +2,7 @@
   <h2 class="mb-4 text-xl font-display font-semibold">Menu</h2>
   <nav class="flex flex-col gap-1">
     
-    <RouterLink to="/" v-slot="{ isExactActive }">
+    <RouterLink to="/" v-slot="{ isExactActive }" @click="handleNavigate">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -15,7 +15,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink to="/clientes" v-slot="{ isExactActive }">
+    <RouterLink to="/clientes" v-slot="{ isExactActive }" @click="handleNavigate">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -39,19 +39,19 @@
         </AccordionTrigger>
 
         <AccordionContent class="pl-6 pt-1">
-          <RouterLink to="/inventario">
+          <RouterLink to="/inventario" @click="handleNavigate">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
               <Archive class="size-4" />
               Listar Itens
             </Button>
           </RouterLink>
-          <RouterLink to="/inventario/novo">
+          <RouterLink to="/inventario/novo" @click="handleNavigate">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
               <PlusCircle class="size-4" />
               Cadastrar Itens
-                        </Button>
+            </Button>
           </RouterLink>
-          <RouterLink to="/inventario/importar-ia">
+          <RouterLink to="/inventario/importar-ia" @click="handleNavigate">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
               <Wand2 class="size-4" />
               Importar com IA
@@ -68,19 +68,19 @@
               </span>
             </AccordionTrigger>
             <AccordionContent class="pl-6 pt-1">
-              <RouterLink to="/ordens-servico/nova">
+              <RouterLink to="/ordens-servico/nova" @click="handleNavigate">
                 <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
                   <PlusCircle class="size-4" />
                   Nova Ordem de Serviço
                 </Button>
               </RouterLink>
-              <RouterLink to="/ordens-servico">
+              <RouterLink to="/ordens-servico" @click="handleNavigate">
                 <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
                   <List class="size-4" />
                   Listar Ordens de Serviço
                 </Button>
               </RouterLink>
-              <RouterLink to="/catalogo-servicos">
+              <RouterLink to="/catalogo-servicos" @click="handleNavigate">
                 <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal">
                   <ListChecks class="size-4" />
                   Catálogo de Serviços
@@ -90,7 +90,7 @@
           </AccordionItem>
         </Accordion>
     
-    <RouterLink to="/kits/builder" v-slot="{ isExactActive }">
+    <RouterLink to="/kits/builder" v-slot="{ isExactActive }" @click="handleNavigate">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -103,7 +103,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink to="/marketing" v-slot="{ isExactActive }">
+    <RouterLink to="/marketing" v-slot="{ isExactActive }" @click="handleNavigate">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -116,7 +116,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink to="/exportar-dados" v-slot="{ isExactActive }">
+    <RouterLink to="/exportar-dados" v-slot="{ isExactActive }" @click="handleNavigate">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -129,7 +129,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink v-if="isAdmin" to="/admin" v-slot="{ isExactActive }">
+    <RouterLink v-if="isAdmin" to="/admin" v-slot="{ isExactActive }" @click="handleNavigate">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -146,25 +146,31 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { computed } from 'vue'
+import { useCurrentStore } from '@/composables/useCurrentStore'
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List, Download } from 'lucide-vue-next'
 
-const isAdmin = ref(false)
-const auth = getAuth()
-
-onMounted(() => {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // A verificação do e-mail é uma solução temporária e INSEGURA.
-      // A forma correta é usar Firebase Custom Claims.
-      isAdmin.value = user.email === 'hugovieira.eng@gmail.com'
-    } else {
-      isAdmin.value = false
-    }
-  })
+const props = defineProps({
+  onNavigate: {
+    type: Function,
+    required: false
+  }
 })
+
+const { currentUser } = useCurrentStore()
+
+const isAdmin = computed(() => {
+  // A verificação do e-mail é uma solução temporária e INSEGURA.
+  // A forma correta é usar Firebase Custom Claims.
+  return currentUser.value?.email === 'hugovieira.eng@gmail.com'
+})
+
+const handleNavigate = () => {
+  if (props.onNavigate) {
+    props.onNavigate()
+  }
+}
 </script>

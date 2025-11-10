@@ -67,23 +67,21 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { 
   signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, // Import for sign up
+  createUserWithEmailAndPassword,
   GoogleAuthProvider, 
   signInWithPopup 
 } from 'firebase/auth'
-// useTenant is no longer needed here
 import { auth } from '@/firebase/config'
 
-const emit = defineEmits(['loggedIn'])
+const router = useRouter()
 const email = ref('')
 const password = ref('')
 const error = ref(null)
-// const { setTenant } = useTenant() // No longer needed
-const isLoginMode = ref(true) // State to toggle between login/signup
+const isLoginMode = ref(true)
 
-// Main handler for the form submission
 const handleSubmit = async () => {
   if (isLoginMode.value) {
     await handleLogin()
@@ -96,8 +94,7 @@ const handleLogin = async () => {
   error.value = null
   try {
     await signInWithEmailAndPassword(auth, email.value, password.value)
-    // The tenantId is now set in App.vue's onAuthStateChanged
-    emit('loggedIn')
+    router.push(router.currentRoute.value.query.redirect || '/')
   } catch (err) {
     error.value = err.message
   }
@@ -107,8 +104,7 @@ const handleSignUp = async () => {
   error.value = null
   try {
     await createUserWithEmailAndPassword(auth, email.value, password.value)
-    // The tenantId is now set in App.vue's onAuthStateChanged
-    emit('loggedIn')
+    router.push(router.currentRoute.value.query.redirect || '/')
   } catch (err) {
     error.value = err.message
   }
@@ -118,8 +114,7 @@ const handleGoogleLogin = async () => {
   error.value = null
   try {
     await signInWithPopup(auth, new GoogleAuthProvider())
-    // The tenantId is now set in App.vue's onAuthStateChanged
-    emit('loggedIn')
+    router.push(router.currentRoute.value.query.redirect || '/')
   } catch (err) {
     error.value = err.message
   }

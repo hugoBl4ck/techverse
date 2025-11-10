@@ -56,7 +56,7 @@
             <X class="size-6" />
           </Button>
         </div>
-        <SidebarMenu @click="showMobileSidebar = false" />
+        <SidebarMenu :on-navigate="closeMobileSidebar" />
       </div>
     </Transition>
 
@@ -126,6 +126,10 @@ const logout = async () => {
 const isDark = ref(false)
 const isMobile = ref(false)
 const showMobileSidebar = ref(false)
+
+const closeMobileSidebar = () => {
+  showMobileSidebar.value = false
+}
 
 const handleThemeChange = (newIsDark) => {
   isDark.value = newIsDark

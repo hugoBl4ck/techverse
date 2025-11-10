@@ -1,10 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AppLayout from '@/layouts/AppLayout.vue'
+import { useCurrentStore } from '@/composables/useCurrentStore'
 
 const routes = [
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/LoginView.vue'),
+    meta: { title: 'Login', requiresAuth: false }
+  },
+  {
     path: '/admin',
-    component: AppLayout, // Assuming admin panel uses the same layout
+    component: AppLayout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -17,6 +25,7 @@ const routes = [
   {
     path: '/',
     component: AppLayout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -127,7 +136,7 @@ const routes = [
       {
         path: 'kits/:id',
         name: 'KitDetalhe',
-        component: () => import('@/views/kits/KitDetalheView.vue'),
+        component: () => import('@/views/kits/KitDetalheView..vue'),
         props: true,
         meta: { title: 'Detalhes do Kit' }
       },
@@ -149,7 +158,7 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFoundView.vue'),
-    meta: { title: 'Página Não Encontrada' }
+    meta: { title: 'Página Não Encontrada', requiresAuth: false }
   }
 ]
 
@@ -159,8 +168,26 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  const { authReady, isAuthenticated } = useCurrentStore();
+
+  // Wait for firebase auth to be ready
+  await authReady;
+
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
   document.title = `TechVerse - ${to.meta.title || 'Gestão'} | Criado por Hugo, BLK Studio`;
-  next();
+
+  if (requiresAuth && !isAuthenticated.value) {
+    // This route requires auth, check if logged in
+    // if not, redirect to login page.
+    next({ name: 'Login', query: { redirect: to.fullPath } });
+  } else if (to.name === 'Login' && isAuthenticated.value) {
+    // If user is authenticated, redirect away from login page
+    next({ name: 'Dashboard' });
+  } else {
+    // make sure to always call next()!
+    next();
+  }
 });
 
 export default router
