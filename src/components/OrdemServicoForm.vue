@@ -57,7 +57,7 @@ const clientes = ref([]);
 const ordemServico = ref({
   customerId: null,
   customerName: '',
-  date: new Date(),
+  date: new Date().toISOString().slice(0, 16),
   price: 0,
   observations: '',
   computerConfiguration: '',
@@ -77,6 +77,20 @@ const selectedCliente = computed(() =>
 const selectedServicoCatalogo = computed(() => 
   catalogoServicos.value.find(s => s.id === selectedServicoId.value) || null
 );
+
+// Format date for datetime-local input
+const dateForInput = computed({
+  get() {
+    if (!ordemServico.value.date) return '';
+    const date = ordemServico.value.date instanceof Date 
+      ? ordemServico.value.date 
+      : new Date(ordemServico.value.date);
+    return date.toISOString().slice(0, 16);
+  },
+  set(value) {
+    ordemServico.value.date = value ? new Date(value) : new Date();
+  }
+});
 
 // Item management
 const inventoryItems = ref([]);
@@ -223,7 +237,9 @@ async function handleSubmit() {
     discount: ordemServico.value.discount || 0,
     surcharge: ordemServico.value.surcharge || 0,
     totalAmount: totalAmount.value,
-    date: ordemServico.value.date || new Date(),
+    date: ordemServico.value.date instanceof Date 
+      ? ordemServico.value.date 
+      : new Date(ordemServico.value.date || new Date()),
   };
 
   try {
@@ -277,6 +293,10 @@ async function handleSubmit() {
                 </SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div class="grid gap-2">
+            <Label for="data">Data da Ordem de Serviço</Label>
+            <Input id="data" v-model="dateForInput" type="datetime-local" />
           </div>
           <div class="grid gap-2">
             <Label for="servico-catalogo">Serviço do Catálogo (Opcional)</Label>
