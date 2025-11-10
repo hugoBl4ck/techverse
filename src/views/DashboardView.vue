@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { db } from '@/firebase/config.js';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { useCurrentStore } from '@/composables/useCurrentStore';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import {
 } from '@/components/ui/table';
 import Calendar from '@/components/ui/calendar/Calendar.vue';
 
-
+const { storeId } = useCurrentStore();
 
 const allServices = ref([]);
 const isLoading = ref(true);
@@ -23,16 +24,30 @@ const selectedDate = ref(new Date());
 const promotions = ref([]);
 
 const loadServices = async () => {
+  if (!storeId.value) {
+    console.error('StoreId não disponível');
+    isLoading.value = false;
+    return;
+  }
+
   isLoading.value = true;
-  const servicesCol = collection(db, 'servicos');
-  const q = query(servicesCol, orderBy('date', 'desc'));
-  const servicesSnapshot = await getDocs(q);
-  allServices.value = servicesSnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-    date: doc.data().date.toDate(), // Convert Firestore Timestamp to JavaScript Date
-  }));
-  isLoading.value = false;
+  try {
+    const servicesCol = collection(db, 'stores', storeId.value, 'ordens_servico');
+    const q = query(servicesCol, orderBy('date', 'desc'));
+    const servicesSnapshot = await getDocs(q);
+    allServices.value = servicesSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
+      };
+    });
+  } catch (error) {
+    console.error('Erro ao carregar serviços:', error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const fetchPromotions = async () => {
@@ -58,7 +73,7 @@ const monthlyRevenue = computed(() => {
       const serviceDate = new Date(service.date);
       return serviceDate.getMonth() === currentMonth && serviceDate.getFullYear() === currentYear;
     })
-    .reduce((total, service) => total + service.price, 0);
+    .reduce((total, service) => total + (service.totalAmount || 0), 0);
 });
 </script>
 
@@ -92,17 +107,17 @@ const monthlyRevenue = computed(() => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow v-for="service in allServices" :key="service.id">
-                    <TableCell class="font-medium">{{ service.customerName }}</TableCell>
-                    <TableCell>{{ service.date.toLocaleDateString() }}</TableCell>
-                    <TableCell>R$ {{ service.price.toFixed(2) }}</TableCell>
-                    <TableCell>
-                      <ul class="list-disc list-inside">
-                        <li v-for="(obs, index) in service.observations" :key="index">{{ obs }}</li>
-                      </ul>
-                    </TableCell>
-                    <TableCell class="text-sm text-muted-foreground">{{ service.computerConfiguration }}</TableCell>
-                  </TableRow>
+                <TableRow v-for="service in allServices" :key="service.id">
+                <TableCell class="font-medium">{{ service.customerName }}</TableCell>
+                <TableCell>{{ service.date.toLocaleDateString() }}</TableCell>
+                <TableCell>R$ {{ (service.totalAmount || 0).toFixed(2) }}</TableCell>
+                <TableCell>
+                <ul class="list-disc list-inside">
+                <li v-for="(obs, index) in service.observations" :key="index">{{ obs }}</li>
+                </ul>
+                </TableCell>
+                <TableCell class="text-sm text-muted-foreground">{{ service.computerConfiguration }}</TableCell>
+                </TableRow>
                 </TableBody>
               </Table>
             </div>
