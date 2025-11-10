@@ -60,6 +60,7 @@ import { ref, onMounted, watch } from 'vue';
 
 import { db } from '@/firebase/config.js';
 import { collection, getDocs } from 'firebase/firestore';
+import { useCurrentStore } from '@/composables/useCurrentStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -72,15 +73,25 @@ const selectedItemId = ref(null);
 const isLoadingItems = ref(true);
 const isGenerating = ref(false);
 const generatedCopy = ref(null);
+const { currentUser } = useCurrentStore();
 
 async function fetchItems() {
   isLoadingItems.value = true;
   try {
-    // TEMPORÁRIO: Usar estrutura antiga até migrar este componente
-    // TODO: Migrar para stores/{storeId}/items
-    const itemsCol = collection(db, 'itens');
+    const storeId = currentUser.value?.storeId;
+    if (!storeId) {
+      console.error("Nenhuma loja encontrada para o usuário");
+      alert("Erro ao carregar inventário. Nenhuma loja encontrada.");
+      return;
+    }
+
+    const itemsCol = collection(db, `stores/${storeId}/items`);
     const itemsSnapshot = await getDocs(itemsCol);
     items.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    if (items.value.length === 0) {
+      alert("Nenhum item cadastrado no inventário. Cadastre itens primeiro.");
+    }
   } catch (error) {
     console.error("Erro ao buscar itens do inventário:", error);
     alert("Erro ao carregar inventário. Verifique se há itens cadastrados.");
