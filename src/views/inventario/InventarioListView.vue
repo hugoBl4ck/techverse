@@ -44,58 +44,48 @@ const itemsAgrupados = computed(() => {
   return agrupados;
 });
 
-// Mapeia os tipos para nomes mais amigáveis
-const nomesCategoria = {
-  cpu: 'CPUs',
+// Mesma lógica do KitBuilder que funciona
+const categoriaLabels = {
   'placa-mae': 'Placas-Mãe',
-  ram: 'Memórias RAM',
+  cpu: 'CPUs',
   gpu: 'Placas de Vídeo',
+  ram: 'Memórias RAM',
   armazenamento: 'Armazenamento',
   fonte: 'Fontes de Alimentação',
   gabinete: 'Gabinetes',
+  watercooler: 'Watercoolers',
+  aircooler: 'Air Coolers',
+  ventoinhas: 'Ventoinhas',
+  'pasta termica': 'Pasta Térmica',
+  mouse: 'Mouses',
+  teclado: 'Teclados',
+  controle: 'Controles',
+  controladoras: 'Controladoras',
   outro: 'Outros'
 };
 
-const defaultCategoryOrder = [
-  'placa-mae',
-  'cpu',
-  'gpu',
-  'ram',
-  'armazenamento',
-  'fonte',
-  'gabinete',
-  'watercooler',
-  'aircooler',
-  'ventoinhas',
-  'pasta termica',
-  'mouse',
-  'teclado',
-  'controle',
-  'controladoras',
-  'outro',
-];
+const groupedItems = computed(() => {
+  const groups = Object.entries(categoriaLabels).reduce(
+    (acc, [type, label]) => {
+      acc[type] = { label, items: [] };
+      return acc;
+    },
+    {}
+  );
 
-// Ordena as categorias encontradas, colocando as conhecidas primeiro
-const orderedCategories = computed(() => {
-  const encontradas = Object.keys(itemsAgrupados.value);
-  const ordenadas = [];
-  
-  // Adiciona categorias na ordem padrão
-  for (const cat of defaultCategoryOrder) {
-    if (encontradas.includes(cat)) {
-      ordenadas.push(cat);
+  items.value.forEach((item) => {
+    const tipo = item.tipo || 'outro';
+    if (groups[tipo]) {
+      groups[tipo].items.push(item);
+    } else {
+      if (!groups[tipo]) {
+        groups[tipo] = { label: tipo, items: [] };
+      }
+      groups[tipo].items.push(item);
     }
-  }
-  
-  // Adiciona categorias desconhecidas no final
-  for (const cat of encontradas) {
-    if (!ordenadas.includes(cat)) {
-      ordenadas.push(cat);
-    }
-  }
-  
-  console.log('📋 orderedCategories:', ordenadas);
-  return ordenadas;
+  });
+
+  return Object.values(groups).filter((group) => group.items.length > 0);
 });
 
 async function fetchItems() {
@@ -177,16 +167,7 @@ watch(
   { immediate: true }
 );
 
-// Watch para quando items mudam
-watch(
-  () => items.value,
-  (newItems) => {
-    console.log('👀 Itens mudaram:', newItems.length, 'itens');
-    console.log('📊 isLoading agora é:', isLoading.value);
-    console.log('🗂️ Categorias encontradas:', Object.keys(itemsAgrupados.value));
-  },
-  { immediate: true }
-);
+
 
 // Estilo para o padrão de pontos a ser injetado no head
 const dotPatternStyle = `
@@ -270,22 +251,17 @@ const dotPatternStyle = `
       </Button>
     </div>
 
-    <!-- Debug Info -->
-    <div v-if="!isLoading" class="mb-4 p-3 bg-blue-100 text-blue-900 rounded text-sm">
-      <p><strong>Debug:</strong> items.length={{ items.length }}, isLoading={{ isLoading }}, keys={{ Object.keys(itemsAgrupados).join(', ') }}</p>
-    </div>
-
     <!-- Seções de Categoria -->
     <div v-if="!isLoading && items.length > 0" class="space-y-10">
-      <section v-for="tipo in orderedCategories" :key="tipo" v-if="itemsAgrupados[tipo]">
+      <section v-for="group in groupedItems" :key="group.label">
         <h2 class="text-xl font-semibold mb-4 capitalize border-b pb-2">
-          {{ nomesCategoria[tipo] || tipo }} ({{ itemsAgrupados[tipo].length }})
+          {{ group.label }} ({{ group.items.length }})
         </h2>
 
         <!-- CARDS VIEW -->
         <div v-if="viewMode === 'cards'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div 
-            v-for="(item, index) in itemsAgrupados[tipo]" 
+            v-for="(item, index) in group.items" 
             :key="item.id"
             :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} group rounded-lg overflow-hidden border bg-card shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 flex flex-col card-hover`"
           >
@@ -348,7 +324,7 @@ const dotPatternStyle = `
             </thead>
             <tbody>
               <tr 
-                v-for="item in itemsAgrupados[tipo]"
+                v-for="item in group.items"
                 :key="item.id"
                 class="border-b hover:bg-muted/50 transition-colors"
               >
