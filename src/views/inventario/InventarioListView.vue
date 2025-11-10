@@ -56,7 +56,7 @@ const nomesCategoria = {
   outro: 'Outros'
 };
 
-const orderedCategories = [
+const defaultCategoryOrder = [
   'placa-mae',
   'cpu',
   'gpu',
@@ -64,8 +64,39 @@ const orderedCategories = [
   'armazenamento',
   'fonte',
   'gabinete',
+  'watercooler',
+  'aircooler',
+  'ventoinhas',
+  'pasta termica',
+  'mouse',
+  'teclado',
+  'controle',
+  'controladoras',
   'outro',
 ];
+
+// Ordena as categorias encontradas, colocando as conhecidas primeiro
+const orderedCategories = computed(() => {
+  const encontradas = Object.keys(itemsAgrupados.value);
+  const ordenadas = [];
+  
+  // Adiciona categorias na ordem padrão
+  for (const cat of defaultCategoryOrder) {
+    if (encontradas.includes(cat)) {
+      ordenadas.push(cat);
+    }
+  }
+  
+  // Adiciona categorias desconhecidas no final
+  for (const cat of encontradas) {
+    if (!ordenadas.includes(cat)) {
+      ordenadas.push(cat);
+    }
+  }
+  
+  console.log('📋 orderedCategories:', ordenadas);
+  return ordenadas;
+});
 
 async function fetchItems() {
   if (!storeId.value) {
