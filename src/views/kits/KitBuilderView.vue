@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { db } from '@/firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
+import { useCurrentStore } from '@/composables/useCurrentStore';
 
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
@@ -16,11 +17,17 @@ const inventario = ref([]);
 const kitsNaTela = ref([]);
 const kitCounter = ref(0);
 const isLoading = ref(true);
+const { currentUser } = useCurrentStore();
 
 const fetchItems = async () => {
   isLoading.value = true;
   try {
-    const itemsCol = collection(db, 'itens');
+    const storeId = currentUser.value?.storeId;
+    if (!storeId) {
+      console.error("Nenhuma loja encontrada para o usuário");
+      return;
+    }
+    const itemsCol = collection(db, `stores/${storeId}/itens`);
     const itemsSnapshot = await getDocs(itemsCol);
     inventario.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {

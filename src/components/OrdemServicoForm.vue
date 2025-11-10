@@ -106,7 +106,7 @@ const loadData = async () => {
     console.log('Clientes carregados:', clientes.value.length);
 
     // Load inventory items
-    const inventoryCol = collection(db, 'stores', storeId.value, 'items');
+    const inventoryCol = collection(db, 'stores', storeId.value, 'itens');
     const inventorySnapshot = await getDocs(inventoryCol);
     inventoryItems.value = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log('Inventário carregado:', inventoryItems.value.length);

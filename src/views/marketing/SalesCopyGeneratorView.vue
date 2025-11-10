@@ -85,7 +85,7 @@ async function fetchItems() {
       return;
     }
 
-    const itemsCol = collection(db, `stores/${storeId}/items`);
+    const itemsCol = collection(db, `stores/${storeId}/itens`);
     const itemsSnapshot = await getDocs(itemsCol);
     items.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     

@@ -74,7 +74,7 @@ async function fetchItems() {
 
   isLoading.value = true;
   try {
-    const querySnapshot = await getDocs(collection(db, 'stores', storeId.value, 'items'))
+    const querySnapshot = await getDocs(collection(db, 'stores', storeId.value, 'itens'))
     items.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()

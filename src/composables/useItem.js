@@ -33,7 +33,7 @@ export function useItem(itemId = null) {
     if (!itemId || !storeId.value) return;
     isLoading.value = true;
     try {
-      const docRef = doc(db, 'stores', storeId.value, 'items', itemId);
+      const docRef = doc(db, 'stores', storeId.value, 'itens', itemId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -76,7 +76,7 @@ export function useItem(itemId = null) {
     error.value = null;
 
     try {
-      const itemCol = collection(db, 'stores', storeId.value, 'items');
+      const itemCol = collection(db, 'stores', storeId.value, 'itens');
       if (itemId) {
         const docRef = doc(itemCol, itemId);
         await updateDoc(docRef, { ...form });

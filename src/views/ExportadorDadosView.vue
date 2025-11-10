@@ -294,7 +294,7 @@ async function exportarInventario(formato) {
   isExporting.value = true;
 
   try {
-    const col = collection(db, 'stores', storeId.value, 'items');
+    const col = collection(db, 'stores', storeId.value, 'itens');
     const snapshot = await getDocs(col);
     
     const dados = snapshot.docs.map(doc => {
@@ -370,7 +370,7 @@ async function exportarTudo(formato) {
     const [clientesSnap, ordensSnap, itemsSnap, catalogoSnap] = await Promise.all([
       getDocs(collection(db, 'stores', storeId.value, 'clientes')),
       getDocs(collection(db, 'stores', storeId.value, 'ordens_servico')),
-      getDocs(collection(db, 'stores', storeId.value, 'items')),
+      getDocs(collection(db, 'stores', storeId.value, 'itens')),
       getDocs(collection(db, 'stores', storeId.value, 'catalogo_servicos')),
     ]);
 
