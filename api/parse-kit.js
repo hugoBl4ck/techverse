@@ -87,8 +87,7 @@ async function callPerplexity(texto, apiKey) {
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: texto }
-      ],
-      response_format: { type: 'json_object' } // Vamos tentar com o 'json_object' de novo
+      ]
     })
   });
 

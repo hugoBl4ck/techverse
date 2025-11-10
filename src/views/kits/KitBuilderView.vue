@@ -1,17 +1,19 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import { db } from '@/firebase/config';
-import { collection, getDocs } from 'firebase/firestore';
-import { useCurrentStore } from '@/composables/useCurrentStore';
+import { ref, computed, onMounted, watch } from "vue";
+import { db } from "@/firebase/config";
+import { collection, getDocs } from "firebase/firestore";
+import { useCurrentStore } from "@/composables/useCurrentStore";
 
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import KitMount from '@/components/kit/KitMount.vue';
-import ItemList from '@/components/kit/ItemList.vue';
-
-
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import KitMount from "@/components/kit/KitMount.vue";
+import ItemList from "@/components/kit/ItemList.vue";
 
 const inventario = ref([]);
 const kitsNaTela = ref([]);
@@ -20,32 +22,41 @@ const isLoading = ref(true);
 const { storeId, authReady } = useCurrentStore();
 
 // Watch para quando storeId está pronto
-watch(storeId, (newStoreId) => {
-  if (newStoreId) {
-    console.log('StoreId pronto:', newStoreId);
-    fetchItems();
-  }
-}, { immediate: true });
+watch(
+  storeId,
+  (newStoreId) => {
+    if (newStoreId) {
+      console.log("StoreId pronto:", newStoreId);
+      fetchItems();
+    }
+  },
+  { immediate: true }
+);
 
 const fetchItems = async () => {
   isLoading.value = true;
   try {
     const currentStoreId = storeId.value;
-    console.log('StoreId:', currentStoreId);
-    
+    console.log("📊 KitBuilder - StoreId:", currentStoreId);
+
     if (!currentStoreId) {
-      console.error("Nenhuma loja encontrada para o usuário");
+      console.error("❌ Nenhuma loja encontrada para o usuário");
+      isLoading.value = false;
       return;
     }
-    
+
     const itemsCol = collection(db, `stores/${currentStoreId}/itens`);
+    console.log("🔍 Buscando itens de:", `stores/${currentStoreId}/itens`);
     const itemsSnapshot = await getDocs(itemsCol);
-    
-    console.log('Itens encontrados:', itemsSnapshot.size);
-    inventario.value = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log('Inventário carregado:', inventario.value);
+
+    console.log("✅ Itens encontrados:", itemsSnapshot.size);
+    inventario.value = itemsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    console.log("📦 Inventário carregado:", inventario.value);
   } catch (error) {
-    console.error("Erro ao buscar itens:", error);
+    console.error("❌ Erro ao buscar itens:", error);
   } finally {
     isLoading.value = false;
   }
@@ -56,29 +67,29 @@ onMounted(async () => {
   // fetchItems é chamado automaticamente pelo watch quando storeId está pronto
 });
 
-
-
-
 const groupedItems = computed(() => {
   const importantTypes = {
-    cpu: 'CPUs',
-    'placa-mae': 'Placas-Mãe',
-    ram: 'Memória RAM',
-    gpu: 'Placas de Vídeo',
-    armazenamento: 'Armazenamento',
-    fonte: 'Fontes',
-    gabinete: 'Gabinetes',
-    watercooler: 'Watercoolers',
-    aircooler: 'Aircoolers',
-    ventoinhas: 'Ventoinhas',
+    cpu: "CPUs",
+    "placa-mae": "Placas-Mãe",
+    ram: "Memória RAM",
+    gpu: "Placas de Vídeo",
+    armazenamento: "Armazenamento",
+    fonte: "Fontes",
+    gabinete: "Gabinetes",
+    watercooler: "Watercoolers",
+    aircooler: "Aircoolers",
+    ventoinhas: "Ventoinhas",
   };
 
-  const groups = Object.entries(importantTypes).reduce((acc, [type, title]) => {
-    acc[type] = { title, items: [] };
-    return acc;
-  }, { outro: { title: 'Outros Itens', items: [] } });
+  const groups = Object.entries(importantTypes).reduce(
+    (acc, [type, title]) => {
+      acc[type] = { title, items: [] };
+      return acc;
+    },
+    { outro: { title: "Outros Itens", items: [] } }
+  );
 
-  inventario.value.forEach(item => {
+  inventario.value.forEach((item) => {
     if (groups[item.tipo]) {
       groups[item.tipo].items.push(item);
     } else {
@@ -86,13 +97,13 @@ const groupedItems = computed(() => {
     }
   });
 
-  return Object.values(groups).filter(group => group.items.length > 0);
+  return Object.values(groups).filter((group) => group.items.length > 0);
 });
 const usedItemIds = computed(() => {
   const ids = new Set();
-  kitsNaTela.value.forEach(kit => {
-    Object.values(kit.slots).forEach(slot => {
-      slot.forEach(item => {
+  kitsNaTela.value.forEach((kit) => {
+    Object.values(kit.slots).forEach((slot) => {
+      slot.forEach((item) => {
         ids.add(item.id);
       });
     });
@@ -114,7 +125,7 @@ function adicionarNovoKit() {
       fonte: [],
       gabinete: [],
       outros: [],
-    }
+    },
   });
 }
 
@@ -138,7 +149,8 @@ function removerKit(index) {
               :title="group.title"
               :list="group.items"
               :used-item-ids="usedItemIds"
-            />          </div>
+            />
+          </div>
         </ScrollArea>
       </Card>
     </ResizablePanel>
@@ -153,7 +165,7 @@ function removerKit(index) {
         </div>
         <ScrollArea class="flex-1 bg-muted/30">
           <div class="flex flex-wrap gap-6 p-6">
-<div v-for="(kit, index) in kitsNaTela" :key="kit.id">
+            <div v-for="(kit, index) in kitsNaTela" :key="kit.id">
               <KitMount :kit="kit" @delete="removerKit(index)" />
             </div>
           </div>
