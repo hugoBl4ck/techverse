@@ -74,7 +74,8 @@ import {
   GoogleAuthProvider, 
   signInWithPopup 
 } from 'firebase/auth'
-import { auth } from '@/firebase/config'
+import { auth, db } from '@/firebase/config'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
 
 const router = useRouter()
 const email = ref('')
@@ -103,7 +104,17 @@ const handleLogin = async () => {
 const handleSignUp = async () => {
   error.value = null
   try {
-    await createUserWithEmailAndPassword(auth, email.value, password.value)
+    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
+    const user = userCredential.user
+    
+    // Criar documento do usuário em /users/{uid} com o storeId mapeado
+    await setDoc(doc(db, 'users', user.uid), {
+      uid: user.uid,
+      email: user.email,
+      storeId: user.uid, // Em multi-tenant, o storeId é igual ao uid
+      createdAt: new Date(),
+    })
+    
     router.push(router.currentRoute.value.query.redirect || '/')
   } catch (err) {
     error.value = err.message
@@ -113,7 +124,23 @@ const handleSignUp = async () => {
 const handleGoogleLogin = async () => {
   error.value = null
   try {
-    await signInWithPopup(auth, new GoogleAuthProvider())
+    const userCredential = await signInWithPopup(auth, new GoogleAuthProvider())
+    const user = userCredential.user
+    
+    // Verificar se o documento do usuário já existe, se não, criar
+    const userDocRef = doc(db, 'users', user.uid)
+    const userDocSnap = await getDoc(userDocRef)
+    
+    if (!userDocSnap.exists()) {
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        storeId: user.uid, // Em multi-tenant, o storeId é igual ao uid
+        createdAt: new Date(),
+      })
+    }
+    
     router.push(router.currentRoute.value.query.redirect || '/')
   } catch (err) {
     error.value = err.message
