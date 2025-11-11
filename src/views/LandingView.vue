@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card'
 import { Users, Wand2, Blocks, ArrowRight, Zap, Shield, TrendingUp } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import TechVerseLogo from '@/components/TechVerseLogo.vue'
 
 const router = useRouter()
 const hoveredFeature = ref(null)
@@ -30,9 +31,7 @@ const navigateToApp = () => {
     <header class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative z-10">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-sm flex items-center justify-center">
-            <span class="font-display text-lg font-bold text-white">T</span>
-          </div>
+          <TechVerseLogo />
           <span class="font-display text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary">
             TechVerse
           </span>
@@ -297,12 +296,10 @@ const navigateToApp = () => {
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12 pb-8 border-b border-border/20">
           <div>
-            <div class="flex items-center gap-2 mb-4">
-              <div class="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-sm flex items-center justify-center">
-                <span class="font-display text-lg font-bold text-white">T</span>
-              </div>
-              <span class="font-display text-lg font-bold text-foreground">TechVerse</span>
-            </div>
+             <div class="flex items-center gap-2 mb-4">
+               <TechVerseLogo />
+               <span class="font-display text-lg font-bold text-foreground">TechVerse</span>
+             </div>
             <p class="text-sm text-muted-foreground">A plataforma completa para técnicos autônomos.</p>
           </div>
           <div>
