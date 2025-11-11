@@ -308,88 +308,95 @@ const dotPatternStyle = `
         </div>
 
         <!-- LIST VIEW -->
-        <div v-else class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b bg-muted/50">
-                <th class="text-center p-3 font-semibold">Status</th>
-                <th class="text-left p-3 font-semibold">Imagem</th>
-                <th class="text-left p-3 font-semibold">Nome</th>
-                <th class="text-left p-3 font-semibold">Estoque</th>
-                <th class="text-left p-3 font-semibold">Mínimo</th>
-                <th class="text-right p-3 font-semibold">Preço Custo</th>
-                <th class="text-right p-3 font-semibold">Preço Venda</th>
-                <th class="text-center p-3 font-semibold">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr 
-                v-for="item in group.items"
-                :key="item.id"
-                class="border-b hover:bg-muted/50 transition-colors"
-              >
-                <td class="p-3 text-center">
-                   <div class="relative group inline-block">
-                     <div 
-                       :class="[
-                         getStockStatus(item.status || 'ativo').bgColor,
-                         'w-3 h-3 rounded-full border-2 border-black'
-                       ]"
-                       :style="{
-                         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)'
-                       }"
-                     ></div>
-                     <!-- Tooltip -->
-                     <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-foreground text-background text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
-                       {{ getStockStatus(item.status || 'ativo').label }}
-                     </div>
-                   </div>
-                 </td>
-                <td class="p-3">
-                   <div class="h-12 w-12 rounded border bg-muted flex items-center justify-center overflow-hidden">
+         <div v-else>
+           <ul role="list" class="space-y-4">
+             <li 
+               v-for="item in group.items"
+               :key="item.id"
+               class="p-4 bg-card border border-border/50 rounded-lg hover:shadow-md transition-all duration-200"
+             >
+               <div class="flex items-center space-x-4">
+                 <!-- Imagem -->
+                 <div class="shrink-0">
+                   <div class="w-12 h-12 rounded border bg-muted flex items-center justify-center overflow-hidden">
                      <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.nome" class="h-full w-full object-cover">
                      <Package v-else class="h-6 w-6 text-muted-foreground" />
                    </div>
-                 </td>
-                 <td class="p-3">
-                   <div>
-                     <p class="font-medium">{{ item.nome }}</p>
-                     <span :class="[getCategoryColors(item).text, 'text-xs font-semibold capitalize']">
+                 </div>
+
+                 <!-- Nome e Tipo -->
+                 <div class="flex-1 min-w-0">
+                   <p class="text-sm font-semibold text-foreground truncate">
+                     {{ item.nome }}
+                   </p>
+                   <div class="flex items-center gap-2 mt-1">
+                     <span :class="[getCategoryColors(item).text, 'text-xs font-medium capitalize']">
                        {{ item.tipo }}
                      </span>
+                     <span class="text-xs text-muted-foreground">•</span>
+                     <span class="text-xs text-muted-foreground">
+                       Estoque: {{ item.quantidade }} un. (Mín: {{ item.estoqueMinimo || 0 }})
+                     </span>
                    </div>
-                 </td>
-                <td class="p-3">{{ item.quantidade }} un.</td>
-                <td class="p-3">{{ item.estoqueMinimo || 0 }} un.</td>
-                <td class="p-3 text-right">
-                   <span v-if="item.precoCusto" class="text-muted-foreground">
-                     R$ {{ item.precoCusto?.toFixed(2) }}
-                   </span>
-                   <span v-else class="text-muted-foreground text-xs">—</span>
-                 </td>
-                <td class="p-3 text-right">
-                  <span class="font-semibold">R$ {{ item.precoVenda?.toFixed(2) }}</span>
-                </td>
-                <td class="p-3">
-                  <div class="flex gap-2 justify-center">
-                    <RouterLink :to="`/inventario/${item.id}/editar`">
-                      <Button variant="outline" size="sm">
-                        <Pencil class="h-4 w-4" />
-                      </Button>
-                    </RouterLink>
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      @click="deleteItem(item.id, item.nome)"
-                    >
-                      <Trash2 class="h-4 w-4" />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                 </div>
+
+                 <!-- Badge de Status -->
+                 <div class="flex items-center gap-3">
+                   <div>
+                     <span 
+                       :class="[
+                         'inline-flex items-center text-xs font-medium px-3 py-1 rounded-full',
+                         item.status === 'ativo' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                         item.status === 'em_transito' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
+                         'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                       ]"
+                     >
+                       <span 
+                         :class="[
+                           'w-2 h-2 me-1.5 rounded-full',
+                           item.status === 'ativo' ? 'bg-green-500' :
+                           item.status === 'em_transito' ? 'bg-yellow-500' :
+                           'bg-red-500'
+                         ]"
+                       ></span>
+                       {{ getStockStatus(item.status || 'ativo').label }}
+                     </span>
+                   </div>
+
+                   <!-- Preços -->
+                   <div class="text-right hidden sm:block">
+                     <p class="text-xs text-muted-foreground">Custo</p>
+                     <p class="text-sm font-semibold text-foreground">
+                       {{ item.precoCusto ? `R$ ${item.precoCusto.toFixed(2)}` : '—' }}
+                     </p>
+                   </div>
+                   <div class="text-right hidden sm:block">
+                     <p class="text-xs text-muted-foreground">Venda</p>
+                     <p class="text-sm font-semibold text-foreground">
+                       R$ {{ item.precoVenda?.toFixed(2) }}
+                     </p>
+                   </div>
+
+                   <!-- Ações -->
+                   <div class="flex gap-2 flex-shrink-0">
+                     <RouterLink :to="`/inventario/${item.id}/editar`">
+                       <Button variant="outline" size="sm">
+                         <Pencil class="h-4 w-4" />
+                       </Button>
+                     </RouterLink>
+                     <Button 
+                       variant="destructive" 
+                       size="sm"
+                       @click="deleteItem(item.id, item.nome)"
+                     >
+                       <Trash2 class="h-4 w-4" />
+                     </Button>
+                   </div>
+                 </div>
+               </div>
+             </li>
+           </ul>
+         </div>
       </section>
     </div>
     </div>
