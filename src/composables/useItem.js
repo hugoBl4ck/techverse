@@ -14,6 +14,7 @@ export function useItem(itemId = null) {
     precoCusto: 0,
     precoVenda: 0,
     tipo: '',
+    status: 'ativo', // ativo, em_transito, bloqueado
     compatibilidade: {
       socket: '',
       tipoRam: '',
@@ -37,14 +38,15 @@ export function useItem(itemId = null) {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        form.nome = data.nome;
-        form.quantidade = data.quantidade;
-        form.precoCusto = data.precoCusto;
-        form.precoVenda = data.precoVenda;
-        form.tipo = data.tipo;
-        form.compatibilidade = data.compatibilidade || { socket: '', tipoRam: '' };
-        form.imageUrl = data.imageUrl || '';
-        form.descricao = data.descricao || '';
+          form.nome = data.nome;
+          form.quantidade = data.quantidade;
+          form.precoCusto = data.precoCusto;
+          form.precoVenda = data.precoVenda;
+          form.tipo = data.tipo;
+          form.status = data.status || 'ativo';
+          form.compatibilidade = data.compatibilidade || { socket: '', tipoRam: '' };
+          form.imageUrl = data.imageUrl || '';
+          form.descricao = data.descricao || '';
       } else {
         error.value = 'Item não encontrado.';
         alert('Item não encontrado!');

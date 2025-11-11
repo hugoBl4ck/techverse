@@ -70,6 +70,7 @@ async function handleSubmit() {
         precoCusto: 0,
         precoVenda: 0,
         tipo: '',
+        status: 'ativo',
         compatibilidade: { socket: '', tipoRam: '' },
         imageUrl: '',
         descricao: '',
@@ -104,15 +105,21 @@ const tipoRamOptions = [
 ];
 
 const socketOptions = [
-  { value: 'AM4', label: 'AM4' },
-  { value: 'AM5', label: 'AM5' },
-  { value: 'LGA1151', label: 'LGA1151' },
-  { value: 'LGA1200', label: 'LGA1200' },
-  { value: 'LGA1700', label: 'LGA1700' },
-  { value: 'TR4', label: 'TR4' },
-  { value: 'sTRX4', label: 'sTRX4' },
-  { value: 'Intel', label: 'Intel (Outros)' },
-  { value: 'Outro', label: 'Outro' },
+   { value: 'AM4', label: 'AM4' },
+   { value: 'AM5', label: 'AM5' },
+   { value: 'LGA1151', label: 'LGA1151' },
+   { value: 'LGA1200', label: 'LGA1200' },
+   { value: 'LGA1700', label: 'LGA1700' },
+   { value: 'TR4', label: 'TR4' },
+   { value: 'sTRX4', label: 'sTRX4' },
+   { value: 'Intel', label: 'Intel (Outros)' },
+   { value: 'Outro', label: 'Outro' },
+];
+
+const statusOptions = [
+   { value: 'ativo', label: 'Ativo (Em Estoque)' },
+   { value: 'em_transito', label: 'Em Trânsito' },
+   { value: 'bloqueado', label: 'Bloqueado (Problema)' },
 ];
 </script>
 
@@ -137,6 +144,19 @@ const socketOptions = [
             <SelectContent>
               <SelectItem v-for="t in tiposItem" :key="t.value" :value="t.value">
                 {{ t.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="grid gap-2">
+          <Label for="status">Status</Label>
+          <Select v-model="form.status">
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="s in statusOptions" :key="s.value" :value="s.value">
+                {{ s.label }}
               </SelectItem>
             </SelectContent>
           </Select>

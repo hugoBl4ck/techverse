@@ -9,10 +9,10 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
-import { TrendingUp, TrendingDown, DollarSign, Package, Zap } from 'lucide-vue-next'
+import { TrendingUp, TrendingDown, DollarSign, Package, Zap, Truck } from 'lucide-vue-next'
 
 const { storeId } = useCurrentStore()
-const { produtos, loadProdutos, produtosPorMargem, valorEstoqueTotal, isLoading: isLoadingProdutos } = useFinanceiro(storeId)
+const { produtos, loadProdutos, produtosPorMargem, valorEstoqueTotal, itensEmTransito, quantidadeEmTransito, valorEmTransito, isLoading: isLoadingProdutos } = useFinanceiro(storeId)
 const { 
   transacoes, 
   loadTransacoes, 
@@ -266,6 +266,22 @@ watch(() => storeId.value, (newStoreId) => {
             {{ totaisFiltrados.margem }}%
           </div>
           <p class="text-xs text-secondary mt-2">Do período</p>
+        </CardContent>
+      </Card>
+
+      <!-- Em Trânsito -->
+      <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm hover:border-blue-500/30 transition-all">
+        <CardHeader class="pb-3">
+          <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+            Em Trânsito
+            <Truck class="w-4 h-4 text-blue-500" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div class="text-2xl font-bold text-blue-500">
+            R$ {{ valorEmTransito.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+          </div>
+          <p class="text-xs text-blue-500 mt-2">{{ quantidadeEmTransito }} unidades</p>
         </CardContent>
       </Card>
     </div>

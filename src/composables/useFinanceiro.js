@@ -193,17 +193,42 @@ export function useFinanceiro(storeId) {
   const totalProdutos = computed(() => produtos.value.length)
 
   /**
-   * Estoque total
+   * Estoque total (apenas itens ativos)
    */
   const estoqueTotal = computed(() => 
-    produtos.value.reduce((total, p) => total + (p.estoque || 0), 0)
+    produtos.value
+      .filter(p => p.status !== 'em_transito' && p.status !== 'bloqueado')
+      .reduce((total, p) => total + (p.estoque || 0), 0)
   )
 
   /**
-   * Valor total em estoque (custo)
+   * Valor total em estoque (custo) - apenas itens ativos
    */
   const valorEstoqueTotal = computed(() =>
-    produtos.value.reduce((total, p) => total + (p.custo * (p.estoque || 0)), 0)
+    produtos.value
+      .filter(p => p.status !== 'em_transito' && p.status !== 'bloqueado')
+      .reduce((total, p) => total + (p.custo * (p.estoque || 0)), 0)
+  )
+
+  /**
+   * Itens em trânsito
+   */
+  const itensEmTransito = computed(() =>
+    produtos.value.filter(p => p.status === 'em_transito')
+  )
+
+  /**
+   * Quantidade em trânsito
+   */
+  const quantidadeEmTransito = computed(() =>
+    itensEmTransito.value.reduce((total, p) => total + (p.estoque || 0), 0)
+  )
+
+  /**
+   * Valor em trânsito (custo)
+   */
+  const valorEmTransito = computed(() =>
+    itensEmTransito.value.reduce((total, p) => total + (p.custo * (p.estoque || 0)), 0)
   )
 
   return {
@@ -224,6 +249,9 @@ export function useFinanceiro(storeId) {
     produtosPorMargem,
     totalProdutos,
     estoqueTotal,
-    valorEstoqueTotal
+    valorEstoqueTotal,
+    itensEmTransito,
+    quantidadeEmTransito,
+    valorEmTransito
   }
 }
