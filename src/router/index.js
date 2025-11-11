@@ -151,9 +151,27 @@ const routes = [
         name: 'TestVisuals',
         component: () => import('@/views/TestVisualsView.vue'),
         meta: { title: 'Teste de Melhorias Visuais' }
+      },
+      {
+        path: 'financeiro',
+        name: 'DashboardFinanceiro',
+        component: () => import('@/views/financeiro/DashboardFinanceiroView.vue'),
+        meta: { title: 'Dashboard Financeiro' }
+      },
+      {
+        path: 'financeiro/produtos',
+        name: 'GerenciamentoProdutos',
+        component: () => import('@/views/financeiro/GerenciamentoProdutosView.vue'),
+        meta: { title: 'Gerenciamento de Produtos' }
+      },
+      {
+        path: 'financeiro/transacoes',
+        name: 'RegistroTransacoes',
+        component: () => import('@/views/financeiro/RegistroTransacoesView.vue'),
+        meta: { title: 'Registro de Transações' }
       }
-    ]
-  },
+      ]
+      },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',

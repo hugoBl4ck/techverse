@@ -1,0 +1,314 @@
+╔════════════════════════════════════════════════════════════════════════════════════╗
+║                       MÓDULO FINANCEIRO - ESTRUTURA COMPLETA                       ║
+╚════════════════════════════════════════════════════════════════════════════════════╝
+
+📊 VIEWS (Interfaces de Usuário)
+================================
+
+┌─────────────────────────────────┐
+│  /financeiro                     │ ← Dashboard Financeiro
+│  DashboardFinanceiroView.vue     │
+├─────────────────────────────────┤
+│ • Receita Total                 │
+│ • Despesa Total                 │
+│ • Lucro Líquido                 │
+│ • Estoque (Valor)               │
+│ • Margem Média                  │
+│ • Gráficos Interativos          │
+│ • Top 5 Produtos                │
+│ • Filtro por Período            │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│  /financeiro/produtos            │ ← Gerenciar Produtos
+│  GerenciamentoProdutosView.vue   │
+├─────────────────────────────────┤
+│ ✅ CRUD Completo               │
+│ • Criar Produto                 │
+│ • Editar Produto                │
+│ • Deletar Produto               │
+│ • Buscar (Nome/SKU)             │
+│ • Ordenar (Nome/Margem/etc)    │
+│ • Cálculo Automático de Margem  │
+│ • Modal de Formulário           │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│  /financeiro/transacoes          │ ← Registrar Transações
+│  RegistroTransacoesView.vue      │
+├─────────────────────────────────┤
+│ ✅ Registrar Vendas            │
+│   • Múltiplos Produtos          │
+│   • Preço Automático            │
+│   • Cliente/OS Opcional         │
+│                                 │
+│ ✅ Registrar Despesas          │
+│   • Valor Manual                │
+│   • Categorias                  │
+│                                 │
+│ ✅ Histórico com Filtros       │
+└─────────────────────────────────┘
+
+
+💾 FIRESTORE (Banco de Dados)
+=============================
+
+stores/{storeId}/
+│
+├─ produtos/ ─────────────────────┐
+│  {id}                            │
+│  ├─ nome: "SSD Samsung"         │
+│  ├─ sku: "SSD-SAMSUNG-1TB"      │
+│  ├─ custo: 250                  │
+│  ├─ preco_venda: 400            │
+│  ├─ margem_lucro: 37.5          │
+│  ├─ categoria: "hardware"       │
+│  ├─ estoque: 10                 │
+│  ├─ createdAt: Timestamp        │
+│  └─ updatedAt: Timestamp        │
+│                                 │
+└─────────────────────────────────┘
+
+├─ transacoes_financeiras/ ───────┐
+│  {id}                            │
+│  ├─ tipo: "venda"               │
+│  ├─ descricao: "PC Gamer"       │
+│  ├─ valor: 1500.00              │
+│  ├─ categoria: "hardware"       │
+│  ├─ status: "concluida"         │
+│  ├─ metodo_pagamento: "pix"     │
+│  ├─ cliente_id: "cli-123"       │
+│  ├─ ordem_servico_id: "os-456"  │
+│  ├─ produtos: [                 │
+│  │  {                            │
+│  │    produtoId: "prod-123",    │
+│  │    quantidade: 1,             │
+│  │    preco_unitario: 400,       │
+│  │    subtotal: 400              │
+│  │  }                            │
+│  │ ]                             │
+│  ├─ data_transacao: Timestamp    │
+│  ├─ data_pagamento: Timestamp    │
+│  └─ createdAt: Timestamp        │
+│                                 │
+└─────────────────────────────────┘
+
+
+🔧 COMPOSABLES (Lógica Reutilizável)
+====================================
+
+┌──────────────────────────────────────────┐
+│          useFinanceiro(storeId)          │
+├──────────────────────────────────────────┤
+│                                          │
+│  📦 STATE:                              │
+│  • produtos: Ref<Array>                 │
+│  • isLoading: Ref<Boolean>              │
+│  • error: Ref<String|null>              │
+│                                          │
+│  🔧 METHODS:                            │
+│  • loadProdutos()                       │
+│  • addProduto(data)                     │
+│  • updateProduto(id, data)              │
+│  • deleteProduto(id)                    │
+│  • calcularMargemLucro(venda, custo)    │
+│  • validarProduto(data)                 │
+│                                          │
+│  📈 COMPUTED:                           │
+│  • produtosPorMargem                    │
+│  • totalProdutos                        │
+│  • estoqueTotal                         │
+│  • valorEstoqueTotal                    │
+│                                          │
+└──────────────────────────────────────────┘
+
+┌──────────────────────────────────────────┐
+│          useTransacoes(storeId)          │
+├──────────────────────────────────────────┤
+│                                          │
+│  📦 STATE:                              │
+│  • transacoes: Ref<Array>               │
+│  • isLoading: Ref<Boolean>              │
+│  • error: Ref<String|null>              │
+│                                          │
+│  🔧 METHODS:                            │
+│  • loadTransacoes(filtros)              │
+│  • registrarVenda(data)                 │
+│  • registrarDespesa(data)               │
+│  • updateTransacao(id, data)            │
+│  • deleteTransacao(id)                  │
+│  • filtrarPorPeriodo(ini, fim)          │
+│  • calcularTotais()                     │
+│  • agruparPorCategoria()                │
+│                                          │
+│  📈 COMPUTED:                           │
+│  • totais {receita, despesa, lucro}    │
+│  • vendas                               │
+│  • despesas                             │
+│  • totalVendas                          │
+│  • totalDespesas                        │
+│  • margemMedia                          │
+│                                          │
+└──────────────────────────────────────────┘
+
+
+🔄 FLUXO DE DADOS
+=================
+
+  USUÁRIO
+    ↓
+  VIEW (Component)
+    ↓
+  COMPOSABLE (Lógica)
+    ↓
+  FIRESTORE (Banco)
+    ↓
+  RESPOSTA ← Atualiza STATE → Renderiza View
+
+
+📊 EXEMPLO: Registrar Venda
+===========================
+
+  1. Usuário clica "Nova Venda"
+     ↓
+  2. Abre Modal com Formulário
+     ↓
+  3. Seleciona Produtos (preço automático de useFinanceiro)
+     ↓
+  4. Define método de pagamento
+     ↓
+  5. Clica "Registrar"
+     ↓
+  6. useTransacoes.registrarVenda(dados)
+     ↓
+  7. Salva no Firestore (stores/{storeId}/transacoes_financeiras/)
+     ↓
+  8. loadTransacoes() recarrega lista
+     ↓
+  9. Computed properties atualizam
+     ↓
+  10. UI re-renderiza com novos dados
+     ↓
+  ✅ Venda registrada + Dashboard atualizado
+
+
+📁 ESTRUTURA DE ARQUIVOS
+========================
+
+src/
+├── views/
+│   └── financeiro/
+│       ├── DashboardFinanceiroView.vue      ← Dashboard
+│       ├── GerenciamentoProdutosView.vue    ← Produtos
+│       └── RegistroTransacoesView.vue       ← Transações
+│
+├── composables/
+│   ├── useFinanceiro.js                     ← Lógica Produtos
+│   └── useTransacoes.js                     ← Lógica Transações
+│
+└── router/
+    └── index.js                             ← Rotas adicionadas
+
+
+🎯 ROTAS DISPONÍVEIS
+====================
+
+GET  /financeiro                → Dashboard
+GET  /financeiro/produtos       → Produtos
+GET  /financeiro/transacoes     → Transações
+
+
+💡 FÓRMULAS IMPLEMENTADAS
+=========================
+
+Margem de Lucro:
+  = (preço_venda - custo) / preço_venda * 100
+
+Lucro Líquido:
+  = Receita Total - Despesa Total
+
+Margem Média:
+  = (Receita - Despesa) / Receita * 100
+
+Valor em Estoque:
+  = SOMA(produto.custo * produto.estoque)
+
+
+🔐 SEGURANÇA
+============
+
+✅ Validação de dados antes de salvar
+✅ Multi-tenant (isolado por storeId)
+✅ Timestamps automáticos
+✅ Sem dados sensíveis expostos
+✅ Firestore rules (em configuração)
+
+
+📊 MÉTRICAS RASTREADAS
+======================
+
+Dashboard:
+  • Total de Vendas
+  • Total de Despesas
+  • Lucro Líquido
+  • Margem Média
+  • Itens em Estoque
+  • Valor em Estoque
+  • Top 5 Produtos
+
+Produtos:
+  • Quantidade Total
+  • SKU Único
+  • Margem Individual
+  • Estoque Atual
+  • Custo e Preço
+
+Transações:
+  • Tipo (Venda/Despesa)
+  • Status (Concluída/Pendente/Cancelada)
+  • Método de Pagamento
+  • Data
+  • Cliente (Opcional)
+  • Ordem de Serviço (Opcional)
+
+
+✨ RECURSOS PRINCIPAIS
+======================
+
+✅ CRUD Completo de Produtos
+✅ Registro de Vendas e Despesas
+✅ Cálculo Automático de Margens
+✅ Gráficos Interativos
+✅ Filtros e Buscas
+✅ Exportação (preparado)
+✅ Histórico Completo
+✅ Multi-Período
+✅ Validação de Dados
+✅ Rastreabilidade
+
+
+🚀 PRÓXIMAS FASES
+=================
+
+Fase 2: Análises Avançadas
+  ⏳ Exportar PDF
+  ⏳ Exportar Excel
+  ⏳ Gráficos de Tendência
+  ⏳ Previsões
+
+Fase 3: Controle de Caixa
+  ⏳ Abertura/Fechamento
+  ⏳ Reconciliação
+  ⏳ Métodos de Pagamento
+
+Fase 4: Integrações
+  ⏳ Com Ordens de Serviço
+  ⏳ Backup Automático
+  ⏳ Alertas
+  ⏳ Contabilidade
+
+═══════════════════════════════════════════════════════════════════════════════════════
+
+                    ✨ Módulo Financeiro Pronto para Uso! ✨
+
+═══════════════════════════════════════════════════════════════════════════════════════
