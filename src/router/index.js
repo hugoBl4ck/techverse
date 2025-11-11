@@ -4,6 +4,12 @@ import { useCurrentStore } from '@/composables/useCurrentStore'
 
 const routes = [
   {
+    path: '/landing',
+    name: 'Landing',
+    component: () => import('@/views/LandingView.vue'),
+    meta: { title: 'TechVerse - Gerenciador de TI para Técnicos', requiresAuth: false }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),

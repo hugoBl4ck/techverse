@@ -5,7 +5,7 @@
 // 3. Lightning tech
 // 4. Microchip futurista
 
-const iconType = 'cpu-circuit' // mude para: 'flame-circuit', 'lightning-tech', 'microchip'
+const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'lightning-tech', 'microchip'
 </script>
 
 <template>

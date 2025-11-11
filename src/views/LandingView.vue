@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card'
 import { Users, Wand2, Blocks, ArrowRight, Zap, Shield, TrendingUp } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import TechVerseLogo from '@/components/TechVerseLogo.vue'
+import TechVerseLogo from '@/components/TechVerseLogo.vue' // logo tech animado
 
 const router = useRouter()
 const hoveredFeature = ref(null)
