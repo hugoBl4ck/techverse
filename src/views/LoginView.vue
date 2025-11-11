@@ -177,7 +177,7 @@ const handleLogin = async () => {
   error.value = null
   try {
     await signInWithEmailAndPassword(auth, email.value, password.value)
-    router.push(router.currentRoute.value.query.redirect || '/app')
+    router.push('/app')
   } catch (err) {
     error.value = err.message
   }
@@ -197,7 +197,7 @@ const handleSignUp = async () => {
       createdAt: new Date(),
     })
     
-    router.push(router.currentRoute.value.query.redirect || '/app')
+    router.push('/app')
   } catch (err) {
     error.value = err.message
   }
@@ -223,7 +223,7 @@ const handleGoogleLogin = async () => {
       })
     }
     
-    router.push(router.currentRoute.value.query.redirect || '/app')
+    router.push('/app')
   } catch (err) {
     error.value = err.message
   }
