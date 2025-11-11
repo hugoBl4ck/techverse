@@ -250,7 +250,7 @@ watch(() => storeId.value, (newStoreId) => {
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold text-foreground">
-            R$ {{ (valorEstoqueTotal / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+            R$ {{ valorEstoqueTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
           </div>
           <p class="text-xs text-accent mt-2">{{ produtos.length }} produtos</p>
         </CardContent>
