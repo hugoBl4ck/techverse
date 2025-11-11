@@ -41,16 +41,8 @@ export function useFinanceiro(storeId) {
     try {
       const itensRef = collection(db, 'stores', storeId.value, 'itens')
       
-      // Tenta ordenar por criadoEm, se falhar carrega sem ordenação
-      let q
-      try {
-        q = query(itensRef, orderBy('criadoEm', 'desc'))
-      } catch {
-        console.log('⚠️ Campo criadoEm não existe, carregando sem ordenação')
-        q = query(itensRef)
-      }
-      
-      const snapshot = await getDocs(q)
+      // Carrega sem ordenação (compatível com qualquer estrutura)
+      const snapshot = await getDocs(itensRef)
       
       console.log(`📊 Encontrados ${snapshot.docs.length} itens no Firestore`)
       console.log(`📍 Caminho: stores/${storeId.value}/itens`)
@@ -60,15 +52,19 @@ export function useFinanceiro(storeId) {
       
       produtos.value = snapshot.docs.map(doc => {
         const data = doc.data()
+        const precoVenda = parseFloat(data.precoVenda || data.preco_venda || 0)
+        const precoCusto = parseFloat(data.precoCusto || data.custo || 0)
+        const quantidade = parseFloat(data.quantidade || data.estoque || 0)
+        
         return {
           id: doc.id,
           nome: data.nome || 'Sem nome',
           sku: data.sku || data.codigo || data.id,
-          preco_venda: parseFloat(data.precoVenda) || 0,
-          custo: parseFloat(data.precoCusto) || 0,
-          estoque: parseFloat(data.quantidade) || 0,
+          preco_venda: precoVenda,
+          custo: precoCusto,
+          estoque: quantidade,
           ...data,
-          margem_lucro: calcularMargemLucro(parseFloat(data.precoVenda) || 0, parseFloat(data.precoCusto) || 0)
+          margem_lucro: calcularMargemLucro(precoVenda, precoCusto)
         }
       })
       
