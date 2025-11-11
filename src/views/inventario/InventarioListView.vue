@@ -7,7 +7,7 @@ import { toast } from 'vue-sonner'
 
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
-import { Pencil, Package, PlusCircle, Trash2, List, Grid3X3 } from 'lucide-vue-next'
+import { Pencil, Package, PlusCircle, Trash2, List, Grid3X3, Circle } from 'lucide-vue-next'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const { storeId } = useCurrentStore()
@@ -29,6 +29,16 @@ const colorMap = {
 function getCategoryColors(item) {
   const tipo = item?.tipo || 'outro';
   return colorMap[tipo] || colorMap.outro;
+}
+
+// Função para determinar status do estoque baseado no campo status do item
+function getStockStatus(itemStatus) {
+  const statusMap = {
+    'ativo': { color: 'text-green-500', label: 'Em Estoque', bgColor: 'bg-green-500' },
+    'em_transito': { color: 'text-yellow-500', label: 'Em Trânsito', bgColor: 'bg-yellow-500' },
+    'bloqueado': { color: 'text-red-500', label: 'Bloqueado', bgColor: 'bg-red-500' },
+  };
+  return statusMap[itemStatus] || statusMap['ativo'];
 }
 
 // Agrupa os itens por categoria
@@ -305,6 +315,7 @@ const dotPatternStyle = `
                 <th class="text-left p-3 font-semibold">Imagem</th>
                 <th class="text-left p-3 font-semibold">Nome</th>
                 <th class="text-left p-3 font-semibold">Estoque</th>
+                <th class="text-left p-3 font-semibold">Mínimo</th>
                 <th class="text-right p-3 font-semibold">Preço Custo</th>
                 <th class="text-right p-3 font-semibold">Preço Venda</th>
                 <th class="text-center p-3 font-semibold">Ações</th>
@@ -323,20 +334,27 @@ const dotPatternStyle = `
                   </div>
                 </td>
                 <td class="p-3">
-                  <div>
-                    <p class="font-medium">{{ item.nome }}</p>
-                    <span :class="[getCategoryColors(item).text, 'text-xs font-semibold capitalize']">
-                      {{ item.tipo }}
-                    </span>
-                  </div>
-                </td>
+                   <div class="flex items-center gap-2">
+                     <div 
+                       :class="[getStockStatus(item.status || 'ativo').bgColor, 'w-2.5 h-2.5 rounded-full flex-shrink-0 animate-pulse']"
+                       :title="getStockStatus(item.status || 'ativo').label"
+                     ></div>
+                     <div>
+                       <p class="font-medium">{{ item.nome }}</p>
+                       <span :class="[getCategoryColors(item).text, 'text-xs font-semibold capitalize']">
+                         {{ item.tipo }}
+                       </span>
+                     </div>
+                   </div>
+                 </td>
                 <td class="p-3">{{ item.quantidade }} un.</td>
+                <td class="p-3">{{ item.estoqueMinimo || 0 }} un.</td>
                 <td class="p-3 text-right">
-                  <span v-if="item.precoCusto" class="text-muted-foreground">
-                    R$ {{ item.precoCusto?.toFixed(2) }}
-                  </span>
-                  <span v-else class="text-muted-foreground text-xs">—</span>
-                </td>
+                   <span v-if="item.precoCusto" class="text-muted-foreground">
+                     R$ {{ item.precoCusto?.toFixed(2) }}
+                   </span>
+                   <span v-else class="text-muted-foreground text-xs">—</span>
+                 </td>
                 <td class="p-3 text-right">
                   <span class="font-semibold">R$ {{ item.precoVenda?.toFixed(2) }}</span>
                 </td>

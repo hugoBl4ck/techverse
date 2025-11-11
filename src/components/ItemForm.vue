@@ -38,6 +38,7 @@ watch(() => props.itemPreenchido, (newItem) => {
     form.nome = newItem.nome || '';
     form.tipo = newItem.tipo || '';
     form.quantidade = 1;
+    form.estoqueMinimo = newItem.estoqueMinimo || 0;
     form.precoCusto = 0;
     form.precoVenda = 0;
     form.compatibilidade = newItem.compatibilidade || { socket: '', tipoRam: '' };
@@ -67,6 +68,7 @@ async function handleSubmit() {
       Object.assign(form, {
         nome: '',
         quantidade: 0,
+        estoqueMinimo: 0,
         precoCusto: 0,
         precoVenda: 0,
         tipo: '',
@@ -161,9 +163,15 @@ const statusOptions = [
             </SelectContent>
           </Select>
         </div>
-        <div class="grid gap-2">
-          <Label for="quantidade">Quantidade</Label>
-          <Input id="quantidade" v-model.number="form.quantidade" type="number" placeholder="0" required />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="grid gap-2">
+            <Label for="quantidade">Quantidade</Label>
+            <Input id="quantidade" v-model.number="form.quantidade" type="number" placeholder="0" required />
+          </div>
+          <div class="grid gap-2">
+            <Label for="estoqueMinimo">Estoque Mínimo</Label>
+            <Input id="estoqueMinimo" v-model.number="form.estoqueMinimo" type="number" placeholder="0" />
+          </div>
         </div>
         <div class="grid gap-2">
           <Label for="precoCusto">Preço de Custo</Label>
