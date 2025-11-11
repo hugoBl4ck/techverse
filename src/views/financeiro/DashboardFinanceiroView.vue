@@ -278,7 +278,10 @@ watch(() => storeId.value, (newStoreId) => {
           <CardTitle>Receita vs Despesa</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
+          <div v-if="dadosGraficoReceita.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
+            Sem dados de transações no período
+          </div>
+          <ResponsiveContainer v-else width="100%" height={300}>
             <BarChart data={dadosGraficoReceita}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--color-border))" />
               <XAxis dataKey="data" stroke="rgba(var(--color-muted-foreground))" />
@@ -302,7 +305,10 @@ watch(() => storeId.value, (newStoreId) => {
           <CardTitle>Distribuição por Categoria</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
+          <div v-if="dadosGraficoCategorias.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
+            Sem dados de categorias no período
+          </div>
+          <ResponsiveContainer v-else width="100%" height={300}>
             <BarChart data={dadosGraficoCategorias}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--color-border))" />
               <XAxis dataKey="name" stroke="rgba(var(--color-muted-foreground))" />

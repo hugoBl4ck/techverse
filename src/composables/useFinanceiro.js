@@ -30,27 +30,45 @@ export function useFinanceiro(storeId) {
    * Carrega todos os produtos do inventário (itens)
    */
   const loadProdutos = async () => {
-    if (!storeId?.value) return
+    if (!storeId?.value) {
+      console.warn('⚠️ StoreId não disponível para loadProdutos')
+      return
+    }
     
     isLoading.value = true
     error.value = null
     
     try {
       const itensRef = collection(db, 'stores', storeId.value, 'itens')
-      const q = query(itensRef, orderBy('criadoEm', 'desc'))
+      
+      // Tenta ordenar por criadoEm, se falhar carrega sem ordenação
+      let q
+      try {
+        q = query(itensRef, orderBy('criadoEm', 'desc'))
+      } catch {
+        console.log('⚠️ Campo criadoEm não existe, carregando sem ordenação')
+        q = query(itensRef)
+      }
+      
       const snapshot = await getDocs(q)
+      
+      console.log(`📊 Encontrados ${snapshot.docs.length} itens no Firestore`)
+      console.log(`📍 Caminho: stores/${storeId.value}/itens`)
+      if (snapshot.docs.length > 0) {
+        console.log('📦 Primeiro item:', snapshot.docs[0].data())
+      }
       
       produtos.value = snapshot.docs.map(doc => {
         const data = doc.data()
         return {
           id: doc.id,
-          nome: data.nome,
-          sku: data.sku || data.id,
-          preco_venda: data.precoVenda || 0,
-          custo: data.precoCusto || 0,
-          estoque: data.quantidade || 0,
+          nome: data.nome || 'Sem nome',
+          sku: data.sku || data.codigo || data.id,
+          preco_venda: parseFloat(data.precoVenda) || 0,
+          custo: parseFloat(data.precoCusto) || 0,
+          estoque: parseFloat(data.quantidade) || 0,
           ...data,
-          margem_lucro: calcularMargemLucro(data.precoVenda || 0, data.precoCusto || 0)
+          margem_lucro: calcularMargemLucro(parseFloat(data.precoVenda) || 0, parseFloat(data.precoCusto) || 0)
         }
       })
       
