@@ -12,7 +12,7 @@ import {
 import { TrendingUp, TrendingDown, DollarSign, Package, Zap } from 'lucide-vue-next'
 
 const { storeId } = useCurrentStore()
-const { produtos, loadProdutos, produtosPorMargem, valorEstoqueTotal } = useFinanceiro(storeId)
+const { produtos, loadProdutos, produtosPorMargem, valorEstoqueTotal, isLoading: isLoadingProdutos } = useFinanceiro(storeId)
 const { 
   transacoes, 
   loadTransacoes, 
@@ -20,8 +20,12 @@ const {
   totalDespesas, 
   margemMedia,
   agruparPorCategoria,
-  filtrarPorPeriodo
+  filtrarPorPeriodo,
+  isLoading: isLoadingTransacoes
 } = useTransacoes(storeId)
+
+// Combina estados de loading
+const isLoading = computed(() => isLoadingProdutos.value || isLoadingTransacoes.value)
 
 // Estado
 const periodo = ref('mes') // dia, semana, mes, ano
@@ -120,11 +124,18 @@ const dadosGraficoCategorias = computed(() => {
 const cores = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6']
 
 // Carrega dados ao montar
-onMounted(() => {
+onMounted(async () => {
   if (storeId.value) {
-    loadProdutos()
-    loadTransacoes()
-    atualizarDatas()
+    console.log('📊 Carregando dados financeiros para store:', storeId.value)
+    try {
+      await loadProdutos()
+      await loadTransacoes()
+      atualizarDatas()
+    } catch (err) {
+      console.error('❌ Erro ao carregar dados financeiros:', err)
+    }
+  } else {
+    console.warn('⚠️ StoreId não disponível')
   }
 })
 
@@ -143,7 +154,14 @@ watch(() => storeId.value, (newStoreId) => {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div v-if="isLoading" class="flex items-center justify-center min-h-screen">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+      <p class="text-muted-foreground">Carregando dashboard financeiro...</p>
+    </div>
+  </div>
+
+  <div v-else class="space-y-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
