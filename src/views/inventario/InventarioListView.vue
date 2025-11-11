@@ -312,6 +312,7 @@ const dotPatternStyle = `
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b bg-muted/50">
+                <th class="text-center p-3 font-semibold">Status</th>
                 <th class="text-left p-3 font-semibold">Imagem</th>
                 <th class="text-left p-3 font-semibold">Nome</th>
                 <th class="text-left p-3 font-semibold">Estoque</th>
@@ -327,43 +328,35 @@ const dotPatternStyle = `
                 :key="item.id"
                 class="border-b hover:bg-muted/50 transition-colors"
               >
-                <td class="p-3">
-                  <div class="h-12 w-12 rounded border bg-muted flex items-center justify-center overflow-hidden">
-                    <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.nome" class="h-full w-full object-cover">
-                    <Package v-else class="h-6 w-6 text-muted-foreground" />
-                  </div>
-                </td>
-                <td class="p-3">
-                   <div class="flex items-center gap-3">
-                     <div class="relative group">
-                       <div 
-                         :class="[
-                           getStockStatus(item.status || 'ativo').bgColor,
-                           'w-2 h-2 rounded-full flex-shrink-0 transition-all duration-300 led-indicator'
-                         ]"
-                         :style="{
-                           boxShadow: `0 0 8px ${
-                             item.status === 'ativo' ? '#22c55e' :
-                             item.status === 'em_transito' ? '#eab308' :
-                             '#ef4444'
-                           }, 0 0 12px ${
-                             item.status === 'ativo' ? 'rgba(34, 197, 94, 0.5)' :
-                             item.status === 'em_transito' ? 'rgba(234, 179, 8, 0.5)' :
-                             'rgba(239, 68, 68, 0.5)'
-                           }`
-                         }"
-                       ></div>
-                       <!-- Tooltip -->
-                       <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-foreground text-background text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
-                         {{ getStockStatus(item.status || 'ativo').label }}
-                       </div>
+                <td class="p-3 text-center">
+                   <div class="relative group inline-block">
+                     <div 
+                       :class="[
+                         getStockStatus(item.status || 'ativo').bgColor,
+                         'w-3 h-3 rounded-full border-2 border-black'
+                       ]"
+                       :style="{
+                         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)'
+                       }"
+                     ></div>
+                     <!-- Tooltip -->
+                     <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-foreground text-background text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
+                       {{ getStockStatus(item.status || 'ativo').label }}
                      </div>
-                     <div>
-                       <p class="font-medium">{{ item.nome }}</p>
-                       <span :class="[getCategoryColors(item).text, 'text-xs font-semibold capitalize']">
-                         {{ item.tipo }}
-                       </span>
-                     </div>
+                   </div>
+                 </td>
+                <td class="p-3">
+                   <div class="h-12 w-12 rounded border bg-muted flex items-center justify-center overflow-hidden">
+                     <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.nome" class="h-full w-full object-cover">
+                     <Package v-else class="h-6 w-6 text-muted-foreground" />
+                   </div>
+                 </td>
+                 <td class="p-3">
+                   <div>
+                     <p class="font-medium">{{ item.nome }}</p>
+                     <span :class="[getCategoryColors(item).text, 'text-xs font-semibold capitalize']">
+                       {{ item.tipo }}
+                     </span>
                    </div>
                  </td>
                 <td class="p-3">{{ item.quantidade }} un.</td>
@@ -402,31 +395,4 @@ const dotPatternStyle = `
     </div>
     </template>
 
-    <style scoped>
-    .led-indicator {
-    position: relative;
-    box-shadow: inset -1px -1px 2px rgba(0, 0, 0, 0.3), inset 1px 1px 2px rgba(255, 255, 255, 0.1);
-    animation: ledGlow 2s ease-in-out infinite;
-    }
 
-    @keyframes ledGlow {
-    0%, 100% {
-    opacity: 0.8;
-    }
-    50% {
-    opacity: 1;
-    }
-    }
-
-    .led-indicator::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    }
-
-    .group:hover .led-indicator {
-    transform: scale(1.3);
-    }
-    </style>
