@@ -27,7 +27,7 @@ export function useFinanceiro(storeId) {
   }
 
   /**
-   * Carrega todos os produtos
+   * Carrega todos os produtos do inventário (itens)
    */
   const loadProdutos = async () => {
     if (!storeId?.value) return
@@ -36,15 +36,23 @@ export function useFinanceiro(storeId) {
     error.value = null
     
     try {
-      const produtosRef = collection(db, 'stores', storeId.value, 'produtos')
-      const q = query(produtosRef, orderBy('createdAt', 'desc'))
+      const itensRef = collection(db, 'stores', storeId.value, 'itens')
+      const q = query(itensRef, orderBy('criadoEm', 'desc'))
       const snapshot = await getDocs(q)
       
-      produtos.value = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        margem_lucro: calcularMargemLucro(doc.data().preco_venda, doc.data().custo)
-      }))
+      produtos.value = snapshot.docs.map(doc => {
+        const data = doc.data()
+        return {
+          id: doc.id,
+          nome: data.nome,
+          sku: data.sku || data.id,
+          preco_venda: data.precoVenda || 0,
+          custo: data.precoCusto || 0,
+          estoque: data.quantidade || 0,
+          ...data,
+          margem_lucro: calcularMargemLucro(data.precoVenda || 0, data.precoCusto || 0)
+        }
+      })
       
       console.log('✅ Produtos carregados:', produtos.value.length)
     } catch (err) {
