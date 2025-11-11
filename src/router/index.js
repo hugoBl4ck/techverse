@@ -4,6 +4,12 @@ import { useCurrentStore } from '@/composables/useCurrentStore'
 
 const routes = [
   {
+    path: '/',
+    name: 'Landing',
+    component: () => import('@/views/LandingView.vue'),
+    meta: { title: 'Bem-vindo ao TechVerse', requiresAuth: false }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
@@ -23,7 +29,7 @@ const routes = [
     ]
   },
   {
-    path: '/',
+    path: '/app',
     component: AppLayout,
     meta: { requiresAuth: true },
     children: [
@@ -189,7 +195,7 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'Login', query: { redirect: to.fullPath } });
   } else if (to.name === 'Login' && isAuthenticated.value) {
     // If user is authenticated, redirect away from login page
-    next({ name: 'Dashboard' });
+    next({ path: '/app' });
   } else {
     // make sure to always call next()!!!
     next();

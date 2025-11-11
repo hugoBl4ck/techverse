@@ -4,6 +4,7 @@ import { db } from "@/firebase/config.js";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useCurrentStore } from "@/composables/useCurrentStore";
 
+import AvisosPanel from "@/components/AvisosPanel.vue";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -193,13 +194,17 @@ const monthlyLineData = computed(() => {
 </script>
 
 <template>
-  <div class="container mx-auto py-8">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">Serviços Realizados</h1>
-      <router-link to="/ordens-servico/nova">
-        <Button>+ Nova Ordem de Serviço</Button>
-      </router-link>
-    </div>
+  <div class="w-full">
+    <!-- Painel de Avisos -->
+    <AvisosPanel class="mb-6" />
+
+    <div class="container mx-auto py-8">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold">Serviços Realizados</h1>
+        <router-link to="/ordens-servico/nova">
+          <Button>+ Nova Ordem de Serviço</Button>
+        </router-link>
+      </div>
 
     <div v-if="isLoading" class="text-center py-8">
       <p>Carregando dados...</p>
@@ -376,6 +381,7 @@ const monthlyLineData = computed(() => {
           </div>
         </CardContent>
       </Card>
+    </div>
     </div>
   </div>
 </template>
