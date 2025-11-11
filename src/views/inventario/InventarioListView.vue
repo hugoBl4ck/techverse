@@ -279,7 +279,26 @@ const dotPatternStyle = `
             <!-- Content Section -->
             <div class="p-4 flex-1 flex flex-col justify-between">
               <div>
-                <h3 class="font-bold text-base text-foreground mb-2 truncate" :title="item.nome">{{ item.nome }}</h3>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-bold text-base text-foreground truncate" :title="item.nome">{{ item.nome }}</h3>
+                  <span 
+                    :class="[
+                      'inline-flex items-center text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ms-2',
+                      (item.status || 'ativo') === 'ativo' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                      (item.status || 'ativo') === 'em_transito' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
+                      'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                    ]"
+                  >
+                    <span 
+                      :class="[
+                        'w-1.5 h-1.5 me-1 rounded-full',
+                        (item.status || 'ativo') === 'ativo' ? 'bg-green-500' :
+                        (item.status || 'ativo') === 'em_transito' ? 'bg-yellow-500' :
+                        'bg-red-500'
+                      ]"
+                    ></span>
+                  </span>
+                </div>
                 <div class="text-sm text-muted-foreground space-y-1">
                   <p><strong>Estoque:</strong> {{ item.quantidade }} unidades</p>
                   <p><strong>Preço:</strong> R$ {{ item.precoVenda?.toFixed(2) }}</p>
@@ -346,16 +365,16 @@ const dotPatternStyle = `
                      <span 
                        :class="[
                          'inline-flex items-center text-xs font-medium px-3 py-1 rounded-full',
-                         item.status === 'ativo' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
-                         item.status === 'em_transito' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
+                         (item.status || 'ativo') === 'ativo' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                         (item.status || 'ativo') === 'em_transito' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                        ]"
                      >
                        <span 
                          :class="[
                            'w-2 h-2 me-1.5 rounded-full',
-                           item.status === 'ativo' ? 'bg-green-500' :
-                           item.status === 'em_transito' ? 'bg-yellow-500' :
+                           (item.status || 'ativo') === 'ativo' ? 'bg-green-500' :
+                           (item.status || 'ativo') === 'em_transito' ? 'bg-yellow-500' :
                            'bg-red-500'
                          ]"
                        ></span>
