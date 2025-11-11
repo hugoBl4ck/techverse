@@ -1,134 +1,129 @@
 <script setup>
-import { Users, Wand2, Blocks } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
+import { Users, Wand2, Blocks } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const goToApp = () => {
-  router.push('/app')
+const navigateToApp = () => {
+  router.push('/app/clientes')
 }
 </script>
 
 <template>
-  <div class="bg-background text-foreground">
-    <!-- Header -->
-    <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm">
-      <div class="container flex h-14 items-center justify-between">
-        <div class="mr-4 flex items-center">
-          <a class="mr-6 flex items-center space-x-2" href="/">
-            <span class="font-bold font-display text-lg">TechVerse</span>
-          </a>
-        </div>
-        <nav class="flex items-center space-x-2">
-          <Button @click="goToApp">Acessar App</Button>
-        </nav>
+  <!-- Header Fixo -->
+  <header class="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="font-display text-2xl font-bold text-foreground">
+        TechVerse
       </div>
-    </header>
+      <Button @click="navigateToApp" variant="default" class="font-body">
+        Acessar App
+      </Button>
+    </div>
+  </header>
 
-    <main class="flex-1">
-      <!-- Hero Section -->
-      <section class="h-screen flex items-center justify-center text-center">
-        <div class="container">
-          <h1 class="text-5xl font-bold font-display tracking-tighter">Seu Gerenciador de TI. Do Cliente ao Kit.</h1>
-          <p class="mx-auto mt-4 max-w-[700px] text-lg text-muted-foreground">
-            TechVerse é a ferramenta gratuita para técnicos autônomos gerenciarem clientes, inventário e montagens de PC. Tudo em um só lugar.
-          </p>
-          <div class="mt-6">
-            <Button size="lg" @click="goToApp">Comece a Gerenciar Agora</Button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Features Section -->
-      <section class="py-20">
-        <div class="container">
-          <div class="text-center mb-12">
-            <h2 class="text-4xl font-bold font-display">Sua Bancada de Trabalho Digital</h2>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Feature Card 1 -->
-            <Card class="text-center">
-              <CardHeader>
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Users class="h-6 w-6" />
-                </div>
-                <CardTitle class="mt-4 font-display">Gestão de Clientes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p class="text-muted-foreground">
-                  Cadastre clientes e mantenha um histórico completo de todos os serviços prestados, de formatações a otimizações.
-                </p>
-              </CardContent>
-            </Card>
-            <!-- Feature Card 2 -->
-            <Card class="text-center">
-              <CardHeader>
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Wand2 class="h-6 w-6" />
-                </div>
-                <CardTitle class="mt-4 font-display">Cadastro Inteligente com IA</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p class="text-muted-foreground">
-                  Cole qualquer anúncio de PC (Facebook, WhatsApp) e nossa IA identifica, extrai e pré-cadastra as peças para você.
-                </p>
-              </CardContent>
-            </Card>
-            <!-- Feature Card 3 -->
-            <Card class="text-center">
-              <CardHeader>
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Blocks class="h-6 w-6" />
-                </div>
-                <CardTitle class="mt-4 font-display">Canvas de Montagem</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p class="text-muted-foreground">
-                  Use nosso "Workbench" interativo. Arraste peças do seu inventário e monte múltiplos kits com lógica de compatibilidade.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      <!-- Monetization Section -->
-      <section class="py-20">
-        <div class="container">
-          <div class="text-center">
-             <Card class="max-w-2xl mx-auto border-primary">
-                <CardHeader>
-                    <CardTitle class="font-display text-3xl">🔥 Promoções Selecionadas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p class="text-muted-foreground">
-                    O TechVerse é gratuito. Para manter o app, oferecemos um painel com as melhores promoções de hardware (AliExpress, etc.) com nossos links de afiliado.
-                    </p>
-                </CardContent>
-             </Card>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="border-t">
-      <div class="container flex items-center justify-center py-6">
-        <p class="text-sm text-muted-foreground">
-          © {{ new Date().getFullYear() }} TechVerse. Desenvolvido por HugoBl4ck.
+  <main>
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="font-display text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+          Seu Gerenciador de TI. Do Cliente ao Kit.
+        </h1>
+        <p class="text-lg text-muted-foreground mb-8 max-w-xl mx-auto font-body">
+          TechVerse é a ferramenta gratuita para técnicos autônomos gerenciarem clientes, inventário e montagens de PC. Tudo em um só lugar.
         </p>
+        <Button 
+          @click="navigateToApp" 
+          size="lg" 
+          class="font-body text-base h-12 px-8"
+        >
+          Comece a Gerenciar Agora
+        </Button>
       </div>
-    </footer>
-  </div>
-</template>
+    </section>
 
-<style scoped>
-/* Applying 0px border-radius to shadcn-vue components */
-:deep() {
-  .rounded-md, .rounded-full, .rounded-lg {
-    border-radius: 0px;
-  }
-}
-</style>
+    <!-- Features Section -->
+    <section class="py-20 bg-muted/30 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="font-display text-4xl font-bold text-foreground text-center mb-16">
+          Sua Bancada de Trabalho Digital
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Feature Card 1: Gestão -->
+          <Card class="p-8 bg-background border border-border hover:border-primary/50 transition-colors">
+            <div class="flex justify-center mb-4">
+              <Users class="w-12 h-12 text-primary" />
+            </div>
+            <h3 class="font-display text-xl font-bold text-foreground text-center mb-4">
+              Gestão de Clientes
+            </h3>
+            <p class="text-sm text-muted-foreground text-center font-body">
+              Cadastre clientes e mantenha um histórico completo de todos os serviços prestados, de formatações a otimizações.
+            </p>
+          </Card>
+
+          <!-- Feature Card 2: IA -->
+          <Card class="p-8 bg-background border border-border hover:border-primary/50 transition-colors">
+            <div class="flex justify-center mb-4">
+              <Wand2 class="w-12 h-12 text-primary" />
+            </div>
+            <h3 class="font-display text-xl font-bold text-foreground text-center mb-4">
+              Cadastro Inteligente com IA
+            </h3>
+            <p class="text-sm text-muted-foreground text-center font-body">
+              Cole qualquer anúncio de PC (Facebook, WhatsApp) e nossa IA identifica, extrai e pré-cadastra as peças para você.
+            </p>
+          </Card>
+
+          <!-- Feature Card 3: Canvas -->
+          <Card class="p-8 bg-background border border-border hover:border-primary/50 transition-colors">
+            <div class="flex justify-center mb-4">
+              <Blocks class="w-12 h-12 text-primary" />
+            </div>
+            <h3 class="font-display text-xl font-bold text-foreground text-center mb-4">
+              Canvas de Montagem
+            </h3>
+            <p class="text-sm text-muted-foreground text-center font-body">
+              Use nosso "Workbench" interativo. Arraste peças do seu inventário e monte múltiplos kits com lógica de compatibilidade.
+            </p>
+          </Card>
+        </div>
+      </div>
+    </section>
+
+    <!-- Monetização Section -->
+    <section class="py-20 bg-background px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto">
+        <Card class="p-12 bg-background border-2 border-primary">
+          <h3 class="font-display text-3xl font-bold text-foreground mb-4 text-center">
+            🔥 Promoções Selecionadas
+          </h3>
+          <p class="text-base text-muted-foreground text-center font-body">
+            O TechVerse é gratuito. Para manter o app, oferecemos um painel com as melhores promoções de hardware (AliExpress, etc.) com nossos links de afiliado.
+          </p>
+          <div class="mt-8 text-center">
+            <Button 
+              @click="navigateToApp" 
+              variant="default" 
+              class="font-body"
+            >
+              Explorar Promoções
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-border bg-muted/20 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto text-center">
+      <p class="text-sm text-muted-foreground font-body">
+        © {{ new Date().getFullYear() }} TechVerse. Desenvolvido por HugoBl4ck.
+      </p>
+    </div>
+  </footer>
+</template>
