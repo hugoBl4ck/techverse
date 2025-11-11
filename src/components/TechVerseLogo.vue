@@ -11,7 +11,7 @@ const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'light
 <template>
   <div class="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-sm flex items-center justify-center relative overflow-hidden">
     <!-- Opção 1: CPU + Circuito -->
-    <svg v-if="iconType === 'cpu-circuit'" class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg v-if="iconType === 'cpu-circuit'" class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- CPU central -->
       <rect x="8" y="8" width="8" height="8" stroke="white" stroke-width="1.5" fill="none" rx="1"/>
       <circle cx="12" cy="12" r="2" fill="white"/>
@@ -33,7 +33,7 @@ const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'light
     </svg>
 
     <!-- Opção 2: Circuito com chamas -->
-    <svg v-else-if="iconType === 'flame-circuit'" class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg v-else-if="iconType === 'flame-circuit'" class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Chama estilizada (tech) -->
       <path d="M12 2C12 2 10 6 10 9C10 11.2 11 13 12 13C13 13 14 11.2 14 9C14 6 12 2 12 2Z" fill="white" class="animate-pulse"/>
       
@@ -47,7 +47,7 @@ const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'light
     </svg>
 
     <!-- Opção 3: Lightning Tech -->
-    <svg v-else-if="iconType === 'lightning-tech'" class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg v-else-if="iconType === 'lightning-tech'" class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Lightning bolt -->
       <path d="M13 2L3 14H11L11 22L21 10H13L13 2Z" fill="white" opacity="0.9"/>
       
@@ -59,7 +59,7 @@ const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'light
     </svg>
 
     <!-- Opção 4: Microchip futurista (DEFAULT) -->
-    <svg v-else class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg v-else class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Chip central -->
       <rect x="7" y="7" width="10" height="10" stroke="white" stroke-width="1.5" fill="none" rx="1"/>
       
