@@ -266,11 +266,11 @@ watch(() => storeId.value, (newStoreId) => {
               <XAxis dataKey="data" stroke="rgba(var(--color-muted-foreground))" />
               <YAxis stroke="rgba(var(--color-muted-foreground))" />
               <Tooltip 
-                contentStyle={{ 
+                :contentStyle="{ 
                   backgroundColor: 'rgba(var(--color-background))', 
                   border: '1px solid rgba(var(--color-border))',
                   borderRadius: '8px'
-                }}
+                }"
               />
               <Bar dataKey="valor" fill="#3b82f6" radius={[8, 8, 0, 0]} />
             </BarChart>
@@ -290,11 +290,11 @@ watch(() => storeId.value, (newStoreId) => {
               <XAxis dataKey="name" stroke="rgba(var(--color-muted-foreground))" />
               <YAxis stroke="rgba(var(--color-muted-foreground))" />
               <Tooltip 
-                contentStyle={{ 
+                :contentStyle="{ 
                   backgroundColor: 'rgba(var(--color-background))', 
                   border: '1px solid rgba(var(--color-border))',
                   borderRadius: '8px'
-                }}
+                }"
               />
               <Legend />
               <Bar dataKey="receita" fill="#10b981" radius={[8, 8, 0, 0]} />
