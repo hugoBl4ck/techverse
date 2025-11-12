@@ -10,6 +10,12 @@ const routes = [
     meta: { title: 'TechVerse - Gerenciador de TI para Técnicos', requiresAuth: false }
   },
   {
+    path: '/donate',
+    name: 'Donate',
+    component: () => import('@/views/DonationPage.vue'),
+    meta: { title: 'Apoie o TechVerse', requiresAuth: false }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
