@@ -216,18 +216,16 @@ const showNotifications = ref(false)
 const showAdminPanel = ref(false)
 const isSuperAdmin = ref(true) // TODO: Verificar com Firebase Auth se é superadmin
 
-// Notificações mockadas
+// Notificações - Carregadas do painel administrativo via Firebase
 const notifications = ref([
-  { id: 1, title: 'Nova ordem de serviço', message: 'Cliente João criou uma nova OS' },
-  { id: 2, title: 'Inventário baixo', message: 'SSD Kingston está acabando' },
+  // TODO: Carregar do Firestore/Painel Administrativo
 ])
 
 const unreadNotifications = computed(() => notifications.value.length)
 
-// Avisos (apenas superadmin)
+// Avisos (apenas superadmin) - Carregados do painel administrativo
 const alerts = ref([
-  { id: 1, type: 'error', title: 'Falha no Firestore', message: 'Regras de segurança com erro', timestamp: new Date() },
-  { id: 2, type: 'warning', title: 'Usuário suspeito', message: 'Login de IP não registrado', timestamp: new Date() },
+  // TODO: Carregar do Firestore/Painel Administrativo
 ])
 
 const unreadAlerts = computed(() => alerts.value.length)
