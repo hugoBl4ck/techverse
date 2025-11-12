@@ -80,12 +80,15 @@ Retorne APENAS o JSON, sem markdown ou explicações.`
       }
     }
 
+    // Validar e processar o link
+    const linkProcessado = await validarEProcessarLink(productLink)
+
     return res.status(200).json({
       promocao: {
         titulo: promocaoData.titulo,
         descricao: promocaoData.descricao,
         desconto: promocaoData.desconto,
-        linkCompra: productLink || '',
+        linkCompra: linkProcessado,
         fotos: fotos,
         categoria: promocaoData.categoriaTagsRelevantes || []
       },
@@ -152,6 +155,85 @@ async function callGemini(prompt, apiKey) {
   const data = await response.json()
   const jsonString = data.candidates[0].content.parts[0].text
   return JSON.parse(jsonString)
+}
+
+/**
+ * Valida e processa links, especialmente AliExpress
+ * Resolve redirecionamentos e normaliza URLs
+ */
+async function validarEProcessarLink(url) {
+  if (!url) return ''
+
+  try {
+    // Validar URL básica
+    const urlObj = new URL(url)
+    
+    // Se for AliExpress, tentar resolver redirecionamento
+    if (url.includes('aliexpress') || url.includes('s.click.aliexpress')) {
+      return await resolverLinkAliExpress(url)
+    }
+
+    // Para outros links, retornar validado
+    return urlObj.href
+  } catch (error) {
+    console.error('Erro ao validar link:', error.message)
+    // Se der erro na validação, retornar o original
+    return url || ''
+  }
+}
+
+/**
+ * Resolve links de redirecionamento do AliExpress
+ * Segue redirects para obter o link direto do produto
+ */
+async function resolverLinkAliExpress(url) {
+  try {
+    // Links de redirecionamento curtos do AliExpress
+    if (url.includes('s.click.aliexpress')) {
+      const response = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      })
+
+      // Obter a URL final após redirects
+      const finalUrl = response.url
+      
+      // Validar que é um link real do AliExpress
+      if (finalUrl && finalUrl.includes('aliexpress.com')) {
+        return finalUrl
+      }
+    }
+
+    // Se não for redirecionamento ou já for link direto
+    if (url.includes('aliexpress.com')) {
+      // Normalizar URL do AliExpress removendo parâmetros de rastreamento desnecessários
+      const urlObj = new URL(url)
+      
+      // Manter apenas parâmetros importantes
+      const paramsImportantes = ['item_id', 'sku_id', 'affiliate_id', 'aff_fcid', 'aff_fsk']
+      const novasParams = new URLSearchParams()
+      
+      paramsImportantes.forEach(param => {
+        const valor = urlObj.searchParams.get(param)
+        if (valor) {
+          novasParams.set(param, valor)
+        }
+      })
+
+      // Reconstruir URL
+      const urlNormalizada = `${urlObj.origin}${urlObj.pathname}${novasParams.toString() ? '?' + novasParams.toString() : ''}`
+      return urlNormalizada
+    }
+
+    return url
+  } catch (error) {
+    console.error('Erro ao resolver link AliExpress:', error.message)
+    // Em caso de erro, retornar o original
+    return url
+  }
 }
 
 /**
