@@ -29,22 +29,22 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
   try {
     // Dados básicos do BR Code
     const brCode = {
-      00: '01', // ID formato
-      01: '12', // Versão
-      26: {
-        00: '0014br.gov.bcb.pix', // URL PIX
-        01: '0014br.gov.bcb.brcode', // Identificador
-        02: pixKey // Chave PIX
+      '00': '01', // ID formato
+      '01': '12', // Versão
+      '26': {
+        '00': '0014br.gov.bcb.pix', // URL PIX
+        '01': '0014br.gov.bcb.brcode', // Identificador
+        '02': pixKey // Chave PIX
       },
-      52: '0400', // Categoria comercial
-      53: '986', // Código da moeda (Real)
-      54: amount || '', // Valor (opcional para PIX estático)
-      55: '0', // Descrição
-      58: '05', // Código do País
-      59: name, // Nome do recebedor
-      60: city, // Cidade
-      62: {
-        05: generateTransactionId() // ID da transação
+      '52': '0400', // Categoria comercial
+      '53': '986', // Código da moeda (Real)
+      '54': amount || '', // Valor (opcional para PIX estático)
+      '55': '0', // Descrição
+      '58': '05', // Código do País
+      '59': name, // Nome do recebedor
+      '60': city, // Cidade
+      '62': {
+        '05': generateTransactionId() // ID da transação
       }
     };
 
