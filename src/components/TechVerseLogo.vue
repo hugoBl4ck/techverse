@@ -1,140 +1,170 @@
 <script setup>
-// Opções de ícone tech - escolha uma:
-// 1. CPU com chamas
-// 2. Circuito estilizado
-// 3. Lightning tech
-// 4. Microchip futurista
+// Escolha o tipo de ícone animado com morphing constante:
+// 'microchip-morph'   - Microchip com transformação contínua
+// 'circuit-pulse'     - Circuito pulsante com efeito
+// 'energy-blob'       - Blob de energia (como o seu!)
 
-const iconType = 'flame-circuit' // opções: 'cpu-circuit', 'flame-circuit', 'lightning-tech', 'microchip'
+const iconType = 'microchip-morph'
 </script>
 
 <template>
-  <div class="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-sm flex items-center justify-center relative overflow-hidden">
-    <!-- Opção 1: CPU + Circuito -->
-    <svg v-if="iconType === 'cpu-circuit'" class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- CPU central -->
-      <rect x="8" y="8" width="8" height="8" stroke="white" stroke-width="1.5" fill="none" rx="1"/>
-      <circle cx="12" cy="12" r="2" fill="white"/>
+  <div class="relative group">
+    <!-- Microchip com Morphing -->
+    <svg v-if="iconType === 'microchip-morph'" class="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="techGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#F7931E;stop-opacity:1" />
+        </linearGradient>
+      </defs>
       
-      <!-- Circuito linhas -->
-      <line x1="12" y1="4" x2="12" y2="7" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="12" y1="17" x2="12" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="4" y1="12" x2="7" y2="12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="17" y1="12" x2="20" y2="12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      
-      <!-- Pontos de conexão -->
-      <circle cx="12" cy="4" r="1.5" fill="white"/>
-      <circle cx="12" cy="20" r="1.5" fill="white"/>
-      <circle cx="4" cy="12" r="1.5" fill="white"/>
-      <circle cx="20" cy="12" r="1.5" fill="white"/>
-      
-      <!-- Glow animado -->
-      <circle cx="12" cy="12" r="5.5" stroke="white" stroke-width="0.5" fill="none" opacity="0" class="animate-glow"/>
+      <!-- Fundo gradiente animado -->
+      <rect x="4" y="4" width="24" height="24" rx="4" fill="url(#techGrad)" opacity="0.95">
+        <animate attributeName="opacity" 
+          values="0.95;0.98;0.95" 
+          dur="2s" 
+          repeatCount="indefinite"/>
+      </rect>
+
+      <!-- Chip central com morphing -->
+      <path d="M 12 12 Q 14 10 16 12 Q 18 14 16 16 Q 14 18 12 16 Q 10 14 12 12" 
+        fill="none" 
+        stroke="white" 
+        stroke-width="1.5" 
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <animate attributeName="d"
+          values="M 12 12 Q 14 10 16 12 Q 18 14 16 16 Q 14 18 12 16 Q 10 14 12 12;
+                  M 11 11 Q 13 9 16 12 Q 19 15 16 18 Q 13 21 11 16 Q 9 11 11 11;
+                  M 12 10 Q 15 9 17 12 Q 18 17 15 19 Q 12 20 12 16 Q 12 12 12 10;
+                  M 12 12 Q 14 10 16 12 Q 18 14 16 16 Q 14 18 12 16 Q 10 14 12 12"
+          dur="1.2s"
+          calcMode="spline"
+          keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1"
+          repeatCount="indefinite"/>
+      </path>
+
+      <!-- Linhas de circuito -->
+      <line x1="16" y1="6" x2="16" y2="10" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
+      </line>
+      <line x1="16" y1="22" x2="16" y2="26" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+      </line>
+      <line x1="6" y1="16" x2="10" y2="16" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+      </line>
+      <line x1="22" y1="16" x2="26" y2="16" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- Pontos de energia -->
+      <circle cx="16" cy="6" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="r" values="1.2;1.8;1.2" dur="1.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="16" cy="26" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="r" values="1.2;1.8;1.2" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="6" cy="16" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="r" values="1.2;1.8;1.2" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="26" cy="16" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="r" values="1.2;1.8;1.2" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+      </circle>
     </svg>
 
-    <!-- Opção 2: Circuito com chamas -->
-    <svg v-else-if="iconType === 'flame-circuit'" class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Chama estilizada (tech) -->
-      <path d="M12 2C12 2 10 6 10 9C10 11.2 11 13 12 13C13 13 14 11.2 14 9C14 6 12 2 12 2Z" fill="white" class="animate-pulse"/>
-      
-      <!-- Circuito -->
-      <path d="M8 14L6 14L6 18C6 19.1 6.9 20 8 20L16 20C17.1 20 18 19.1 18 18L18 14L16 14" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <line x1="10" y1="14" x2="10" y2="20" stroke="white" stroke-width="1" opacity="0.6"/>
-      <line x1="14" y1="14" x2="14" y2="20" stroke="white" stroke-width="1" opacity="0.6"/>
-      
-      <!-- Efeito de energia -->
-      <circle cx="12" cy="14" r="4" stroke="white" stroke-width="0.5" fill="none" opacity="0" class="animate-energy"/>
+    <!-- Circuito com Pulse Energético -->
+    <svg v-else-if="iconType === 'circuit-pulse'" class="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="energyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#F7931E;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+
+      <!-- Fundo -->
+      <rect x="4" y="4" width="24" height="24" rx="4" fill="url(#energyGrad)" opacity="0.95"/>
+
+      <!-- Circuito central pulsante -->
+      <g>
+        <!-- Núcleo -->
+        <circle cx="16" cy="16" r="3" fill="white" opacity="0.8">
+          <animate attributeName="r" values="3;4;3" dur="1.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;1;0.8" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Anel 1 -->
+        <circle cx="16" cy="16" r="6" fill="none" stroke="white" stroke-width="1" opacity="0.4">
+          <animate attributeName="r" values="6;8;6" dur="1.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.4;0;0.4" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Anel 2 -->
+        <circle cx="16" cy="16" r="9" fill="none" stroke="white" stroke-width="0.8" opacity="0.2">
+          <animate attributeName="r" values="9;11;9" dur="1.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.2;0;0.2" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <!-- Linhas de conexão -->
+      <line x1="16" y1="4" x2="16" y2="10" stroke="white" stroke-width="1.2" opacity="0.7">
+        <animate attributeName="stroke-width" values="1.2;2;1.2" dur="1.5s" repeatCount="indefinite"/>
+      </line>
+      <line x1="16" y1="22" x2="16" y2="28" stroke="white" stroke-width="1.2" opacity="0.7">
+        <animate attributeName="stroke-width" values="1.2;2;1.2" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+      </line>
+      <line x1="4" y1="16" x2="10" y2="16" stroke="white" stroke-width="1.2" opacity="0.7">
+        <animate attributeName="stroke-width" values="1.2;2;1.2" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+      </line>
+      <line x1="22" y1="16" x2="28" y2="16" stroke="white" stroke-width="1.2" opacity="0.7">
+        <animate attributeName="stroke-width" values="1.2;2;1.2" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+      </line>
     </svg>
 
-    <!-- Opção 3: Lightning Tech -->
-    <svg v-else-if="iconType === 'lightning-tech'" class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Lightning bolt -->
-      <path d="M13 2L3 14H11L11 22L21 10H13L13 2Z" fill="white" opacity="0.9"/>
-      
-      <!-- Linha de circuito -->
-      <line x1="8" y1="8" x2="16" y2="16" stroke="white" stroke-width="1" opacity="0.5" stroke-dasharray="2,2" class="animate-dash"/>
-      
-      <!-- Glow animado -->
-      <path d="M13 2L3 14H11L11 22L21 10H13L13 2Z" stroke="white" stroke-width="0.5" fill="none" opacity="0" class="animate-glow"/>
-    </svg>
+    <!-- Energy Blob (como seu SVG!) -->
+    <svg v-else class="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="blobGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#F7931E;stop-opacity:1" />
+        </linearGradient>
+      </defs>
 
-    <!-- Opção 4: Microchip futurista (DEFAULT) -->
-    <svg v-else class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Chip central -->
-      <rect x="7" y="7" width="10" height="10" stroke="white" stroke-width="1.5" fill="none" rx="1"/>
-      
-      <!-- Grid interno -->
-      <line x1="10" y1="7" x2="10" y2="17" stroke="white" stroke-width="0.8" opacity="0.6"/>
-      <line x1="14" y1="7" x2="14" y2="17" stroke="white" stroke-width="0.8" opacity="0.6"/>
-      <line x1="7" y1="10" x2="17" y2="10" stroke="white" stroke-width="0.8" opacity="0.6"/>
-      <line x1="7" y1="14" x2="17" y2="14" stroke="white" stroke-width="0.8" opacity="0.6"/>
-      
-      <!-- Pinos -->
-      <line x1="4" y1="10" x2="7" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="17" y1="10" x2="20" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="10" y1="4" x2="10" y2="7" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="14" y1="17" x2="14" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      
-      <!-- Centro brilhante -->
-      <circle cx="12" cy="12" r="2" fill="white" opacity="0.7"/>
+      <!-- Fundo -->
+      <rect x="2" y="2" width="28" height="28" rx="4" fill="url(#blobGrad)" opacity="0.95"/>
+
+      <!-- Blob morphing (simplificado para o tamanho) -->
+      <path d="M 16 6 Q 20 8 22 12 Q 24 16 22 20 Q 20 24 16 26 Q 12 24 10 20 Q 8 16 10 12 Q 12 8 16 6"
+        fill="white"
+        opacity="0.85"
+        stroke="white"
+        stroke-width="0.5"
+        stroke-opacity="0.4">
+        
+        <animate attributeName="d"
+          values="M 16 6 Q 20 8 22 12 Q 24 16 22 20 Q 20 24 16 26 Q 12 24 10 20 Q 8 16 10 12 Q 12 8 16 6;
+                  M 16 5 Q 21 7 23 11 Q 25 17 21 23 Q 17 26 16 27 Q 11 25 9 19 Q 7 13 9 9 Q 13 5 16 5;
+                  M 16 6 Q 19 7 21 11 Q 23 18 19 24 Q 15 27 16 26 Q 13 23 11 18 Q 9 12 11 10 Q 13 6 16 6;
+                  M 16 6 Q 20 8 22 12 Q 24 16 22 20 Q 20 24 16 26 Q 12 24 10 20 Q 8 16 10 12 Q 12 8 16 6"
+          dur="1.2s"
+          calcMode="spline"
+          keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1"
+          repeatCount="indefinite"/>
+      </path>
+
+      <!-- Glow interno -->
+      <circle cx="16" cy="16" r="8" fill="white" opacity="0" stroke="white" stroke-width="1">
+        <animate attributeName="r" values="7;9;7" dur="1.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;0.3;0" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
     </svg>
   </div>
 </template>
 
 <style scoped>
-@keyframes pulse-custom {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-
-@keyframes glow {
-  0%, 100% {
-    opacity: 0;
-    r: 4;
-  }
-  50% {
-    opacity: 0.4;
-    r: 6;
-  }
-}
-
-@keyframes energy {
-  0%, 100% {
-    opacity: 0;
-    r: 3;
-  }
-  50% {
-    opacity: 0.5;
-    r: 5;
-  }
-}
-
-@keyframes dash {
-  0% {
-    stroke-dashoffset: 0;
-  }
-  100% {
-    stroke-dashoffset: 4;
-  }
-}
-
-.animate-pulse {
-  animation: pulse-custom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-glow {
-  animation: glow 1.5s ease-in-out infinite;
-}
-
-.animate-energy {
-  animation: energy 1.2s ease-in-out infinite;
-}
-
-.animate-dash {
-  animation: dash 1s linear infinite;
-}
+/* Sem estilos adicionais - tudo está em SVG animado! */
 </style>
