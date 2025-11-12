@@ -3,6 +3,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Helper function para verificar se o usuário é superadmin
+    function isSuperAdmin() {
+      return request.auth != null 
+             && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isSuperAdmin == true;
+    }
+    
     // Helper function para verificar se o usuário tem acesso à loja
     function userOwnsStore(storeId) {
       return request.auth != null 
@@ -10,8 +16,10 @@ service cloud.firestore {
     }
     
     // Permitir que usuários autenticados criem/leiam seu próprio documento de usuário
+    // Superadmin pode ler todos os usuários
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
     
     // Regra para stores multi-tenant - nível da loja
@@ -23,6 +31,12 @@ service cloud.firestore {
       match /{collection}/{document=**} {
         allow read, write: if userOwnsStore(storeId);
       }
+    }
+
+    // Promoções - todos podem ler, apenas superadmin pode escrever/deletar
+    match /promocoes/{document=**} {
+      allow read: if request.auth != null;
+      allow write, delete: if isSuperAdmin();
     }
     
     // Regra global: negar tudo por padrão

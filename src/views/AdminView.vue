@@ -2,28 +2,28 @@
   <div class="p-4 md:p-6">
     <h1 class="text-2xl font-bold mb-6">Painel Administrativo</h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-6">
       <!-- Card de Estatísticas -->
       <Card>
         <CardHeader>
           <CardTitle>Estatísticas</CardTitle>
         </CardHeader>
         <CardContent>
-          <div class="grid gap-4">
+          <div class="grid gap-4 md:grid-cols-2">
             <div>
               <h3 class="font-semibold">Total de Usuários</h3>
-              <p>{{ userCount }}</p>
+              <p class="text-2xl font-bold text-primary">{{ userCount }}</p>
             </div>
             <div>
               <h3 class="font-semibold">Usuários Online</h3>
-              <p>{{ activeUsersCount }}</p>
+              <p class="text-2xl font-bold text-accent">{{ activeUsersCount }}</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <!-- Card de Promoções -->
-      <Card class="md:col-span-2">
+      <Card>
         <CardHeader>
           <CardTitle>Gerenciar Promoções</CardTitle>
         </CardHeader>
@@ -52,6 +52,81 @@
           </div>
         </CardContent>
       </Card>
+
+      <!-- Card de Usuários -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Lista de Usuários</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="text-left py-2 px-2">Email</th>
+                  <th class="text-left py-2 px-2">Nome</th>
+                  <th class="text-left py-2 px-2">Loja</th>
+                  <th class="text-left py-2 px-2">Último Acesso</th>
+                  <th class="text-center py-2 px-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="user in users" :key="user.id" class="border-b hover:bg-primary/5">
+                  <td class="py-2 px-2">{{ user.email }}</td>
+                  <td class="py-2 px-2">{{ user.nome || '-' }}</td>
+                  <td class="py-2 px-2">{{ user.storeName || '-' }}</td>
+                  <td class="py-2 px-2 text-sm text-muted-foreground">
+                    {{ formatLastActive(user.lastActive) }}
+                  </td>
+                  <td class="py-2 px-2 text-center">
+                    <span v-if="isUserOnline(user.lastActive)" class="inline-flex items-center gap-1">
+                      <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                      <span class="text-xs text-green-600 font-semibold">Online</span>
+                    </span>
+                    <span v-else class="inline-flex items-center gap-1">
+                      <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+                      <span class="text-xs text-gray-600 font-semibold">Offline</span>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-if="users.length === 0" class="text-center py-4 text-muted-foreground">
+              Nenhum usuário encontrado
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Card de Lojas -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Lista de Lojas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="text-left py-2 px-2">Nome da Loja</th>
+                  <th class="text-left py-2 px-2">Email</th>
+                  <th class="text-left py-2 px-2">Proprietário</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="store in stores" :key="store.id" class="border-b hover:bg-primary/5">
+                  <td class="py-2 px-2 font-semibold">{{ store.name }}</td>
+                  <td class="py-2 px-2">{{ store.email || '-' }}</td>
+                  <td class="py-2 px-2">{{ store.ownerName || '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-if="stores.length === 0" class="text-center py-4 text-muted-foreground">
+              Nenhuma loja encontrada
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   </div>
 </template>
@@ -69,6 +144,8 @@ import { Textarea } from '@/components/ui/textarea';
 const userCount = ref(0);
 const activeUsersCount = ref(0);
 const promotions = ref([]);
+const users = ref([]);
+const stores = ref([]);
 const newPromotion = ref({ title: '', description: '' });
 const isSavingPromotion = ref(false);
 let refreshInterval;
@@ -93,6 +170,53 @@ const fetchActiveUsers = async () => {
     activeUsersCount.value = snapshot.size;
   } catch (error) {
     console.error("Erro ao buscar usuários ativos:", error);
+  }
+};
+
+// --- Usuários ---
+const fetchUsers = async () => {
+  try {
+    const usersCol = collection(db, 'users');
+    const snapshot = await getDocs(usersCol);
+    users.value = snapshot.docs.map(doc => ({ 
+      id: doc.id, 
+      ...doc.data() 
+    }));
+  } catch (error) {
+    console.error("Erro ao buscar usuários:", error);
+  }
+};
+
+// --- Lojas ---
+const fetchStores = async () => {
+  try {
+    const storesCol = collection(db, 'stores');
+    const snapshot = await getDocs(storesCol);
+    stores.value = await Promise.all(snapshot.docs.map(async (doc) => {
+      const storeData = doc.data();
+      let ownerName = '-';
+      
+      // Busca o nome do proprietário
+      try {
+        if (storeData.ownerId) {
+          const ownerDoc = doc(db, 'users', storeData.ownerId);
+          const ownerSnapshot = await getDocs(query(collection(db, 'users'), where('id', '==', storeData.ownerId)));
+          if (!ownerSnapshot.empty) {
+            ownerName = ownerSnapshot.docs[0].data().nome || '-';
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao buscar proprietário:", e);
+      }
+      
+      return {
+        id: doc.id,
+        ...storeData,
+        ownerName
+      };
+    }));
+  } catch (error) {
+    console.error("Erro ao buscar lojas:", error);
   }
 };
 
@@ -132,9 +256,46 @@ const deletePromotion = async (id) => {
   }
 };
 
+// --- Helpers para formatação ---
+const formatLastActive = (timestamp) => {
+  if (!timestamp) return '-';
+  
+  try {
+    const lastActiveDate = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - lastActiveDate;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffMins < 1) return 'Agora';
+    if (diffMins < 60) return `${diffMins}m atrás`;
+    if (diffHours < 24) return `${diffHours}h atrás`;
+    if (diffDays < 7) return `${diffDays}d atrás`;
+    
+    return lastActiveDate.toLocaleDateString('pt-BR');
+  } catch (error) {
+    return '-';
+  }
+};
+
+const isUserOnline = (timestamp) => {
+  if (!timestamp) return false;
+  
+  try {
+    const lastActiveDate = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    return lastActiveDate >= fiveMinutesAgo;
+  } catch (error) {
+    return false;
+  }
+};
+
 onMounted(() => {
   fetchUserCount();
   fetchActiveUsers();
+  fetchUsers();
+  fetchStores();
   fetchPromotions();
   
   // Atualiza usuários ativos a cada 30 segundos
