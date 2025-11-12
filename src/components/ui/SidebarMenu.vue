@@ -134,6 +134,20 @@
       </Button>
     </RouterLink>
 
+    <RouterLink to="/test-visuals" v-slot="{ isExactActive }">
+      <Button
+        variant="ghost"
+        class="w-full justify-start gap-2"
+        :class="{
+          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
+        }"
+        @click="handleNavigate"
+      >
+        <Newspaper class="size-4" />
+        Gerenciar Notícias
+      </Button>
+    </RouterLink>
+
     <RouterLink to="/exportar-dados" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
@@ -171,7 +185,7 @@ import { useCurrentStore } from '@/composables/useCurrentStore'
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List, Download, TrendingUp } from 'lucide-vue-next'
+import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List, Download, TrendingUp, Newspaper } from 'lucide-vue-next'
 
 const props = defineProps({
   onNavigate: {

@@ -136,6 +136,9 @@ export function useFirestore() {
         titulo: news.titulo,
         conteudo: news.conteudo || '',
         dataPub: news.dataPub ? new Date(news.dataPub) : new Date(),
+        categoria: news.categoria || 'tech',
+        imagem: news.imagem || '',
+        views: news.views || 0,
         ativo: news.ativo !== false,
         atualizadoEm: new Date()
       }

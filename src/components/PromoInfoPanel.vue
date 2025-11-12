@@ -356,9 +356,24 @@
               class="w-full p-2 text-sm border rounded-md resize-none h-24"
             />
           </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="text-sm font-medium">Categoria</label>
+              <select v-model="formData.categoria" class="w-full p-2 text-sm border rounded-md">
+                <option value="tech">💻 Tech</option>
+                <option value="techverse">🔧 TechVerse</option>
+                <option value="tutorial">📚 Tutorial</option>
+                <option value="release">🚀 Release</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <label class="text-sm font-medium">Data de Publicação</label>
+              <Input v-model="formData.dataPub" type="date" />
+            </div>
+          </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Data de Publicação</label>
-            <Input v-model="formData.dataPub" type="date" />
+            <label class="text-sm font-medium">URL da Imagem (opcional)</label>
+            <Input v-model="formData.imagem" placeholder="https://..." type="url" />
           </div>
         </div>
 
@@ -448,6 +463,8 @@ const formData = ref({
   dataInicio: '',
   dataFim: '',
   dataPub: '',
+  categoria: 'tech',
+  imagem: '',
   ativo: true
 });
 
@@ -492,6 +509,8 @@ function openFormModal(type) {
     dataInicio: '',
     dataFim: '',
     dataPub: new Date().toISOString().split('T')[0],
+    categoria: 'tech',
+    imagem: '',
     ativo: true
   };
   showModal.value = true;
