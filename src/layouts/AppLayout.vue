@@ -45,16 +45,16 @@
 
           <!-- Social Links -->
           <div v-if="!isMobile" class="flex items-center space-x-1">
-            <a href="#" target="_blank" rel="noopener" class="btn-social-mini" data-tooltip="Discord">
+            <a href="https://discord.com/" target="_blank" rel="noopener noreferrer" class="btn-social-mini" data-tooltip="Discord">
               <i class="fa-brands fa-discord"></i>
             </a>
-            <a href="#" target="_blank" rel="noopener" class="btn-social-mini" data-tooltip="Gmail">
+            <a href="mailto:hugovieira.eng@gmail.com" target="_blank" rel="noopener noreferrer" class="btn-social-mini" data-tooltip="Gmail">
               <i class="fa-regular fa-envelope"></i>
             </a>
-            <a href="#" target="_blank" rel="noopener" class="btn-social-mini" data-tooltip="Telegram">
+            <a href="https://t.me/+EePYIRUrki40YTkx" target="_blank" rel="noopener noreferrer" class="btn-social-mini" data-tooltip="Telegram">
               <i class="fa-brands fa-telegram"></i>
             </a>
-            <a href="#" target="_blank" rel="noopener" class="btn-social-mini" data-tooltip="Whatsapp">
+            <a href="https://wa.me/5577998267548?text=gostaria%20de%20saber%20mais%20sobre%20o%20TECHVERSE" target="_blank" rel="noopener noreferrer" class="btn-social-mini" data-tooltip="Whatsapp">
               <i class="fa-brands fa-whatsapp"></i>
             </a>
             <button @click="logout" class="btn-social-mini" data-tooltip="Sair">
