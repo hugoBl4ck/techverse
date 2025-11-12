@@ -12,77 +12,57 @@ const iconType = 'microchip-morph'
     <!-- Microchip com Morphing -->
     <svg v-if="iconType === 'microchip-morph'" class="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="techGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#F7931E;stop-opacity:1" />
-        </linearGradient>
         <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.9" />
-          <stop offset="100%" style="stop-color:#FFD700;stop-opacity:0" />
+          <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.6" />
+          <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
         </radialGradient>
       </defs>
-      
-      <!-- Fundo gradiente animado -->
-      <rect x="4" y="4" width="24" height="24" rx="4" fill="url(#techGrad)" opacity="0.95">
-        <animate attributeName="opacity" 
-          values="0.95;0.98;0.95" 
-          dur="2s" 
-          repeatCount="indefinite"/>
-      </rect>
 
-      <!-- Glow interno radial -->
-      <circle cx="16" cy="16" r="10" fill="url(#glowGrad)" opacity="0.4">
-        <animate attributeName="opacity" values="0.4;0.7;0.4" dur="1.2s" repeatCount="indefinite"/>
+      <!-- Glow suave -->
+      <circle cx="16" cy="16" r="10" fill="url(#glowGrad)" opacity="0.3">
+        <animate attributeName="opacity" values="0.3;0.5;0.3" dur="1.5s" repeatCount="indefinite"/>
       </circle>
 
-      <!-- Chip central com morphing -->
-      <path d="M 12 12 Q 14 10 16 12 Q 18 14 16 16 Q 14 18 12 16 Q 10 14 12 12" 
-        fill="white" 
-        opacity="0.9"
-        stroke="none"
+      <!-- Circuito principal - quadrado com cantos arredondados animado -->
+      <path d="M 10 12 L 12 12 L 12 10 L 20 10 L 20 12 L 22 12 L 22 20 L 20 20 L 20 22 L 12 22 L 12 20 L 10 20 Z" 
+        fill="none" 
+        stroke="white" 
+        stroke-width="1.2" 
         stroke-linecap="round"
-        stroke-linejoin="round">
-        <animate attributeName="d"
-          values="M 12 12 Q 14 10 16 12 Q 18 14 16 16 Q 14 18 12 16 Q 10 14 12 12;
-                  M 11 11 Q 13 9 16 12 Q 19 15 16 18 Q 13 21 11 16 Q 9 11 11 11;
-                  M 12 10 Q 15 9 17 12 Q 18 17 15 19 Q 12 20 12 16 Q 12 12 12 10;
-                  M 12 12 Q 14 10 16 12 Q 18 14 16 16 Q 14 18 12 16 Q 10 14 12 12"
-          dur="1.2s"
-          calcMode="spline"
-          keySplines="0.42 0 0.58 1; 0.42 0 0.58 1; 0.42 0 0.58 1"
-          repeatCount="indefinite"/>
+        stroke-linejoin="round"
+        opacity="0.9">
+        <animate attributeName="stroke-width" values="1.2;1.5;1.2" dur="1.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
       </path>
 
-      <!-- Linhas de circuito com gradiente -->
-      <line x1="16" y1="6" x2="16" y2="10" stroke="url(#techGrad)" stroke-width="1.2" stroke-linecap="round" opacity="0.9">
-        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
-      </line>
-      <line x1="16" y1="22" x2="16" y2="26" stroke="url(#techGrad)" stroke-width="1.2" stroke-linecap="round" opacity="0.9">
-        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
-      </line>
-      <line x1="6" y1="16" x2="10" y2="16" stroke="url(#techGrad)" stroke-width="1.2" stroke-linecap="round" opacity="0.9">
-        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
-      </line>
-      <line x1="22" y1="16" x2="26" y2="16" stroke="url(#techGrad)" stroke-width="1.2" stroke-linecap="round" opacity="0.9">
-        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+      <!-- Núcleo central morphing -->
+      <circle cx="16" cy="16" r="2.5" fill="none" stroke="white" stroke-width="1" opacity="0.7">
+        <animate attributeName="r" values="2.5;3.2;2.5" dur="1.2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.2s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Linhas horizontais internas -->
+      <line x1="13" y1="16" x2="19" y2="16" stroke="white" stroke-width="0.8" opacity="0.5">
+        <animate attributeName="opacity" values="0.5;0.8;0.5" dur="1.5s" repeatCount="indefinite"/>
       </line>
 
-      <!-- Pontos de energia com gradiente -->
-      <circle cx="16" cy="6" r="1.2" fill="url(#glowGrad)" opacity="0.8">
-        <animate attributeName="r" values="1.2;1.8;1.2" dur="1.5s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
+      <!-- Linhas verticais internas -->
+      <line x1="16" y1="13" x2="16" y2="19" stroke="white" stroke-width="0.8" opacity="0.5">
+        <animate attributeName="opacity" values="0.5;0.8;0.5" dur="1.5s" begin="0.2s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- Conectores nos cantos -->
+      <circle cx="10" cy="12" r="1" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.9;0.6" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
       </circle>
-      <circle cx="16" cy="26" r="1.2" fill="url(#glowGrad)" opacity="0.8">
-        <animate attributeName="r" values="1.2;1.8;1.2" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+      <circle cx="22" cy="12" r="1" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.9;0.6" dur="1.5s" begin="0.45s" repeatCount="indefinite"/>
       </circle>
-      <circle cx="6" cy="16" r="1.2" fill="url(#glowGrad)" opacity="0.8">
-        <animate attributeName="r" values="1.2;1.8;1.2" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+      <circle cx="22" cy="20" r="1" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.9;0.6" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
       </circle>
-      <circle cx="26" cy="16" r="1.2" fill="url(#glowGrad)" opacity="0.8">
-        <animate attributeName="r" values="1.2;1.8;1.2" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+      <circle cx="10" cy="20" r="1" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.9;0.6" dur="1.5s" begin="0.75s" repeatCount="indefinite"/>
       </circle>
     </svg>
 
