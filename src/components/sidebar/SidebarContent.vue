@@ -6,7 +6,7 @@
       <button @click="increaseFontSize" class="btn-social text-lg font-bold">A+</button>
     </div>
     <div class="social-links flex justify-center gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
-      <a href="https://wa.me/5577998267548" target="_blank" rel="noopener noreferrer" class="btn-social" data-tooltip="WhatsApp">
+      <a href="https://wa.me/5577998267548?text=gostaria%20de%20saber%20mais%20sobre%20o%20TECHVERSE" target="_blank" rel="noopener noreferrer" class="btn-social" data-tooltip="WhatsApp">
         <img :src="whatsappIcon" alt="WhatsApp" class="w-6 h-6" />
       </a>
       <a href="mailto:hugovieira.eng@gmail.com" target="_blank" rel="noopener noreferrer" class="btn-social" data-tooltip="Gmail">
@@ -15,7 +15,7 @@
       <a href="https://discord.com/" target="_blank" rel="noopener noreferrer" class="btn-social" data-tooltip="Discord">
         <img :src="discordIcon" alt="Discord" class="w-6 h-6" />
       </a>
-      <a href="https://t.me/" target="_blank" rel="noopener noreferrer" class="btn-social" data-tooltip="Telegram">
+      <a href="https://t.me/+EePYIRUrki40YTkx" target="_blank" rel="noopener noreferrer" class="btn-social" data-tooltip="Telegram">
         <img :src="telegramIcon" alt="Telegram" class="w-6 h-6" />
       </a>
     </div>
