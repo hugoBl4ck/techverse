@@ -5,7 +5,7 @@
 // 3. Lightning tech
 // 4. Microchip futurista
 
-const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'lightning-tech', 'microchip'
+const iconType = 'flame-circuit' // opções: 'cpu-circuit', 'flame-circuit', 'lightning-tech', 'microchip'
 </script>
 
 <template>
@@ -23,10 +23,10 @@ const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'light
       <line x1="17" y1="12" x2="20" y2="12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       
       <!-- Pontos de conexão -->
-      <circle cx="12" cy="4" r="1.5" fill="white" class="animate-pulse"/>
-      <circle cx="12" cy="20" r="1.5" fill="white" class="animate-pulse" style="animation-delay: 0.3s"/>
-      <circle cx="4" cy="12" r="1.5" fill="white" class="animate-pulse" style="animation-delay: 0.6s"/>
-      <circle cx="20" cy="12" r="1.5" fill="white" class="animate-pulse" style="animation-delay: 0.9s"/>
+      <circle cx="12" cy="4" r="1.5" fill="white"/>
+      <circle cx="12" cy="20" r="1.5" fill="white"/>
+      <circle cx="4" cy="12" r="1.5" fill="white"/>
+      <circle cx="20" cy="12" r="1.5" fill="white"/>
       
       <!-- Glow animado -->
       <circle cx="12" cy="12" r="5.5" stroke="white" stroke-width="0.5" fill="none" opacity="0" class="animate-glow"/>
@@ -70,10 +70,10 @@ const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'light
       <line x1="7" y1="14" x2="17" y2="14" stroke="white" stroke-width="0.8" opacity="0.6"/>
       
       <!-- Pinos -->
-      <line x1="4" y1="10" x2="7" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round" class="animate-pulse"/>
-      <line x1="17" y1="10" x2="20" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round" class="animate-pulse" style="animation-delay: 0.3s"/>
-      <line x1="10" y1="4" x2="10" y2="7" stroke="white" stroke-width="1.5" stroke-linecap="round" class="animate-pulse" style="animation-delay: 0.6s"/>
-      <line x1="14" y1="17" x2="14" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round" class="animate-pulse" style="animation-delay: 0.9s"/>
+      <line x1="4" y1="10" x2="7" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="17" y1="10" x2="20" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="10" y1="4" x2="10" y2="7" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="14" y1="17" x2="14" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       
       <!-- Centro brilhante -->
       <circle cx="12" cy="12" r="2" fill="white" opacity="0.7"/>
@@ -82,6 +82,15 @@ const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'light
 </template>
 
 <style scoped>
+@keyframes pulse-custom {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
 @keyframes glow {
   0%, 100% {
     opacity: 0;
@@ -111,6 +120,10 @@ const iconType = 'microchip' // opções: 'cpu-circuit', 'flame-circuit', 'light
   100% {
     stroke-dashoffset: 4;
   }
+}
+
+.animate-pulse {
+  animation: pulse-custom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .animate-glow {
