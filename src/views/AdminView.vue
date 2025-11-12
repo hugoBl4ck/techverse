@@ -16,7 +16,7 @@
             </div>
             <div>
               <h3 class="font-semibold">Usuários Online</h3>
-              <p>Em breve</p>
+              <p>{{ activeUsersCount }}</p>
             </div>
           </div>
         </CardContent>
@@ -57,9 +57,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { db } from '@/firebase/config.js';
-import { collection, getDocs, addDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, query, orderBy, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,9 +67,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
 const userCount = ref(0);
+const activeUsersCount = ref(0);
 const promotions = ref([]);
 const newPromotion = ref({ title: '', description: '' });
 const isSavingPromotion = ref(false);
+let refreshInterval;
 
 // --- Estatísticas ---
 const fetchUserCount = async () => {
@@ -79,6 +81,19 @@ const fetchUserCount = async () => {
   const usersCol = collection(db, 'users');
   const userSnapshot = await getDocs(usersCol);
   userCount.value = userSnapshot.size;
+};
+
+// Conta usuários online (com lastActive nos últimos 5 minutos)
+const fetchActiveUsers = async () => {
+  try {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const usersCol = collection(db, 'users');
+    const q = query(usersCol, where('lastActive', '>=', fiveMinutesAgo));
+    const snapshot = await getDocs(q);
+    activeUsersCount.value = snapshot.size;
+  } catch (error) {
+    console.error("Erro ao buscar usuários ativos:", error);
+  }
 };
 
 // --- Promoções ---
@@ -119,6 +134,16 @@ const deletePromotion = async (id) => {
 
 onMounted(() => {
   fetchUserCount();
+  fetchActiveUsers();
   fetchPromotions();
+  
+  // Atualiza usuários ativos a cada 30 segundos
+  refreshInterval = setInterval(() => {
+    fetchActiveUsers();
+  }, 30000);
+});
+
+onUnmounted(() => {
+  if (refreshInterval) clearInterval(refreshInterval);
 });
 </script>
