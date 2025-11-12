@@ -11,9 +11,12 @@
       <CardDescription>Gerencie promoções e notícias para todas as lojas</CardDescription>
     </CardHeader>
 
-    <CardContent class="space-y-4">
-      <!-- Tabs: Promoções e Notícias -->
-      <div class="flex gap-2 border-b">
+    <CardContent class="space-y-6">
+       <!-- Gerador IA -->
+       <PromoGeneratorAI @promo-added="loadData" />
+
+       <!-- Tabs: Promoções e Notícias -->
+       <div class="flex gap-2 border-b">
         <button
           @click="activeTab = 'promos'"
           :class="[
@@ -461,7 +464,8 @@ import {
   Copy,
   Eye
 } from 'lucide-vue-next';
-import { useFirestore } from '@/composables/useFirestore';
+import { useFirestore } from '@/composables/useFirestore'
+import PromoGeneratorAI from './PromoGeneratorAI.vue'
 
 const { getPromos, savePromo, deletePromo, getNews, saveNews, deleteNews, getPixConfig, savePixConfig: savePixConfigToDb } = useFirestore();
 

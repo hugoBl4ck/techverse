@@ -120,7 +120,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink to="/marketing" v-slot="{ isExactActive }">
+    <RouterLink v-if="isAdmin" to="/marketing" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -134,7 +134,25 @@
       </Button>
     </RouterLink>
 
-    <RouterLink to="/test-visuals" v-slot="{ isExactActive }">
+    <!-- Seção PÚBLICA (Aparece para todos) -->
+    <Separator class="my-2" />
+    <div class="px-4 py-2 text-xs font-medium text-muted-foreground">ACOMPANHAR</div>
+
+    <RouterLink to="/promocoes" v-slot="{ isExactActive }">
+      <Button
+        variant="ghost"
+        class="w-full justify-start gap-2"
+        :class="{
+          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
+        }"
+        @click="handleNavigate"
+      >
+        <Gift class="size-4" />
+        Promoções
+      </Button>
+    </RouterLink>
+
+    <RouterLink to="/noticias" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -144,11 +162,29 @@
         @click="handleNavigate"
       >
         <Newspaper class="size-4" />
-        Gerenciar Notícias e Promoções
+        Notícias
       </Button>
     </RouterLink>
 
-    <RouterLink to="/exportar-dados" v-slot="{ isExactActive }">
+    <!-- Seção ADMIN (Apenas Admin) -->
+    <Separator v-if="isAdmin" class="my-2" />
+    <div v-if="isAdmin" class="px-4 py-2 text-xs font-medium text-muted-foreground">ADMINISTRAÇÃO</div>
+
+    <RouterLink v-if="isAdmin" to="/test-visuals" v-slot="{ isExactActive }">
+      <Button
+        variant="ghost"
+        class="w-full justify-start gap-2"
+        :class="{
+          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
+        }"
+        @click="handleNavigate"
+      >
+        <Edit class="size-4" />
+        Gerenciar Promoções
+      </Button>
+    </RouterLink>
+
+    <RouterLink v-if="isAdmin" to="/exportar-dados" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -185,7 +221,8 @@ import { useCurrentStore } from '@/composables/useCurrentStore'
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List, Download, TrendingUp, Newspaper } from 'lucide-vue-next'
+import { Home, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List, Download, TrendingUp, Newspaper, Gift, Edit } from 'lucide-vue-next'
+import Separator from './separator/Separator.vue'
 
 const props = defineProps({
   onNavigate: {
