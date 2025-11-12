@@ -3,8 +3,22 @@
 // 'microchip-morph'   - Microchip com transformação contínua
 // 'circuit-pulse'     - Circuito pulsante com efeito
 // 'energy-blob'       - Blob de energia (como o seu!)
+// 'grip-infinite'     - Grade animada infinita com degrade
 
-const iconType = 'microchip-morph'
+const iconType = 'grip-infinite'
+
+// Array de coordenadas para a grade 3x3
+const circles = [
+  { cx: 8, cy: 8 },   // Top left
+  { cx: 16, cy: 8 },  // Top middle
+  { cx: 24, cy: 8 },  // Top right
+  { cx: 8, cy: 16 },  // Middle left
+  { cx: 16, cy: 16 }, // Center
+  { cx: 24, cy: 16 }, // Middle right
+  { cx: 8, cy: 24 },  // Bottom left
+  { cx: 16, cy: 24 }, // Bottom middle
+  { cx: 24, cy: 24 }, // Bottom right
+]
 </script>
 
 <template>
@@ -111,6 +125,82 @@ const iconType = 'microchip-morph'
       </line>
       <line x1="22" y1="16" x2="28" y2="16" stroke="white" stroke-width="1.2" opacity="0.7">
         <animate attributeName="stroke-width" values="1.2;2;1.2" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+      </line>
+    </svg>
+
+    <!-- Grip Infinito com Degrade -->
+    <svg v-else-if="iconType === 'grip-infinite'" class="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="gripGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+          <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
+        </radialGradient>
+      </defs>
+
+      <!-- Glow de fundo com degrade -->
+      <circle cx="16" cy="16" r="12" fill="url(#gripGlow)" opacity="0.3">
+        <animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Círculos da grade 3x3 com animação infinita -->
+      <circle cx="8" cy="8" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="16" cy="8" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.2s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" begin="0.2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="24" cy="8" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.4s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" begin="0.4s" repeatCount="indefinite"/>
+      </circle>
+
+      <circle cx="8" cy="16" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="16" cy="16" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.8s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" begin="0.8s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="24" cy="16" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="1s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" begin="1s" repeatCount="indefinite"/>
+      </circle>
+
+      <circle cx="8" cy="24" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="1.2s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" begin="1.2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="16" cy="24" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="1.4s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" begin="1.4s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="24" cy="24" r="1.2" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="1.6s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="1.2;1.6;1.2" dur="1.8s" begin="1.6s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Linhas finas conectando os círculos -->
+      <line x1="8" y1="8" x2="24" y2="8" stroke="white" stroke-width="0.5" opacity="0.3">
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" repeatCount="indefinite"/>
+      </line>
+      <line x1="8" y1="16" x2="24" y2="16" stroke="white" stroke-width="0.5" opacity="0.3">
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+      </line>
+      <line x1="8" y1="24" x2="24" y2="24" stroke="white" stroke-width="0.5" opacity="0.3">
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+      </line>
+
+      <line x1="8" y1="8" x2="8" y2="24" stroke="white" stroke-width="0.5" opacity="0.3">
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" begin="0.9s" repeatCount="indefinite"/>
+      </line>
+      <line x1="16" y1="8" x2="16" y2="24" stroke="white" stroke-width="0.5" opacity="0.3">
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" begin="1.2s" repeatCount="indefinite"/>
+      </line>
+      <line x1="24" y1="8" x2="24" y2="24" stroke="white" stroke-width="0.5" opacity="0.3">
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" begin="1.5s" repeatCount="indefinite"/>
       </line>
     </svg>
 
