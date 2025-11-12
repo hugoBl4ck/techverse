@@ -268,9 +268,17 @@ html {
     right: 0;
     bottom: 0;
     z-index: -1;
-    background-image: linear-gradient(45deg, hsla(0, 0%, 100%, 0.03) 25%, transparent 25%, transparent 50%, hsla(0, 0%, 100%, 0.03) 50%, hsla(0, 0%, 100%, 0.03) 75%, transparent 75%, transparent);
-    background-size: 60px 60px;
-    opacity: 0.3;
+    background: #f5f3f8;
+    background-image: 
+        /* Mesh gradient overlay */
+        radial-gradient(at 20% 50%, rgba(93, 63, 161, 0.12) 0px, transparent 50%),
+        radial-gradient(at 80% 30%, rgba(216, 92, 92, 0.1) 0px, transparent 50%),
+        radial-gradient(at 50% 80%, rgba(93, 63, 161, 0.08) 0px, transparent 50%),
+        /* Dotted grid */
+        radial-gradient(circle, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 30px 30px;
+    background-position: 0 0, 0 0, 0 0, 0 0;
+    opacity: 1;
 }
 
 .dark .app-background-stripes {
