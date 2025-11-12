@@ -144,7 +144,7 @@
         @click="handleNavigate"
       >
         <Newspaper class="size-4" />
-        Gerenciar Notícias
+        Gerenciar Notícias e Promoções
       </Button>
     </RouterLink>
 

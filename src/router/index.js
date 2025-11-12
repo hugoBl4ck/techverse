@@ -22,6 +22,12 @@ const routes = [
     meta: { title: 'Notícias TechVerse', requiresAuth: false }
   },
   {
+    path: '/promocoes',
+    name: 'Promos',
+    component: () => import('@/views/PromosPage.vue'),
+    meta: { title: 'Promoções TechVerse', requiresAuth: false }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),

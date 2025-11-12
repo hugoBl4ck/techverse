@@ -82,9 +82,15 @@
             </div>
 
             <div class="flex items-center justify-between gap-2 text-xs text-muted-foreground mb-2">
-              <span v-if="promo.desconto">💰 Desconto: {{ promo.desconto }}%</span>
-              <span v-if="promo.dataInicio">📅 {{ formatDate(promo.dataInicio) }}</span>
-            </div>
+                <span v-if="promo.desconto">💰 Desconto: {{ promo.desconto }}%</span>
+                <span v-if="promo.dataInicio">📅 {{ formatDate(promo.dataInicio) }}</span>
+              </div>
+
+              <div v-if="promo.fotos && promo.fotos.length > 0" class="mb-2">
+                <div class="flex gap-2 overflow-x-auto">
+                  <img v-for="(foto, idx) in promo.fotos" :key="idx" :src="foto" class="h-16 w-16 rounded object-cover flex-shrink-0" />
+                </div>
+              </div>
 
             <div class="flex gap-2">
               <Button
@@ -321,30 +327,49 @@
         </div>
 
         <!-- Promoção específico -->
-        <div v-if="currentType === 'promo'" class="space-y-3">
-          <div class="space-y-1">
-            <label class="text-sm font-medium">Descrição</label>
-            <textarea
-              v-model="formData.descricao"
-              placeholder="Descreva a promoção"
-              class="w-full p-2 text-sm border rounded-md resize-none h-20"
-            />
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-1">
-              <label class="text-sm font-medium">Desconto (%)</label>
-              <Input v-model.number="formData.desconto" type="number" placeholder="0" />
-            </div>
-            <div class="space-y-1">
-              <label class="text-sm font-medium">Data Início</label>
-              <Input v-model="formData.dataInicio" type="date" />
-            </div>
-          </div>
-          <div class="space-y-1">
-            <label class="text-sm font-medium">Data Fim</label>
-            <Input v-model="formData.dataFim" type="date" />
-          </div>
-        </div>
+         <div v-if="currentType === 'promo'" class="space-y-3">
+           <div class="space-y-1">
+             <label class="text-sm font-medium">Descrição</label>
+             <textarea
+               v-model="formData.descricao"
+               placeholder="Descreva a promoção"
+               class="w-full p-2 text-sm border rounded-md resize-none h-20"
+             />
+           </div>
+           <div class="grid grid-cols-2 gap-3">
+             <div class="space-y-1">
+               <label class="text-sm font-medium">Desconto (%)</label>
+               <Input v-model.number="formData.desconto" type="number" placeholder="0" />
+             </div>
+             <div class="space-y-1">
+               <label class="text-sm font-medium">Data Início</label>
+               <Input v-model="formData.dataInicio" type="date" />
+             </div>
+           </div>
+           <div class="space-y-1">
+             <label class="text-sm font-medium">Data Fim</label>
+             <Input v-model="formData.dataFim" type="date" />
+           </div>
+
+           <div class="space-y-1">
+             <label class="text-sm font-medium">URL de Compra</label>
+             <Input v-model="formData.linkCompra" placeholder="https://s.click.aliexpress.com/e/_c3qZpQup" type="url" />
+           </div>
+
+           <div class="space-y-2">
+             <label class="text-sm font-medium">Fotos da Promoção (URLs)</label>
+             <div class="space-y-2">
+               <div v-for="(foto, idx) in (formData.fotos || [])" :key="idx" class="flex gap-2">
+                 <Input v-model="formData.fotos[idx]" placeholder="https://..." type="url" class="text-xs" />
+                 <Button @click="formData.fotos.splice(idx, 1)" variant="ghost" size="sm" class="h-9">✕</Button>
+               </div>
+               <Button @click="formData.fotos = [...(formData.fotos || []), '']" variant="outline" size="sm" class="w-full">
+                 + Adicionar Foto
+               </Button>
+             </div>
+             <p class="text-xs text-muted-foreground">Adicione URLs de fotos do produto em promoção</p>
+           </div>
+         </div>
 
         <!-- Notícia específico -->
         <div v-if="currentType === 'news'" class="space-y-3">
@@ -456,17 +481,19 @@ const pixConfig = ref({
 const currentType = ref('promo');
 const formMode = ref('create');
 const formData = ref({
-  titulo: '',
-  descricao: '',
-  conteudo: '',
-  desconto: 0,
-  dataInicio: '',
-  dataFim: '',
-  dataPub: '',
-  categoria: 'tech',
-  imagem: '',
-  ativo: true
-});
+   titulo: '',
+   descricao: '',
+   conteudo: '',
+   desconto: 0,
+   dataInicio: '',
+   dataFim: '',
+   dataPub: '',
+   categoria: 'tech',
+   imagem: '',
+   linkCompra: '',
+   fotos: [],
+   ativo: true
+ });
 
 const donationStats = ref({
   total: 0,
@@ -499,22 +526,24 @@ async function loadData() {
 }
 
 function openFormModal(type) {
-  currentType.value = type;
-  formMode.value = 'create';
-  formData.value = {
-    titulo: '',
-    descricao: '',
-    conteudo: '',
-    desconto: 0,
-    dataInicio: '',
-    dataFim: '',
-    dataPub: new Date().toISOString().split('T')[0],
-    categoria: 'tech',
-    imagem: '',
-    ativo: true
-  };
-  showModal.value = true;
-}
+   currentType.value = type;
+   formMode.value = 'create';
+   formData.value = {
+     titulo: '',
+     descricao: '',
+     conteudo: '',
+     desconto: 0,
+     dataInicio: '',
+     dataFim: '',
+     dataPub: new Date().toISOString().split('T')[0],
+     categoria: 'tech',
+     imagem: '',
+     linkCompra: '',
+     fotos: [],
+     ativo: true
+   };
+   showModal.value = true;
+ }
 
 function editItem(type, item) {
   currentType.value = type;

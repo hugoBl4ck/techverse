@@ -53,12 +53,17 @@ export function useFirestore() {
     try {
       isLoading.value = true
 
+      // Filtrar fotos vazias
+      const fotosFiltradas = (promo.fotos || []).filter(f => f && f.trim())
+
       const promoData = {
         titulo: promo.titulo,
         descricao: promo.descricao || '',
         desconto: promo.desconto || 0,
         dataInicio: promo.dataInicio ? new Date(promo.dataInicio) : null,
         dataFim: promo.dataFim ? new Date(promo.dataFim) : null,
+        linkCompra: promo.linkCompra || '',
+        fotos: fotosFiltradas,
         ativo: promo.ativo !== false,
         atualizadoEm: new Date()
       }
