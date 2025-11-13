@@ -281,6 +281,16 @@ async function handleSubmit() {
        osId = docRef.id;
        console.log('Ordem de Serviço criada com sucesso!');
        
+       // Diminui o estoque dos itens utilizados
+       for (const item of addedItems.value) {
+         const itemDocRef = doc(db, 'stores', storeId.value, 'itens', item.id);
+         const novaQuantidade = Math.max(0, (item.quantidade || 0) - item.quantity);
+         await updateDoc(itemDocRef, { 
+           quantidade: novaQuantidade 
+         });
+         console.log(`✅ Estoque atualizado - ${item.nome}: ${novaQuantidade} unidades`);
+       }
+       
        // Registra automaticamente como transação no financeiro
        await registrarVenda({
          descricao: `Ordem de Serviço #${osId} - ${cliente.nome}`,
