@@ -66,6 +66,7 @@ const ordemServico = ref({
   items: [],
   discount: 0,
   surcharge: 0,
+  status: 'aberta',
 });
 const selectedClienteId = ref('');
 const catalogoServicos = ref([]);
@@ -259,6 +260,7 @@ async function handleSubmit() {
      discount: ordemServico.value.discount || 0,
      surcharge: ordemServico.value.surcharge || 0,
      totalAmount: totalAmount.value,
+     status: ordemServico.value.status || 'aberta',
      date: ordemServico.value.date instanceof Date 
        ? ordemServico.value.date 
        : new Date(ordemServico.value.date || new Date()),

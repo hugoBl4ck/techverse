@@ -2,22 +2,26 @@
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { db } from '@/firebase/config.js';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { useCurrentStore } from '@/composables/useCurrentStore';
+import { useTransacoes } from '@/composables/useTransacoes';
+import { toast } from 'vue-sonner';
 
 import Calendar from '@/components/ui/calendar/Calendar.vue';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Pencil, ClipboardCopy, X } from 'lucide-vue-next';
+import { Pencil, ClipboardCopy, X, XCircle } from 'lucide-vue-next';
 
 const { storeId } = useCurrentStore();
+const { registrarVenda } = useTransacoes(storeId);
 
 const ordensServico = ref([]);
 const isLoading = ref(true);
 const selectedDate = ref(new Date());
 const receiptText = ref('');
 const showReceiptModal = ref(false);
+const cancelingOsId = ref(null);
 
 function generateReceipt(os) {
   const serviceDate = new Date(os.date);
@@ -96,6 +100,61 @@ const loadOrdensServico = async () => {
   }
 };
 
+const cancelarOrdem = async (os) => {
+  if (!confirm(`Tem certeza que deseja cancelar a ordem de serviço de ${os.customerName}?\n\nIsso vai reverter a transação financeira e restaurar o estoque.`)) {
+    return;
+  }
+
+  cancelingOsId.value = os.id;
+  const toastId = toast.loading('Cancelando ordem...');
+
+  try {
+    // 1. Marca a ordem como cancelada
+    const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', os.id);
+    await updateDoc(osDocRef, { status: 'cancelada' });
+    console.log('✅ Ordem marcada como cancelada');
+
+    // 2. Restaura o estoque dos itens
+    for (const item of (os.items || [])) {
+      const itemDocRef = doc(db, 'stores', storeId.value, 'itens', item.id);
+      const novaQuantidade = (item.quantidade || 0) + (item.quantity || 0);
+      await updateDoc(itemDocRef, { quantidade: novaQuantidade });
+      console.log(`✅ Estoque restaurado - ${item.nome}: ${novaQuantidade} unidades`);
+    }
+
+    // 3. Registra uma transação reversa no financeiro (cancelamento)
+    await registrarVenda({
+      descricao: `CANCELAMENTO - Ordem de Serviço #${os.id} - ${os.customerName}`,
+      valor: -(os.totalAmount || 0),
+      categoria: 'cancelamento',
+      cliente_id: os.customerId,
+      ordem_servico_id: os.id,
+      metodo_pagamento: 'reembolso',
+      produtos: (os.items || []).map(item => ({
+        produtoId: item.id,
+        quantidade: -(item.quantity || 0),
+        preco_unitario: item.precoVenda || item.preco || 0,
+        subtotal: -((item.precoVenda || item.preco || 0) * (item.quantity || 0))
+      }))
+    });
+
+    console.log('✅ Transação reversa registrada no financeiro');
+    
+    // 4. Atualiza a lista localmente
+    const osIndex = ordensServico.value.findIndex(o => o.id === os.id);
+    if (osIndex >= 0) {
+      ordensServico.value[osIndex].status = 'cancelada';
+    }
+
+    toast.success('Ordem cancelada com sucesso!', { id: toastId });
+  } catch (error) {
+    console.error('Erro ao cancelar ordem:', error);
+    toast.error('Erro ao cancelar: ' + error.message, { id: toastId });
+  } finally {
+    cancelingOsId.value = null;
+  }
+};
+
 onMounted(() => {
   loadOrdensServico();
 });
@@ -147,24 +206,50 @@ const filteredOrdensServico = computed(() => {
             <li 
               v-for="(os, index) in filteredOrdensServico" 
               :key="os.id" 
-              :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} flex items-center justify-between p-4 hover:bg-muted/50 rounded-lg border card-hover cursor-pointer`"
+              :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} flex items-center justify-between p-4 rounded-lg border card-hover ${os.status === 'cancelada' ? 'bg-red-50 dark:bg-red-950 opacity-60' : 'hover:bg-muted/50 cursor-pointer'}`"
             >
               <div>
-                <strong class="text-lg">{{ os.customerName }}</strong>
+                <div class="flex items-center gap-2 mb-1">
+                  <strong class="text-lg">{{ os.customerName }}</strong>
+                  <span 
+                    v-if="os.status === 'cancelada'"
+                    class="inline-flex items-center text-xs font-semibold px-2 py-1 rounded-full bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200"
+                  >
+                    Cancelada
+                  </span>
+                </div>
                 <p class="text-sm text-muted-foreground mt-1">
                   {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
                 </p>
                 <p class="text-sm font-semibold mt-1">Total: R$ {{ (os.totalAmount || 0).toFixed(2) }}</p>
               </div>
               <div class="flex items-center gap-2 flex-shrink-0">
-                <Button variant="outline" size="sm" @click="generateReceipt(os)">
+                <Button 
+                  v-if="os.status !== 'cancelada'"
+                  variant="outline" 
+                  size="sm" 
+                  @click="generateReceipt(os)"
+                >
                   Gerar Recibo
                 </Button>
-                <RouterLink :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }">
+                <RouterLink 
+                  v-if="os.status !== 'cancelada'"
+                  :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }"
+                >
                   <Button variant="ghost" size="icon">
                     <Pencil class="h-4 w-4" />
                   </Button>
                 </RouterLink>
+                <Button 
+                  v-if="os.status !== 'cancelada'"
+                  variant="destructive" 
+                  size="icon"
+                  :disabled="cancelingOsId === os.id"
+                  @click="cancelarOrdem(os)"
+                  title="Cancelar ordem de serviço"
+                >
+                  <XCircle class="h-4 w-4" />
+                </Button>
               </div>
             </li>
           </ul>
