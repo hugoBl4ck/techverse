@@ -108,7 +108,8 @@ const monthlyRevenue = computed(() => {
       const serviceDate = new Date(service.date);
       return (
         serviceDate.getMonth() === currentMonth &&
-        serviceDate.getFullYear() === currentYear
+        serviceDate.getFullYear() === currentYear &&
+        service.status !== 'cancelada'
       );
     })
     .reduce((total, service) => total + (service.totalAmount || 0), 0);
@@ -134,7 +135,8 @@ const dailyRevenueData = computed(() => {
       const serviceDate = new Date(service.date);
       return (
         serviceDate.getMonth() === currentMonth &&
-        serviceDate.getFullYear() === currentYear
+        serviceDate.getFullYear() === currentYear &&
+        service.status !== 'cancelada'
       );
     })
     .forEach((service) => {
@@ -173,7 +175,8 @@ const monthlyLineData = computed(() => {
       const serviceDate = new Date(service.date);
       return (
         serviceDate.getMonth() === currentMonth &&
-        serviceDate.getFullYear() === currentYear
+        serviceDate.getFullYear() === currentYear &&
+        service.status !== 'cancelada'
       );
     })
     .forEach((service) => {
@@ -276,9 +279,9 @@ const monthlyLineData = computed(() => {
             <p class="text-2xl font-bold">R$ {{ monthlyRevenue.toFixed(2) }}</p>
             <!-- Gráfico de barras compacto -->
             <div v-if="dailyRevenueData.length > 0" class="mt-4 -mx-4">
-              <ResponsiveContainer width="100%" height="{150}">
+              <ResponsiveContainer width="100%" height={150}>
                 <BarChart :data="dailyRevenueData">
-                  <Bar dataKey="value" fill="#8b5cf6" radius="{[4," 4, 0, 0]} />
+                  <Bar dataKey="value" fill="#8b5cf6" :radius="[4, 4, 0, 0]" />
                   <Tooltip
                     :formatter="(value) => `R$ ${value.toFixed(2)}`"
                     :contentStyle="{
@@ -331,7 +334,7 @@ const monthlyLineData = computed(() => {
         </CardHeader>
         <CardContent>
           <div v-if="monthlyLineData.length > 0" class="-mx-4 -mb-4">
-            <ResponsiveContainer width="100%" height="{300}">
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart :data="monthlyLineData">
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
