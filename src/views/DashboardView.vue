@@ -218,9 +218,9 @@ const monthlyLineData = computed(() => {
               <CardTitle>Serviços - {{ selectedPeriod === 'current-month' ? 'Mês Atual' : periodOptions.find(p => p.value === selectedPeriod)?.label }}</CardTitle>
               <select
                 v-model="selectedPeriod"
-                class="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                <option v-for="option in periodOptions" :key="option.value" :value="option.value">
+                <option v-for="option in periodOptions" :key="option.value" :value="option.value" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
                   {{ option.label }}
                 </option>
               </select>
@@ -320,14 +320,25 @@ const monthlyLineData = computed(() => {
           <CardTitle>Faturamento Diário</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="dailyRevenueData.length > 0" class="-mx-4 -mb-4 h-80">
+          <div v-if="dailyRevenueData.length > 0" style="width: 100%; height: 400px">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart :data="dailyRevenueData">
+              <BarChart
+                :data="dailyRevenueData"
+                margin="{ top: 20, right: 30, left: 0, bottom: 80 }"
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" :angle="-45" textAnchor="end" :height="80" />
+                <XAxis 
+                  dataKey="name" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
                 <YAxis />
-                <Tooltip :formatter="(value) => `R$ ${value.toFixed(2)}`" />
-                <Bar dataKey="value" fill="#8b5cf6" />
+                <Tooltip 
+                  :formatter="(value) => `R$ ${value.toFixed(2)}`"
+                  contentStyle="{ backgroundColor: 'rgba(0, 0, 0, 0.8)', border: 'none', borderRadius: '4px', color: '#fff' }"
+                />
+                <Bar dataKey="value" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -347,18 +358,30 @@ const monthlyLineData = computed(() => {
           <CardTitle>Evolução do Faturamento</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="monthlyLineData.length > 0" class="-mx-4 -mb-4 h-80">
+          <div v-if="monthlyLineData.length > 0" style="width: 100%; height: 400px">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart :data="monthlyLineData">
+              <LineChart
+                :data="monthlyLineData"
+                margin="{ top: 20, right: 30, left: 0, bottom: 80 }"
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" :angle="-45" textAnchor="end" :height="80" />
+                <XAxis 
+                  dataKey="name"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
                 <YAxis />
-                <Tooltip :formatter="(value) => `R$ ${value.toFixed(2)}`" />
+                <Tooltip 
+                  :formatter="(value) => `R$ ${value.toFixed(2)}`"
+                  contentStyle="{ backgroundColor: 'rgba(0, 0, 0, 0.8)', border: 'none', borderRadius: '4px', color: '#fff' }"
+                />
                 <Line
                   type="monotone"
                   dataKey="value"
                   stroke="#8b5cf6"
-                  :strokeWidth="2"
+                  strokeWidth={2}
+                  dot="{ fill: '#8b5cf6', r: 4 }"
                 />
               </LineChart>
             </ResponsiveContainer>
