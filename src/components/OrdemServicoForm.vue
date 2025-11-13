@@ -4,6 +4,7 @@ import { db } from '@/firebase/config.js';
 import { collection, getDocs, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import { useCurrentStore } from '@/composables/useCurrentStore';
+import { useTransacoes } from '@/composables/useTransacoes';
 import { toast } from 'vue-sonner';
 
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ const props = defineProps({
 
 const router = useRouter();
 const { storeId, isAuthenticated } = useCurrentStore();
+const { registrarVenda } = useTransacoes(storeId);
 
 const isEditMode = computed(() => !!props.id);
 
@@ -232,57 +234,79 @@ function decreaseQuantity(itemId) {
 }
 
 async function handleSubmit() {
-  const cliente = selectedCliente.value;
-  if (!cliente) {
-    toast.error('Por favor, selecione um cliente.');
-    return;
-  }
+   const cliente = selectedCliente.value;
+   if (!cliente) {
+     toast.error('Por favor, selecione um cliente.');
+     return;
+   }
 
-  if (!storeId.value) {
-    toast.error('Erro: Usuário não autenticado.');
-    return;
-  }
+   if (!storeId.value) {
+     toast.error('Erro: Usuário não autenticado.');
+     return;
+   }
 
-  isLoading.value = true;
-  const loadingToast = toast.loading(isEditMode.value ? 'Atualizando ordem...' : 'Criando ordem...');
-  
-  const osData = {
-    customerId: cliente.id,
-    customerName: cliente.nome,
-    price: ordemServico.value.price || 0,
-    observations: String(ordemServico.value.observations || '').split('\n').filter(o => o.trim()),
-    computerConfiguration: ordemServico.value.computerConfiguration || '',
-    items: addedItems.value,
-    subtotal: subtotal.value,
-    discount: ordemServico.value.discount || 0,
-    surcharge: ordemServico.value.surcharge || 0,
-    totalAmount: totalAmount.value,
-    date: ordemServico.value.date instanceof Date 
-      ? ordemServico.value.date 
-      : new Date(ordemServico.value.date || new Date()),
-  };
+   isLoading.value = true;
+   const loadingToast = toast.loading(isEditMode.value ? 'Atualizando ordem...' : 'Criando ordem...');
+   
+   const osData = {
+     customerId: cliente.id,
+     customerName: cliente.nome,
+     price: ordemServico.value.price || 0,
+     observations: String(ordemServico.value.observations || '').split('\n').filter(o => o.trim()),
+     computerConfiguration: ordemServico.value.computerConfiguration || '',
+     items: addedItems.value,
+     subtotal: subtotal.value,
+     discount: ordemServico.value.discount || 0,
+     surcharge: ordemServico.value.surcharge || 0,
+     totalAmount: totalAmount.value,
+     date: ordemServico.value.date instanceof Date 
+       ? ordemServico.value.date 
+       : new Date(ordemServico.value.date || new Date()),
+   };
 
-  try {
-    const osCol = collection(db, 'stores', storeId.value, 'ordens_servico');
-    if (isEditMode.value) {
-      console.log('Atualizando ordem de serviço ID:', props.id);
-      const osDocRef = doc(osCol, props.id);
-      await updateDoc(osDocRef, osData);
-      console.log('Ordem de Serviço atualizada com sucesso!');
-      toast.success('Ordem de serviço atualizada!', { id: loadingToast });
-    } else {
-      console.log('Criando nova ordem de serviço');
-      await addDoc(osCol, osData);
-      console.log('Ordem de Serviço criada com sucesso!');
-      toast.success('Ordem de serviço criada!', { id: loadingToast });
-    }
-    router.push('/ordens-servico');
-  } catch (error) {
-    console.error('Erro ao salvar Ordem de Serviço:', error);
-    toast.error('Erro: ' + error.message, { id: loadingToast });
-  } finally {
-    isLoading.value = false;
-  }
+   try {
+     const osCol = collection(db, 'stores', storeId.value, 'ordens_servico');
+     let osId;
+     
+     if (isEditMode.value) {
+       console.log('Atualizando ordem de serviço ID:', props.id);
+       const osDocRef = doc(osCol, props.id);
+       await updateDoc(osDocRef, osData);
+       osId = props.id;
+       console.log('Ordem de Serviço atualizada com sucesso!');
+       toast.success('Ordem de serviço atualizada!', { id: loadingToast });
+     } else {
+       console.log('Criando nova ordem de serviço');
+       const docRef = await addDoc(osCol, osData);
+       osId = docRef.id;
+       console.log('Ordem de Serviço criada com sucesso!');
+       
+       // Registra automaticamente como transação no financeiro
+       await registrarVenda({
+         descricao: `Ordem de Serviço #${osId} - ${cliente.nome}`,
+         valor: totalAmount.value,
+         categoria: 'servico',
+         cliente_id: cliente.id,
+         ordem_servico_id: osId,
+         metodo_pagamento: 'pix',
+         produtos: addedItems.value.map(item => ({
+           produtoId: item.id,
+           quantidade: item.quantity,
+           preco_unitario: item.precoVenda || item.preco || 0,
+           subtotal: (item.precoVenda || item.preco || 0) * item.quantity
+         }))
+       });
+       
+       console.log('✅ Transação registrada automaticamente no financeiro');
+       toast.success('Ordem de serviço criada!', { id: loadingToast });
+     }
+     router.push('/ordens-servico');
+   } catch (error) {
+     console.error('Erro ao salvar Ordem de Serviço:', error);
+     toast.error('Erro: ' + error.message, { id: loadingToast });
+   } finally {
+     isLoading.value = false;
+   }
 }
 </script>
 
