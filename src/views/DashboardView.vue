@@ -14,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Calendar from "@/components/ui/calendar/Calendar.vue";
 import {
   BarChart,
   Bar,
@@ -31,8 +30,17 @@ const { storeId } = useCurrentStore();
 
 const allServices = ref([]);
 const isLoading = ref(true);
-const selectedDate = ref(new Date());
 const promotions = ref([]);
+const selectedPeriod = ref("current-month");
+
+// Opções de período
+const periodOptions = [
+  { value: "current-month", label: "Mês Atual" },
+  { value: "last-month", label: "Mês Anterior" },
+  { value: "last-3-months", label: "Últimos 3 Meses" },
+  { value: "last-6-months", label: "Últimos 6 Meses" },
+  { value: "current-year", label: "Ano Atual" },
+];
 
 const loadServices = async () => {
   if (!storeId.value) {
@@ -99,99 +107,93 @@ watch(
   { immediate: true }
 );
 
-const monthlyRevenue = computed(() => {
-  if (!allServices.value) return 0;
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-  return allServices.value
-    .filter((service) => {
-      const serviceDate = new Date(service.date);
-      return (
-        serviceDate.getMonth() === currentMonth &&
-        serviceDate.getFullYear() === currentYear &&
-        service.status !== 'cancelada'
-      );
-    })
-    .reduce((total, service) => total + (service.totalAmount || 0), 0);
+// Função para obter datas do período selecionado
+const getPeriodDates = () => {
+  const now = new Date();
+  let startDate, endDate;
+
+  switch (selectedPeriod.value) {
+    case "current-month":
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      break;
+    case "last-month":
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+      break;
+    case "last-3-months":
+      startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+      endDate = now;
+      break;
+    case "last-6-months":
+      startDate = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+      endDate = now;
+      break;
+    case "current-year":
+      startDate = new Date(now.getFullYear(), 0, 1);
+      endDate = now;
+      break;
+    default:
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  }
+
+  return { startDate, endDate };
+};
+
+// Serviços filtrados por período
+const filteredServices = computed(() => {
+  const { startDate, endDate } = getPeriodDates();
+  return allServices.value.filter((service) => {
+    const serviceDate = new Date(service.date);
+    return (
+      serviceDate >= startDate &&
+      serviceDate <= endDate &&
+      service.status !== "cancelada"
+    );
+  });
+});
+
+// Faturamento do período selecionado
+const periodRevenue = computed(() => {
+  return filteredServices.value.reduce(
+    (total, service) => total + (service.totalAmount || 0),
+    0
+  );
 });
 
 // Dados para o gráfico de barras (valores diários)
 const dailyRevenueData = computed(() => {
-  if (!allServices.value) return [];
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const servicesByDay = {};
 
-  const dailyData = {};
+  filteredServices.value.forEach((service) => {
+    const dateKey = new Date(service.date).toLocaleDateString("pt-BR");
+    servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + (service.totalAmount || 0);
+  });
 
-  // Inicializar todos os dias com 0
-  for (let i = 1; i <= daysInMonth; i++) {
-    dailyData[i] = 0;
-  }
-
-  // Somar os valores por dia
-  allServices.value
-    .filter((service) => {
-      const serviceDate = new Date(service.date);
-      return (
-        serviceDate.getMonth() === currentMonth &&
-        serviceDate.getFullYear() === currentYear &&
-        service.status !== 'cancelada'
-      );
-    })
-    .forEach((service) => {
-      const day = new Date(service.date).getDate();
-      dailyData[day] = (dailyData[day] || 0) + (service.totalAmount || 0);
-    });
-
-  // Converter para array para o gráfico, mostrando apenas dias com valores
-  return Object.entries(dailyData)
-    .map(([day, value]) => ({
-      day: day,
-      name: `Dia ${day}`,
+  return Object.entries(servicesByDay)
+    .map(([date, value]) => ({
+      name: date,
       value: parseFloat(value.toFixed(2)),
     }))
-    .filter((item) => item.value > 0)
-    .slice(-15); // Mostrar apenas os últimos 15 dias com movimento
+    .sort((a, b) => new Date(a.name) - new Date(b.name));
 });
 
-// Dados para o gráfico de linha (todos os dias do mês)
+// Dados para o gráfico de linha (todos os dias do período)
 const monthlyLineData = computed(() => {
-  if (!allServices.value) return [];
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const servicesByDay = {};
 
-  const dailyData = {};
+  filteredServices.value.forEach((service) => {
+    const dateKey = new Date(service.date).toLocaleDateString("pt-BR");
+    servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + (service.totalAmount || 0);
+  });
 
-  // Inicializar todos os dias com 0
-  for (let i = 1; i <= daysInMonth; i++) {
-    dailyData[i] = 0;
-  }
-
-  // Somar os valores por dia
-  allServices.value
-    .filter((service) => {
-      const serviceDate = new Date(service.date);
-      return (
-        serviceDate.getMonth() === currentMonth &&
-        serviceDate.getFullYear() === currentYear &&
-        service.status !== 'cancelada'
-      );
-    })
-    .forEach((service) => {
-      const day = new Date(service.date).getDate();
-      dailyData[day] = (dailyData[day] || 0) + (service.totalAmount || 0);
-    });
-
-  // Converter para array
-  return Object.entries(dailyData)
-    .map(([day, value]) => ({
-      day: parseInt(day),
-      name: `${day}`,
+  return Object.entries(servicesByDay)
+    .map(([date, value]) => ({
+      name: date,
       value: parseFloat(value.toFixed(2)),
     }))
-    .sort((a, b) => a.day - b.day);
+    .sort((a, b) => new Date(a.name) - new Date(b.name));
 });
 </script>
 
@@ -212,10 +214,20 @@ const monthlyLineData = computed(() => {
       <div class="lg:col-span-2">
         <Card>
           <CardHeader>
-            <CardTitle>Todos os Serviços</CardTitle>
+            <div class="flex justify-between items-center">
+              <CardTitle>Serviços - {{ selectedPeriod === 'current-month' ? 'Mês Atual' : periodOptions.find(p => p.value === selectedPeriod)?.label }}</CardTitle>
+              <select
+                v-model="selectedPeriod"
+                class="px-3 py-2 border border-gray-300 rounded-md text-sm"
+              >
+                <option v-for="option in periodOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
           </CardHeader>
           <CardContent>
-            <div v-if="allServices.length > 0">
+            <div v-if="filteredServices.length > 0">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -227,7 +239,7 @@ const monthlyLineData = computed(() => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow v-for="service in allServices" :key="service.id">
+                  <TableRow v-for="service in filteredServices" :key="service.id">
                     <TableCell class="font-medium">{{
                       service.customerName
                     }}</TableCell>
@@ -265,7 +277,7 @@ const monthlyLineData = computed(() => {
               </Table>
             </div>
             <div v-else class="text-center mt-8">
-              <p>Nenhum serviço registrado ainda.</p>
+              <p>Nenhum serviço registrado neste período.</p>
             </div>
           </CardContent>
         </Card>
@@ -273,36 +285,11 @@ const monthlyLineData = computed(() => {
       <div class="lg:col-span-1 grid gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Faturamento Mensal</CardTitle>
+            <CardTitle>Faturamento do Período</CardTitle>
           </CardHeader>
           <CardContent class="space-y-4">
-            <p class="text-2xl font-bold">R$ {{ monthlyRevenue.toFixed(2) }}</p>
-            <!-- Gráfico de barras compacto -->
-            <div v-if="dailyRevenueData.length > 0" class="mt-4 -mx-4">
-              <ResponsiveContainer width="100%" height={150}>
-                <BarChart :data="dailyRevenueData">
-                  <Bar dataKey="value" fill="#8b5cf6" :radius="[4, 4, 0, 0]" />
-                  <Tooltip
-                    :formatter="(value) => `R$ ${value.toFixed(2)}`"
-                    :contentStyle="{
-                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                      border: 'none',
-                      borderRadius: '4px',
-                      color: '#fff',
-                    }"
-                    :cursor="{ fill: 'rgba(139, 92, 246, 0.1)' }"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Calendário</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Calendar v-model="selectedDate" />
+            <p class="text-3xl font-bold text-purple-600">R$ {{ periodRevenue.toFixed(2) }}</p>
+            <p class="text-sm text-gray-600">{{ filteredServices.length }} serviço(s)</p>
           </CardContent>
         </Card>
         <Card>
@@ -326,55 +313,59 @@ const monthlyLineData = computed(() => {
       </div>
     </div>
 
-    <!-- Gráfico de linha - Faturamento ao longo do mês -->
+    <!-- Gráfico de barras - Faturamento por dia -->
     <div class="mt-6">
       <Card>
         <CardHeader>
-          <CardTitle>Faturamento Diário do Mês</CardTitle>
+          <CardTitle>Faturamento Diário</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="monthlyLineData.length > 0" class="-mx-4 -mb-4">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart :data="monthlyLineData">
+          <div v-if="dailyRevenueData.length > 0" class="-mx-4 -mb-4 h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dailyRevenueData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  :label="{
-                    value: 'Dia do Mês',
-                    position: 'insideBottom',
-                    offset: -5,
-                  }"
-                />
-                <YAxis
-                  :label="{
-                    value: 'Valor (R$)',
-                    angle: -90,
-                    position: 'insideLeft',
-                  }"
-                />
-                <Tooltip
-                  :formatter="(value) => `R$ ${value.toFixed(2)}`"
-                  :contentStyle="{
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    border: 'none',
-                    borderRadius: '4px',
-                    color: '#fff',
-                  }"
-                  :cursor="{ fill: 'rgba(139, 92, 246, 0.1)' }"
-                />
+                <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
+                <YAxis />
+                <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
+                <Bar dataKey="value" fill="#8b5cf6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div v-else class="text-center py-8">
+            <p class="text-muted-foreground">
+              Nenhum faturamento registrado neste período.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Gráfico de linha - Faturamento acumulado -->
+    <div class="mt-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Evolução do Faturamento</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div v-if="monthlyLineData.length > 0" class="-mx-4 -mb-4 h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={monthlyLineData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
+                <YAxis />
+                <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
                 <Line
                   type="monotone"
                   dataKey="value"
                   stroke="#8b5cf6"
-                  :dot="false"
-                  :strokeWidth="2"
+                  strokeWidth={2}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
           <div v-else class="text-center py-8">
             <p class="text-muted-foreground">
-              Nenhum faturamento registrado neste mês.
+              Nenhum faturamento registrado neste período.
             </p>
           </div>
         </CardContent>
