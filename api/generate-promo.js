@@ -18,25 +18,51 @@ export default async function handler(req, res) {
     const PPLX_KEY = process.env.PERPLEXITY_API_KEY
     const GEMINI_KEY = process.env.GEMINI_API_KEY
 
-    // Preparar dados para análise
-    const prompt = `Você é um especialista em marketing e e-commerce de produtos de tecnologia.
+    // Tentar buscar dados reais do produto se houver link
+    let dadosProduto = {
+      titulo: productName || null,
+      descricao: null,
+      precoOriginal: originalPrice,
+      precoAtual: productPrice
+    }
 
-Analise o seguinte produto e gere uma promoção profissional:
+    if (productLink) {
+      try {
+        console.log('Buscando dados reais do produto...')
+        const dadosExtraidos = await extrairDadosProduto(productLink)
+        if (dadosExtraidos) {
+          dadosProduto = { ...dadosProduto, ...dadosExtraidos }
+          console.log('Dados do produto extraídos:', dadosProduto)
+        }
+      } catch (e) {
+        console.error('Erro ao extrair dados:', e.message)
+        // Continua com dados parciais
+      }
+    }
 
-${productLink ? `Link: ${productLink}` : ''}
-${productName ? `Nome: ${productName}` : ''}
-${productPrice ? `Preço Atual: BRL ${productPrice}` : ''}
-${originalPrice ? `Preço Original: BRL ${originalPrice}` : ''}
+    // Preparar dados para análise com informações reais
+     const prompt = `Você é um especialista em marketing e e-commerce de produtos de tecnologia.
 
-Gere um JSON com a seguinte estrutura:
-{
-  "titulo": "Título atrativo e claro (máx 60 caracteres)",
-  "descricao": "Descrição completa do produto com especificações técnicas (máx 200 caracteres)",
-  "desconto": número de 1 a 100,
-  "categoriaTagsRelevantes": ["tag1", "tag2", "tag3"]
-}
+    Analise o seguinte produto REAL e gere uma promoção profissional baseada em DADOS REAIS:
 
-Retorne APENAS o JSON, sem markdown ou explicações.`
+    ${dadosProduto.titulo ? `Produto: ${dadosProduto.titulo}` : ''}
+    ${dadosProduto.descricao ? `Descrição Original: ${dadosProduto.descricao}` : ''}
+    ${dadosProduto.precoAtual ? `Preço Atual: BRL ${dadosProduto.precoAtual}` : ''}
+    ${dadosProduto.precoOriginal ? `Preço Original: BRL ${dadosProduto.precoOriginal}` : ''}
+    ${productLink ? `Link: ${productLink}` : ''}
+
+    Use as informações REAIS do produto acima para gerar uma promoção precisa e atrativa.
+    Destaque as características técnicas e benefícios reais mencionados.
+
+    Gere um JSON com a seguinte estrutura:
+    {
+    "titulo": "Título atrativo baseado no produto real (máx 60 caracteres)",
+    "descricao": "Descrição com especificações técnicas REAIS do produto (máx 200 caracteres)",
+    "desconto": ${originalPrice && productPrice ? Math.round(((originalPrice - productPrice) / originalPrice) * 100) : 25},
+    "categoriaTagsRelevantes": ["tag1", "tag2", "tag3"]
+    }
+
+    Retorne APENAS o JSON, sem markdown ou explicações.`
 
     let promocaoData = null
 
@@ -74,7 +100,14 @@ Retorne APENAS o JSON, sem markdown ou explicações.`
     let fotos = []
     if (productLink) {
       try {
-        fotos = await buscarImagensDoLink(productLink)
+        // Primeiro tenta usar imagens extraídas do scraping
+        if (dadosProduto.imagens && dadosProduto.imagens.length > 0) {
+          fotos = dadosProduto.imagens.slice(0, 3) // Pega até 3 imagens
+          console.log(`Usando ${fotos.length} imagens do scraping do produto`)
+        } else {
+          // Se não tiver imagens do scraping, tenta buscar outras
+          fotos = await buscarImagensDoLink(productLink)
+        }
       } catch (error) {
         console.error('Erro ao buscar imagens:', error.message)
       }
@@ -441,6 +474,89 @@ function normalizarUrlAliExpress(url) {
   } catch (error) {
     console.error('Erro ao normalizar URL:', error.message)
     return url
+  }
+}
+
+/**
+ * Extrai dados reais do produto do HTML da página
+ * Busca título, descrição e imagens
+ */
+async function extrairDadosProduto(url) {
+  try {
+    console.log('Tentando fazer scraping do produto:', url)
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      },
+      timeout: 10000
+    })
+
+    if (!response.ok) {
+      console.warn(`Erro ao buscar página: ${response.status}`)
+      return null
+    }
+
+    const html = await response.text()
+
+    // Extrair titulo do produto (procura em múltiplos lugares)
+    let titulo = null
+    
+    // AliExpress usa h1 com class específica para título
+    const tituloMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/)
+    if (tituloMatch) titulo = tituloMatch[1].trim()
+    
+    // Alternativa: procurar em atributos JSON do site
+    if (!titulo) {
+      const jsonMatch = html.match(/"productTitle":"([^"]+)"/)
+      if (jsonMatch) titulo = jsonMatch[1]
+    }
+
+    // Alternativa: procurar em meta tags
+    if (!titulo) {
+      const metaMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"/)
+      if (metaMatch) titulo = metaMatch[1]
+    }
+
+    // Extrair descrição
+    let descricao = null
+    const descMatch = html.match(/<meta[^>]*name="description"[^>]*content="([^"]+)"/)
+    if (descMatch) descricao = descMatch[1]
+
+    // Extrair imagens (procura por multiple imagens)
+    let imagens = []
+    
+    // AliExpress geralmente tem imgs em um div específico
+    const imgMatches = html.matchAll(/<img[^>]*src="([^"]*?alicdn[^"]*)"[^>]*>/g)
+    for (const match of imgMatches) {
+      if (match[1] && !match[1].includes('logo')) {
+        imagens.push(match[1])
+      }
+      if (imagens.length >= 5) break
+    }
+
+    // Se não achou imagens, procura por data-src (lazy loading)
+    if (imagens.length === 0) {
+      const lazyMatches = html.matchAll(/<img[^>]*data-src="([^"]*?alicdn[^"]*)"[^>]*>/g)
+      for (const match of lazyMatches) {
+        if (match[1]) {
+          imagens.push(match[1])
+        }
+        if (imagens.length >= 5) break
+      }
+    }
+
+    console.log('Dados extraídos:', { titulo, descricao, imagens: imagens.length })
+
+    return {
+      titulo: titulo || null,
+      descricao: descricao || null,
+      imagens: imagens
+    }
+
+  } catch (error) {
+    console.error('Erro ao extrair dados do produto:', error.message)
+    return null
   }
 }
 
