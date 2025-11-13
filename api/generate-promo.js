@@ -82,6 +82,12 @@ Retorne APENAS o JSON, sem markdown ou explicações.`
 
     // Validar e processar o link
     const linkProcessado = await validarEProcessarLink(productLink)
+    
+    console.log('=== RESULTADO FINAL ===')
+    console.log('Link Original:', productLink)
+    console.log('Link Processado:', linkProcessado)
+    console.log('Será Salvo:', linkProcessado)
+    console.log('===================')
 
     return res.status(200).json({
       promocao: {
@@ -92,7 +98,11 @@ Retorne APENAS o JSON, sem markdown ou explicações.`
         fotos: fotos,
         categoria: promocaoData.categoriaTagsRelevantes || []
       },
-      fotos: fotos
+      fotos: fotos,
+      debug: {
+        linkOriginal: productLink,
+        linkProcessado: linkProcessado
+      }
     })
 
   } catch (error) {
