@@ -341,11 +341,16 @@ async function chamarAPIAliExpress(productId, apiKey) {
   try {
     const crypto = require('crypto')
     
-    // Parâmetros da requisição
-    const timestamp = new Date().toISOString().replace(/[-:.Z]/g, '').substring(0, 14)
+    // AliExpress API requer app_key (public) e app_secret (private)
+    // Se apenas uma chave for fornecida, assumimos que é a app_key
+    const appKey = apiKey
+    const appSecret = process.env.ALIEXPRESS_SECRET || apiKey // Fallback para a mesma chave
+    
+    // Parâmetros da requisição - timestamp em millisegundos
+    const timestamp = Date.now().toString()
     
     const params = {
-      app_key: apiKey,
+      app_key: appKey,
       method: 'aliexpress.affiliate.productdetail.get',
       sign_method: 'md5',
       timestamp: timestamp,
@@ -356,20 +361,15 @@ async function chamarAPIAliExpress(productId, apiKey) {
       target_language: 'EN'
     }
 
-    // Gerar assinatura MD5
-    const sortedParams = Object.keys(params).sort().reduce((acc, key) => {
-      acc[key] = params[key]
-      return acc
-    }, {})
-
-    // Construir string para assinar: key1value1key2value2...
-    let signStr = ''
-    Object.entries(sortedParams).forEach(([key, value]) => {
-      signStr += key + value
+    // Construir string para assinar: sort alphabetically, then concatenate key+value
+    const sortedKeys = Object.keys(params).sort()
+    let signStr = appSecret // Começa com o secret
+    
+    sortedKeys.forEach(key => {
+      signStr += key + params[key]
     })
-
-    // Adicionar secret (que é o apiKey novamente)
-    signStr = apiKey + signStr + apiKey
+    
+    signStr += appSecret // Termina com o secret
     
     // Gerar MD5
     const sign = crypto
@@ -388,24 +388,20 @@ async function chamarAPIAliExpress(productId, apiKey) {
 
     console.log('Chamando API do AliExpress:', {
       product_id: productId,
+      app_key: appKey,
       timestamp: timestamp
     })
+    console.log('URL da API:', apiUrl.substring(0, 100) + '...')
 
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      },
-      timeout: 5000 // timeout de 5 segundos
+      }
     })
 
-    if (!response.ok) {
-      console.error(`Erro na API: ${response.status} ${response.statusText}`)
-      return false
-    }
-
     const data = await response.json()
+    console.log('Resposta da API (primeiros 200 chars):', JSON.stringify(data).substring(0, 200))
 
     // Verificar se a resposta contém erros
     if (data.error_response) {
@@ -413,16 +409,22 @@ async function chamarAPIAliExpress(productId, apiKey) {
       return false
     }
 
-    // Verificar se conseguimos os detalhes do produto
-    if (data.resp_result && data.resp_result.result) {
+    // Verificar se conseguimos os detalhes do produto (formato: resp_result com products)
+    if (data.resp_result && data.resp_result.result && data.resp_result.result.products) {
       const products = data.resp_result.result.products || []
-      if (products.length > 0 && products[0].product_id) {
+      if (products.length > 0) {
         console.log('Produto encontrado:', products[0].product_title || products[0].product_id)
         return true
       }
     }
 
-    console.warn('Nenhum produto encontrado na resposta')
+    // Alternativo: alguns endpoints retornam diretamente em result
+    if (data.result && data.result.products && data.result.products.length > 0) {
+      console.log('Produto encontrado (formato alternativo):', data.result.products[0].product_id)
+      return true
+    }
+
+    console.warn('Nenhum produto encontrado na resposta da API')
     return false
 
   } catch (error) {
