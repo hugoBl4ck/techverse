@@ -322,11 +322,11 @@ const monthlyLineData = computed(() => {
         <CardContent>
           <div v-if="dailyRevenueData.length > 0" class="-mx-4 -mb-4 h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dailyRevenueData}>
+              <BarChart :data="dailyRevenueData">
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
+                <XAxis dataKey="name" :angle="-45" textAnchor="end" :height="80" />
                 <YAxis />
-                <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
+                <Tooltip :formatter="(value) => `R$ ${value.toFixed(2)}`" />
                 <Bar dataKey="value" fill="#8b5cf6" />
               </BarChart>
             </ResponsiveContainer>
@@ -349,16 +349,16 @@ const monthlyLineData = computed(() => {
         <CardContent>
           <div v-if="monthlyLineData.length > 0" class="-mx-4 -mb-4 h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyLineData}>
+              <LineChart :data="monthlyLineData">
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
+                <XAxis dataKey="name" :angle="-45" textAnchor="end" :height="80" />
                 <YAxis />
-                <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
+                <Tooltip :formatter="(value) => `R$ ${value.toFixed(2)}`" />
                 <Line
                   type="monotone"
                   dataKey="value"
                   stroke="#8b5cf6"
-                  strokeWidth={2}
+                  :strokeWidth="2"
                 />
               </LineChart>
             </ResponsiveContainer>
