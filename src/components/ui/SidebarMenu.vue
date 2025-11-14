@@ -2,7 +2,7 @@
   <h2 class="mb-4 text-xl font-display font-semibold">Menu</h2>
   <nav class="flex flex-col gap-1">
     
-    <RouterLink to="/" v-slot="{ isExactActive }">
+    <RouterLink to="dashboard" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -16,7 +16,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink to="/clientes" v-slot="{ isExactActive }">
+    <RouterLink to="clientes" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -41,19 +41,19 @@
         </AccordionTrigger>
 
         <AccordionContent class="pl-6 pt-1">
-          <RouterLink to="/inventario">
+          <RouterLink to="inventario">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
               <Archive class="size-4" />
               Listar Itens
             </Button>
           </RouterLink>
-          <RouterLink to="/inventario/novo">
+          <RouterLink to="inventario/novo">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
               <PlusCircle class="size-4" />
               Cadastrar Itens
             </Button>
           </RouterLink>
-          <RouterLink to="/inventario/importar-ia">
+          <RouterLink to="inventario/importar-ia">
             <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
               <Wand2 class="size-4" />
               Importar com IA
@@ -70,19 +70,19 @@
               </span>
             </AccordionTrigger>
             <AccordionContent class="pl-6 pt-1">
-              <RouterLink to="/ordens-servico/nova">
+              <RouterLink to="ordens-servico/nova">
                 <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
                   <PlusCircle class="size-4" />
                   Nova Ordem de Serviço
                 </Button>
               </RouterLink>
-              <RouterLink to="/ordens-servico">
+              <RouterLink to="ordens-servico">
                 <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
                   <List class="size-4" />
                   Listar Ordens de Serviço
                 </Button>
               </RouterLink>
-              <RouterLink to="/catalogo-servicos">
+              <RouterLink to="catalogo-servicos">
                 <Button variant="ghost" class="w-full justify-start gap-2 text-sm font-normal" @click="handleNavigate">
                   <ListChecks class="size-4" />
                   Catálogo de Serviços
@@ -92,7 +92,7 @@
           </AccordionItem>
         </Accordion>
     
-    <RouterLink to="/financeiro" v-slot="{ isExactActive }">
+    <RouterLink to="financeiro" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -106,7 +106,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink to="/kits/builder" v-slot="{ isExactActive }">
+    <RouterLink to="kits/builder" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -120,7 +120,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink v-if="isAdmin" to="/marketing" v-slot="{ isExactActive }">
+    <RouterLink v-if="isAdmin" to="marketing" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -170,7 +170,7 @@
     <Separator v-if="isAdmin" class="my-2" />
     <div v-if="isAdmin" class="px-4 py-2 text-xs font-medium text-muted-foreground">ADMINISTRAÇÃO</div>
 
-    <RouterLink v-if="isAdmin" to="/test-visuals" v-slot="{ isExactActive }">
+    <RouterLink v-if="isAdmin" to="test-visuals" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -184,7 +184,7 @@
       </Button>
     </RouterLink>
 
-    <RouterLink v-if="isAdmin" to="/exportar-dados" v-slot="{ isExactActive }">
+    <RouterLink v-if="isAdmin" to="exportar-dados" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
