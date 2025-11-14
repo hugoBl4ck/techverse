@@ -5,16 +5,9 @@ import { useCurrentStore } from "@/composables/useCurrentStore";
 const routes = [
   {
     path: "/",
-    redirect: async () => {
-      const { isAuthenticated } = useCurrentStore();
-      await new Promise(resolve => {
-        const checkAuth = setInterval(() => {
-          if (isAuthenticated.value !== undefined) {
-            clearInterval(checkAuth);
-            resolve();
-          }
-        }, 10);
-      });
+    redirect: async (to) => {
+      const { authReady, isAuthenticated } = useCurrentStore();
+      await authReady;
       return isAuthenticated.value ? "/dashboard" : "/landing";
     },
   },
