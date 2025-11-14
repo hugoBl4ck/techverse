@@ -4,10 +4,6 @@ import { useCurrentStore } from "@/composables/useCurrentStore";
 
 const routes = [
   {
-    path: "/",
-    redirect: "/landing",
-  },
-  {
     path: "/landing",
     name: "Landing",
     component: () => import("@/views/LandingView.vue"),
@@ -60,7 +56,7 @@ const routes = [
     ],
   },
   {
-    path: "/app",
+    path: "/",
     component: AppLayout,
     meta: { requiresAuth: true },
     children: [
