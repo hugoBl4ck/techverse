@@ -38,7 +38,7 @@ onMounted(() => {
   if (!storeId.value) {
     console.error('Usuário não autenticado!');
     toast.error('Erro: Usuário não autenticado');
-    router.push('/');
+    router.push('/login');
     return;
   }
   

@@ -4,6 +4,21 @@ import { useCurrentStore } from "@/composables/useCurrentStore";
 
 const routes = [
   {
+    path: "/",
+    redirect: async () => {
+      const { isAuthenticated } = useCurrentStore();
+      await new Promise(resolve => {
+        const checkAuth = setInterval(() => {
+          if (isAuthenticated.value !== undefined) {
+            clearInterval(checkAuth);
+            resolve();
+          }
+        }, 10);
+      });
+      return isAuthenticated.value ? "/dashboard" : "/landing";
+    },
+  },
+  {
     path: "/landing",
     name: "Landing",
     component: () => import("@/views/LandingView.vue"),
@@ -56,7 +71,7 @@ const routes = [
     ],
   },
   {
-    path: "/",
+    path: "/dashboard",
     component: AppLayout,
     meta: { requiresAuth: true },
     children: [
@@ -246,9 +261,9 @@ router.beforeEach(async (to, from, next) => {
     // This route requires auth, check if logged in
     // if not, redirect to login page.
     next({ name: "Login", query: { redirect: to.fullPath } });
-  } else if (to.name === "Login" && isAuthenticated.value) {
-    // If user is authenticated, redirect away from login page
-    next({ name: "Dashboard" });
+  } else if (to.path === "/login" && isAuthenticated.value) {
+    // If user is authenticated, redirect away from login page to dashboard
+    next({ path: "/dashboard" });
   } else {
     // make sure to always call next()!!!
     next();
