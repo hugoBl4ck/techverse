@@ -4,14 +4,6 @@ import { useCurrentStore } from "@/composables/useCurrentStore";
 
 const routes = [
   {
-    path: "/",
-    redirect: async (to) => {
-      const { authReady, isAuthenticated } = useCurrentStore();
-      await authReady;
-      return isAuthenticated.value ? "/dashboard" : "/landing";
-    },
-  },
-  {
     path: "/landing",
     name: "Landing",
     component: () => import("@/views/LandingView.vue"),
@@ -226,6 +218,11 @@ const routes = [
     ],
   },
   {
+    path: "/",
+    name: "Root",
+    meta: { requiresAuth: false },
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: () => import("@/views/NotFoundView.vue"),
@@ -249,6 +246,11 @@ router.beforeEach(async (to, from, next) => {
   document.title = `TechVerse - ${
     to.meta.title || "Gestão"
   } | Criado por Hugo, BLK Studio`;
+
+  // Rota raiz redireciona baseado em autenticação
+  if (to.path === "/") {
+    return next(isAuthenticated.value ? "/dashboard" : "/landing");
+  }
 
   if (requiresAuth && !isAuthenticated.value) {
     // This route requires auth, check if logged in
