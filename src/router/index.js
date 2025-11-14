@@ -57,165 +57,158 @@ const routes = [
   },
   {
     path: "/dashboard",
-    component: AppLayout,
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: "",
-        name: "Dashboard",
-        component: () => import("@/views/DashboardView.vue"),
-        meta: { title: "Dashboard" },
-      },
-      {
-        path: "marketing",
-        name: "Marketing",
-        component: () => import("@/views/marketing/SalesCopyGeneratorView.vue"),
-        meta: { title: "Assistente de Marketing" },
-      },
-      {
-        path: "clientes",
-        name: "ClientesList",
-        component: () => import("@/views/clientes/ClienteListView.vue"),
-        meta: { title: "Clientes" },
-      },
-      {
-        path: "clientes/novo",
-        name: "ClienteNovo",
-        component: () => import("@/views/clientes/ClienteFormView.vue"),
-        meta: { title: "Novo Cliente" },
-      },
-      {
-        path: "clientes/:id",
-        name: "ClienteDetalhe",
-        component: () => import("@/views/clientes/ClienteDetalheView.vue"),
-        props: true,
-        meta: { title: "Detalhes do Cliente" },
-      },
-      {
-        path: "clientes/:id/editar",
-        name: "ClienteEditar",
-        component: () => import("@/views/clientes/ClienteFormView.vue"),
-        props: true,
-        meta: { title: "Editar Cliente" },
-      },
-      {
-        path: "ordens-servico",
-        name: "OrdensServicoList",
-        component: () =>
-          import("@/views/ordens-servico/OrdemServicoListView.vue"),
-        meta: { title: "Ordens de Serviço" },
-      },
-      {
-        path: "ordens-servico/nova",
-        name: "OrdemServicoNova",
-        component: () =>
-          import("@/views/ordens-servico/OrdemServicoFormView.vue"),
-        meta: { title: "Nova Ordem de Serviço" },
-      },
-      {
-        path: "ordens-servico/:id/editar",
-        name: "OrdemServicoEditar",
-        component: () =>
-          import("@/views/ordens-servico/OrdemServicoFormView.vue"),
-        props: true,
-        meta: { title: "Editar Ordem de Serviço" },
-      },
-      {
-        path: "catalogo-servicos",
-        name: "CatalogoServicosList",
-        component: () =>
-          import(
-            "@/views/servicos-predefinidos/ServicoPredefinidoListView.vue"
-          ),
-        meta: { title: "Catálogo de Serviços" },
-      },
-      {
-        path: "catalogo-servicos/novo",
-        name: "CatalogoServicosNovo",
-        component: () =>
-          import(
-            "@/views/servicos-predefinidos/ServicoPredefinidoFormView.vue"
-          ),
-        meta: { title: "Novo Serviço do Catálogo" },
-      },
-      {
-        path: "inventario",
-        name: "InventarioList",
-        component: () => import("@/views/inventario/InventarioListView.vue"),
-        meta: { title: "Inventário" },
-      },
-      {
-        path: "inventario/novo",
-        name: "ItemNovo",
-        component: () => import("@/views/inventario/ItemFormView.vue"),
-        meta: { title: "Novo Item" },
-      },
-      {
-        path: "inventario/:id/editar",
-        name: "ItemEditar",
-        component: () => import("@/views/inventario/ItemFormView.vue"),
-        props: true,
-        meta: { title: "Editar Item" },
-      },
-      {
-        path: "inventario/importar-ia",
-        name: "InventarioImportarIA",
-        component: () => import("@/views/inventario/ImportadorIAView.vue"),
-        meta: { title: "Importar com IA" },
-      },
-      {
-        path: "kits",
-        name: "KitsList",
-        component: () => import("@/views/kits/KitListView.vue"),
-        meta: { title: "Kits Salvos" },
-      },
-      {
-        path: "kits/builder",
-        name: "KitBuilder",
-        component: () => import("@/views/kits/KitBuilderView.vue"),
-        meta: { title: "Montador de Kits" },
-      },
-      {
-        path: "kits/:id",
-        name: "KitDetalhe",
-        component: () => import("@/views/kits/KitDetalheView.vue"),
-        props: true,
-        meta: { title: "Detalhes do Kit" },
-      },
-      {
-        path: "exportar-dados",
-        name: "ExportarDados",
-        component: () => import("@/views/ExportadorDadosView.vue"),
-        meta: { title: "Exportar Dados" },
-      },
-      {
-        path: "test-visuals",
-        name: "TestVisuals",
-        component: () => import("@/views/TestVisualsView.vue"),
-        meta: { title: "Teste de Melhorias Visuais", requiresAdmin: true },
-      },
-      {
-        path: "financeiro",
-        name: "DashboardFinanceiro",
-        component: () =>
-          import("@/views/financeiro/DashboardFinanceiroView.vue"),
-        meta: { title: "Dashboard Financeiro" },
-      },
-      {
-        path: "financeiro/produtos",
-        name: "GerenciamentoProdutos",
-        component: () =>
-          import("@/views/financeiro/GerenciamentoProdutosView.vue"),
-        meta: { title: "Gerenciamento de Produtos" },
-      },
-      {
-        path: "financeiro/transacoes",
-        name: "RegistroTransacoes",
-        component: () =>
-          import("@/views/financeiro/RegistroTransacoesView.vue"),
-        meta: { title: "Registro de Transações" },
-      },
-    ],
+    name: "Dashboard",
+    component: () => import("@/views/DashboardView.vue"),
+    meta: { title: "Dashboard", requiresAuth: true },
+  },
+  {
+    path: "/marketing",
+    name: "Marketing",
+    component: () => import("@/views/marketing/SalesCopyGeneratorView.vue"),
+    meta: { title: "Assistente de Marketing", requiresAuth: true },
+  },
+  {
+    path: "/clientes",
+    name: "ClientesList",
+    component: () => import("@/views/clientes/ClienteListView.vue"),
+    meta: { title: "Clientes", requiresAuth: true },
+  },
+  {
+    path: "/clientes/novo",
+    name: "ClienteNovo",
+    component: () => import("@/views/clientes/ClienteFormView.vue"),
+    meta: { title: "Novo Cliente", requiresAuth: true },
+  },
+  {
+    path: "/clientes/:id",
+    name: "ClienteDetalhe",
+    component: () => import("@/views/clientes/ClienteDetalheView.vue"),
+    props: true,
+    meta: { title: "Detalhes do Cliente", requiresAuth: true },
+  },
+  {
+    path: "/clientes/:id/editar",
+    name: "ClienteEditar",
+    component: () => import("@/views/clientes/ClienteFormView.vue"),
+    props: true,
+    meta: { title: "Editar Cliente", requiresAuth: true },
+  },
+  {
+    path: "/ordens-servico",
+    name: "OrdensServicoList",
+    component: () =>
+      import("@/views/ordens-servico/OrdemServicoListView.vue"),
+    meta: { title: "Ordens de Serviço", requiresAuth: true },
+  },
+  {
+    path: "/ordens-servico/nova",
+    name: "OrdemServicoNova",
+    component: () =>
+      import("@/views/ordens-servico/OrdemServicoFormView.vue"),
+    meta: { title: "Nova Ordem de Serviço", requiresAuth: true },
+  },
+  {
+    path: "/ordens-servico/:id/editar",
+    name: "OrdemServicoEditar",
+    component: () =>
+      import("@/views/ordens-servico/OrdemServicoFormView.vue"),
+    props: true,
+    meta: { title: "Editar Ordem de Serviço", requiresAuth: true },
+  },
+  {
+    path: "/catalogo-servicos",
+    name: "CatalogoServicosList",
+    component: () =>
+      import(
+        "@/views/servicos-predefinidos/ServicoPredefinidoListView.vue"
+      ),
+    meta: { title: "Catálogo de Serviços", requiresAuth: true },
+  },
+  {
+    path: "/catalogo-servicos/novo",
+    name: "CatalogoServicosNovo",
+    component: () =>
+      import(
+        "@/views/servicos-predefinidos/ServicoPredefinidoFormView.vue"
+      ),
+    meta: { title: "Novo Serviço do Catálogo", requiresAuth: true },
+  },
+  {
+    path: "/inventario",
+    name: "InventarioList",
+    component: () => import("@/views/inventario/InventarioListView.vue"),
+    meta: { title: "Inventário", requiresAuth: true },
+  },
+  {
+    path: "/inventario/novo",
+    name: "ItemNovo",
+    component: () => import("@/views/inventario/ItemFormView.vue"),
+    meta: { title: "Novo Item", requiresAuth: true },
+  },
+  {
+    path: "/inventario/:id/editar",
+    name: "ItemEditar",
+    component: () => import("@/views/inventario/ItemFormView.vue"),
+    props: true,
+    meta: { title: "Editar Item", requiresAuth: true },
+  },
+  {
+    path: "/inventario/importar-ia",
+    name: "InventarioImportarIA",
+    component: () => import("@/views/inventario/ImportadorIAView.vue"),
+    meta: { title: "Importar com IA", requiresAuth: true },
+  },
+  {
+    path: "/kits",
+    name: "KitsList",
+    component: () => import("@/views/kits/KitListView.vue"),
+    meta: { title: "Kits Salvos", requiresAuth: true },
+  },
+  {
+    path: "/kits/builder",
+    name: "KitBuilder",
+    component: () => import("@/views/kits/KitBuilderView.vue"),
+    meta: { title: "Montador de Kits", requiresAuth: true },
+  },
+  {
+    path: "/kits/:id",
+    name: "KitDetalhe",
+    component: () => import("@/views/kits/KitDetalheView.vue"),
+    props: true,
+    meta: { title: "Detalhes do Kit", requiresAuth: true },
+  },
+  {
+    path: "/exportar-dados",
+    name: "ExportarDados",
+    component: () => import("@/views/ExportadorDadosView.vue"),
+    meta: { title: "Exportar Dados", requiresAuth: true },
+  },
+  {
+    path: "/test-visuals",
+    name: "TestVisuals",
+    component: () => import("@/views/TestVisualsView.vue"),
+    meta: { title: "Teste de Melhorias Visuais", requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: "/financeiro",
+    name: "DashboardFinanceiro",
+    component: () =>
+      import("@/views/financeiro/DashboardFinanceiroView.vue"),
+    meta: { title: "Dashboard Financeiro", requiresAuth: true },
+  },
+  {
+    path: "/financeiro/produtos",
+    name: "GerenciamentoProdutos",
+    component: () =>
+      import("@/views/financeiro/GerenciamentoProdutosView.vue"),
+    meta: { title: "Gerenciamento de Produtos", requiresAuth: true },
+  },
+  {
+    path: "/financeiro/transacoes",
+    name: "RegistroTransacoes",
+    component: () =>
+      import("@/views/financeiro/RegistroTransacoesView.vue"),
+    meta: { title: "Registro de Transações", requiresAuth: true },
   },
   {
     path: "/",
