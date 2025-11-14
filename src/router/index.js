@@ -28,6 +28,12 @@ const routes = [
     meta: { title: 'Promoções TechVerse', requiresAuth: false }
   },
   {
+    path: '/atualizacoes',
+    name: 'Updates',
+    component: () => import('@/views/UpdatesPage.vue'),
+    meta: { title: 'Atualizações TechVerse', requiresAuth: false }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),

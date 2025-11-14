@@ -79,11 +79,12 @@ const navigateToApp = () => {
               <ArrowRight class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 
+              @click="router.push('/atualizacoes')"
               variant="outline" 
               size="lg"
               class="font-body text-base h-14 px-10 rounded-full border-2 border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all"
             >
-              Ver Demonstração
+              Ver Atualizações
             </Button>
           </div>
 
@@ -305,9 +306,9 @@ const navigateToApp = () => {
           <div>
             <p class="font-semibold text-foreground mb-3 text-sm">Produto</p>
             <ul class="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" class="hover:text-primary transition-colors">Dashboard</a></li>
-              <li><a href="#" class="hover:text-primary transition-colors">Recurso</a></li>
-              <li><a href="#" class="hover:text-primary transition-colors">Preços</a></li>
+              <li><a href="/atualizacoes" class="hover:text-primary transition-colors">Atualizações</a></li>
+              <li><a href="/promocoes" class="hover:text-primary transition-colors">Promoções</a></li>
+              <li><a href="/noticias" class="hover:text-primary transition-colors">Notícias</a></li>
             </ul>
           </div>
           <div>
