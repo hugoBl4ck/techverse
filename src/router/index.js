@@ -192,7 +192,7 @@ const routes = [
         path: "test-visuals",
         name: "TestVisuals",
         component: () => import("@/views/TestVisualsView.vue"),
-        meta: { title: "Teste de Melhorias Visuais" },
+        meta: { title: "Teste de Melhorias Visuais", requiresAdmin: true },
       },
       {
         path: "financeiro",
