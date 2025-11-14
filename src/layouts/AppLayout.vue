@@ -248,12 +248,14 @@ const handleThemeChange = (newIsDark) => {
 }
 
 const checkMobile = () => {
+  // Check mobile at 768px (md breakpoint)
   isMobile.value = window.innerWidth < 768
 }
 
 onMounted(() => {
   checkMobile()
-  window.addEventListener('resize', checkMobile)
+  // Add passive listener for better performance
+  window.addEventListener('resize', checkMobile, { passive: true })
 })
 
 onUnmounted(() => {

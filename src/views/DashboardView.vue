@@ -44,13 +44,11 @@ const periodOptions = [
 
 const loadServices = async () => {
   if (!storeId.value) {
-    console.error("StoreId não disponível no Dashboard");
     isLoading.value = false;
     return;
   }
 
   isLoading.value = true;
-  console.log("Dashboard - Carregando serviços para store:", storeId.value);
 
   try {
     const servicesCol = collection(
@@ -62,10 +60,6 @@ const loadServices = async () => {
     const q = query(servicesCol, orderBy("date", "desc"));
     const servicesSnapshot = await getDocs(q);
 
-    console.log(
-      `Dashboard - ${servicesSnapshot.docs.length} serviços carregados`
-    );
-
     allServices.value = servicesSnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
@@ -74,9 +68,8 @@ const loadServices = async () => {
         date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
       };
     });
-    console.log("Dashboard - Serviços processados:", allServices.value.length);
   } catch (error) {
-    console.error("Erro ao carregar serviços no Dashboard:", error);
+    // Handle error silently
   } finally {
     isLoading.value = false;
   }
@@ -320,18 +313,18 @@ const monthlyLineData = computed(() => {
           <CardTitle>Faturamento Diário</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="dailyRevenueData.length > 0" style="width: 100%; height: 400px">
-            <ResponsiveContainer width="100%" height="100%">
+          <div v-if="dailyRevenueData.length > 0" class="w-full" style="height: auto; min-height: 300px;">
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 :data="dailyRevenueData"
-                margin="{ top: 20, right: 30, left: 0, bottom: 80 }"
+                margin="{ top: 20, right: 30, left: 0, bottom: 60 }"
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="name" 
                   angle={-45}
                   textAnchor="end"
-                  height={80}
+                  height={60}
                 />
                 <YAxis />
                 <Tooltip 
@@ -358,18 +351,18 @@ const monthlyLineData = computed(() => {
           <CardTitle>Evolução do Faturamento</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="monthlyLineData.length > 0" style="width: 100%; height: 400px">
-            <ResponsiveContainer width="100%" height="100%">
+          <div v-if="monthlyLineData.length > 0" class="w-full" style="height: auto; min-height: 300px;">
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart
                 :data="monthlyLineData"
-                margin="{ top: 20, right: 30, left: 0, bottom: 80 }"
+                margin="{ top: 20, right: 30, left: 0, bottom: 60 }"
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="name"
                   angle={-45}
                   textAnchor="end"
-                  height={80}
+                  height={60}
                 />
                 <YAxis />
                 <Tooltip 

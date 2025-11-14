@@ -24,8 +24,6 @@ const { storeId } = useCurrentStore();
 
 const fetchItems = async () => {
   if (!storeId.value) {
-    const msg = "❌ KitBuilder - StoreId não disponível";
-    console.error(msg);
     error.value = "Usuário não autenticado. StoreId não encontrado.";
     isLoading.value = false;
     return;
@@ -36,20 +34,15 @@ const fetchItems = async () => {
   
   try {
     const currentStoreId = storeId.value;
-    console.log("📊 KitBuilder - StoreId:", currentStoreId);
 
     const itemsCol = collection(db, `stores/${currentStoreId}/itens`);
-    console.log("🔍 Buscando itens de:", `stores/${currentStoreId}/itens`);
     const itemsSnapshot = await getDocs(itemsCol);
 
-    console.log("✅ Itens encontrados:", itemsSnapshot.size);
     inventario.value = itemsSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-    console.log("📦 Inventário carregado:", inventario.value.length, "itens");
   } catch (err) {
-    console.error("❌ Erro ao buscar itens:", err);
     error.value = `Erro ao carregar itens: ${err.message}`;
   } finally {
     isLoading.value = false;
@@ -61,16 +54,11 @@ watch(
   () => storeId.value,
   (newStoreId) => {
     if (newStoreId) {
-      console.log("🎯 KitBuilder - StoreId pronto:", newStoreId);
       fetchItems();
     }
   },
   { immediate: true }
 );
-
-onMounted(() => {
-  console.log("🚀 KitBuilder montado");
-});
 
 const groupedItems = computed(() => {
   const importantTypes = {

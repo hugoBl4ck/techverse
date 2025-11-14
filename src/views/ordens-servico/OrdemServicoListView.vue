@@ -65,20 +65,17 @@ async function copyToClipboard(text) {
     await navigator.clipboard.writeText(text);
     alert('Texto copiado para a área de transferência!');
   } catch (err) {
-    console.error('Falha ao copiar texto: ', err);
     alert('Não foi possível copiar o texto.');
   }
 }
 
 const loadOrdensServico = async () => {
   if (!storeId.value) {
-    console.error('StoreId não disponível');
     isLoading.value = false;
     return;
   }
 
   isLoading.value = true;
-  console.log('Carregando ordens de serviço para store:', storeId.value);
 
   try {
     const osCol = collection(db, 'stores', storeId.value, 'ordens_servico');
@@ -91,9 +88,7 @@ const loadOrdensServico = async () => {
         date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
       };
     });
-    console.log('Ordens carregadas:', ordensServico.value.length);
   } catch (error) {
-    console.error('Erro ao carregar ordens de serviço:', error);
     alert('Erro ao carregar ordens de serviço: ' + error.message);
   } finally {
     isLoading.value = false;
@@ -109,50 +104,45 @@ const cancelarOrdem = async (os) => {
   const toastId = toast.loading('Cancelando ordem...');
 
   try {
-    // 1. Marca a ordem como cancelada
-    const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', os.id);
-    await updateDoc(osDocRef, { status: 'cancelada' });
-    console.log('✅ Ordem marcada como cancelada');
+     // 1. Marca a ordem como cancelada
+     const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', os.id);
+     await updateDoc(osDocRef, { status: 'cancelada' });
 
-    // 2. Restaura o estoque dos itens
-    for (const item of (os.items || [])) {
-      const itemDocRef = doc(db, 'stores', storeId.value, 'itens', item.id);
-      const novaQuantidade = (item.quantidade || 0) + (item.quantity || 0);
-      await updateDoc(itemDocRef, { quantidade: novaQuantidade });
-      console.log(`✅ Estoque restaurado - ${item.nome}: ${novaQuantidade} unidades`);
-    }
+     // 2. Restaura o estoque dos itens
+     for (const item of (os.items || [])) {
+       const itemDocRef = doc(db, 'stores', storeId.value, 'itens', item.id);
+       const novaQuantidade = (item.quantidade || 0) + (item.quantity || 0);
+       await updateDoc(itemDocRef, { quantidade: novaQuantidade });
+     }
 
-    // 3. Registra uma transação reversa no financeiro (cancelamento)
-    await registrarVenda({
-      descricao: `CANCELAMENTO - Ordem de Serviço #${os.id} - ${os.customerName}`,
-      valor: -(os.totalAmount || 0),
-      categoria: 'cancelamento',
-      cliente_id: os.customerId,
-      ordem_servico_id: os.id,
-      metodo_pagamento: 'reembolso',
-      produtos: (os.items || []).map(item => ({
-        produtoId: item.id,
-        quantidade: -(item.quantity || 0),
-        preco_unitario: item.precoVenda || item.preco || 0,
-        subtotal: -((item.precoVenda || item.preco || 0) * (item.quantity || 0))
-      }))
-    });
+     // 3. Registra uma transação reversa no financeiro (cancelamento)
+     await registrarVenda({
+       descricao: `CANCELAMENTO - Ordem de Serviço #${os.id} - ${os.customerName}`,
+       valor: -(os.totalAmount || 0),
+       categoria: 'cancelamento',
+       cliente_id: os.customerId,
+       ordem_servico_id: os.id,
+       metodo_pagamento: 'reembolso',
+       produtos: (os.items || []).map(item => ({
+         produtoId: item.id,
+         quantidade: -(item.quantity || 0),
+         preco_unitario: item.precoVenda || item.preco || 0,
+         subtotal: -((item.precoVenda || item.preco || 0) * (item.quantity || 0))
+       }))
+     });
+     
+     // 4. Atualiza a lista localmente
+     const osIndex = ordensServico.value.findIndex(o => o.id === os.id);
+     if (osIndex >= 0) {
+       ordensServico.value[osIndex].status = 'cancelada';
+     }
 
-    console.log('✅ Transação reversa registrada no financeiro');
-    
-    // 4. Atualiza a lista localmente
-    const osIndex = ordensServico.value.findIndex(o => o.id === os.id);
-    if (osIndex >= 0) {
-      ordensServico.value[osIndex].status = 'cancelada';
-    }
-
-    toast.success('Ordem cancelada com sucesso!', { id: toastId });
-  } catch (error) {
-    console.error('Erro ao cancelar ordem:', error);
-    toast.error('Erro ao cancelar: ' + error.message, { id: toastId });
-  } finally {
-    cancelingOsId.value = null;
-  }
+     toast.success('Ordem cancelada com sucesso!', { id: toastId });
+   } catch (error) {
+     toast.error('Erro ao cancelar: ' + error.message, { id: toastId });
+   } finally {
+     cancelingOsId.value = null;
+   }
 };
 
 onMounted(() => {

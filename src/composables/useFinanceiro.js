@@ -31,7 +31,6 @@ export function useFinanceiro(storeId) {
    */
   const loadProdutos = async () => {
     if (!storeId?.value) {
-      console.warn('⚠️ StoreId não disponível para loadProdutos')
       return
     }
     
@@ -43,12 +42,6 @@ export function useFinanceiro(storeId) {
       
       // Carrega sem ordenação (compatível com qualquer estrutura)
       const snapshot = await getDocs(itensRef)
-      
-      console.log(`📊 Encontrados ${snapshot.docs.length} itens no Firestore`)
-      console.log(`📍 Caminho: stores/${storeId.value}/itens`)
-      if (snapshot.docs.length > 0) {
-        console.log('📦 Primeiro item:', snapshot.docs[0].data())
-      }
       
       produtos.value = snapshot.docs.map(doc => {
         const data = doc.data()
@@ -67,11 +60,8 @@ export function useFinanceiro(storeId) {
           margem_lucro: calcularMargemLucro(precoVenda, precoCusto)
         }
       })
-      
-      console.log('✅ Produtos carregados:', produtos.value.length)
     } catch (err) {
       error.value = err.message
-      console.error('❌ Erro ao carregar produtos:', err)
     } finally {
       isLoading.value = false
     }
@@ -101,13 +91,11 @@ export function useFinanceiro(storeId) {
       }
 
       const docRef = await addDoc(produtosRef, novo)
-      console.log('✅ Produto adicionado:', docRef.id)
       
       await loadProdutos()
       return docRef.id
     } catch (err) {
       error.value = err.message
-      console.error('❌ Erro ao adicionar produto:', err)
       return null
     }
   }
@@ -135,13 +123,11 @@ export function useFinanceiro(storeId) {
       }
 
       await updateDoc(produtoRef, dadosAtualizar)
-      console.log('✅ Produto atualizado:', produtoId)
       
       await loadProdutos()
       return true
     } catch (err) {
       error.value = err.message
-      console.error('❌ Erro ao atualizar produto:', err)
       return false
     }
   }
@@ -154,12 +140,10 @@ export function useFinanceiro(storeId) {
 
     try {
       await deleteDoc(doc(db, 'stores', storeId.value, 'produtos', produtoId))
-      console.log('✅ Produto deletado:', produtoId)
       await loadProdutos()
       return true
     } catch (err) {
       error.value = err.message
-      console.error('❌ Erro ao deletar produto:', err)
       return false
     }
   }
