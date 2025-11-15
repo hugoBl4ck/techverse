@@ -16,16 +16,110 @@
           <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-4">
             Promoções <span class="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">TechVerse</span>
           </h1>
-          
-          <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Descubra ofertas exclusivas e economize em produtos selecionados
+
+          <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+            Descubra ofertas exclusivas de parceiros e economize em produtos selecionados para seu negócio
           </p>
+
+          <div class="flex items-center justify-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-2">
+              <Shield class="w-4 h-4 text-green-600" />
+              <span>Compras Seguras</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <Star class="w-4 h-4 text-blue-600" />
+              <span>Parceiros Confiáveis</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <ExternalLink class="w-4 h-4 text-purple-600" />
+              <span>Links Afiliados</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Featured Affiliate Section -->
+      <div v-if="filteredPromos.some(p => p.tipo === 'afiliado' && p.destaque)" class="mb-12">
+        <div class="text-center mb-8">
+          <Badge variant="outline" class="bg-blue-50 dark:bg-blue-950/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 mb-4">
+            <Star class="w-4 h-4 mr-2" />
+            Destaque do Parceiro
+          </Badge>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+            Ofertas Exclusivas AliExpress
+          </h2>
+          <p class="text-slate-600 dark:text-slate-400">
+            Produtos selecionados com os melhores descontos do mercado
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6">
+          <article
+            v-for="promo in filteredPromos.filter(p => p.tipo === 'afiliado' && p.destaque)"
+            :key="`featured-${promo.id}`"
+            class="group rounded-2xl overflow-hidden bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-2xl dark:hover:shadow-blue-500/20 transition-all duration-500"
+          >
+            <div class="md:flex">
+              <!-- Images -->
+              <div class="md:w-1/3 p-6">
+                <div class="flex gap-3 overflow-x-auto">
+                  <img
+                    v-for="(foto, idx) in promo.fotos"
+                    :key="idx"
+                    :src="foto"
+                    :alt="`Produto ${idx + 1}`"
+                    class="h-24 w-24 rounded-xl object-cover flex-shrink-0 border-2 border-white dark:border-slate-700 shadow-lg"
+                  />
+                </div>
+              </div>
+
+              <!-- Content -->
+              <div class="md:w-2/3 p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                      {{ promo.titulo }}
+                    </h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">
+                      {{ promo.descricao }}
+                    </p>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-4xl font-bold text-blue-600 dark:text-blue-400">
+                      {{ promo.desconto }}% OFF
+                    </div>
+                    <Badge variant="default" class="bg-blue-600 text-white mt-2">
+                      <Shield class="w-3 h-3 mr-1" />
+                      Compra Segura
+                    </Badge>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                    <span>📅 Válido até {{ formatarData(promo.dataFim) }}</span>
+                    <span>🏷️ {{ promo.categoria }}</span>
+                  </div>
+                  <a
+                    :href="promo.linkCompra"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    @click="trackAffiliateClick(promo)"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700 transition-all font-semibold shadow-lg hover:shadow-xl group/btn"
+                  >
+                    <ExternalLink class="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                    Ver Oferta Completa
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
       <!-- Search and Filters -->
       <div class="mb-8 flex flex-col sm:flex-row gap-4">
         <!-- Search Bar -->
@@ -103,18 +197,41 @@
         <article
           v-for="promo in filteredPromos"
           :key="promo.id"
-          class="group rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-600 hover:shadow-lg dark:hover:shadow-red-500/10 transition-all duration-300"
+          :class="[
+            'group rounded-xl overflow-hidden bg-white dark:bg-slate-800 border transition-all duration-300',
+            promo.tipo === 'afiliado'
+              ? 'border-blue-300 dark:border-blue-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-xl dark:hover:shadow-blue-500/20'
+              : 'border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-600 hover:shadow-lg dark:hover:shadow-red-500/10'
+          ]"
         >
+          <!-- Affiliate Badge -->
+          <div v-if="promo.tipo === 'afiliado'" class="absolute top-3 right-3 z-10">
+            <Badge variant="default" class="bg-blue-600 text-white text-xs font-semibold px-2 py-1">
+              <Star class="w-3 h-3 mr-1" />
+              Parceiro
+            </Badge>
+          </div>
+
           <!-- Header com Desconto -->
-          <div class="relative h-32 bg-gradient-to-r from-red-500/20 to-orange-500/20 dark:from-red-500/10 dark:to-orange-500/10 flex items-center justify-center border-b border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div
+            :class="[
+              'relative h-32 flex items-center justify-center border-b overflow-hidden',
+              promo.tipo === 'afiliado'
+                ? 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 dark:from-blue-500/10 dark:to-cyan-500/10 border-blue-200 dark:border-blue-700'
+                : 'bg-gradient-to-r from-red-500/20 to-orange-500/20 dark:from-red-500/10 dark:to-orange-500/10 border-slate-200 dark:border-slate-700'
+            ]"
+          >
             <div class="absolute inset-0 opacity-10">
-              <Gift class="w-24 h-24 text-red-500 absolute -right-4 -top-4" />
+              <component :is="promo.tipo === 'afiliado' ? Star : Gift" class="w-24 h-24 text-current absolute -right-4 -top-4" />
             </div>
             <div class="relative text-center">
-              <div class="text-5xl font-bold text-red-600 dark:text-red-400">
+              <div :class="['text-5xl font-bold', promo.tipo === 'afiliado' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400']">
                 {{ promo.desconto }}%
               </div>
               <p class="text-sm text-slate-600 dark:text-slate-400">Desconto</p>
+              <p v-if="promo.tipo === 'afiliado'" class="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">
+                Via AliExpress
+              </p>
             </div>
           </div>
 
@@ -157,25 +274,43 @@
               </div>
             </div>
 
+            <!-- Trust Badges for Affiliate -->
+            <div v-if="promo.tipo === 'afiliado'" class="flex items-center justify-center gap-3 mb-4 text-xs text-slate-500 dark:text-slate-400">
+              <div class="flex items-center gap-1">
+                <Shield class="w-3 h-3" />
+                <span>Compra Segura</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <ExternalLink class="w-3 h-3" />
+                <span>Link Afiliado</span>
+              </div>
+            </div>
+
             <!-- CTA Button -->
-             <a
-               v-if="promo.linkCompra"
-               :href="promo.linkCompra"
-               target="_blank"
-               rel="noopener noreferrer"
-               class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all font-semibold group/btn"
-             >
-               <Zap class="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-               Comprar Agora
-             </a>
-             <button
-               v-else
-               @click="handlePromoClick(promo)"
-               class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all font-semibold group/btn"
-             >
-               <Zap class="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-               Aproveitar Promoção
-             </button>
+            <a
+              v-if="promo.linkCompra"
+              :href="promo.linkCompra"
+              target="_blank"
+              rel="noopener noreferrer"
+              @click="trackAffiliateClick(promo)"
+              :class="[
+                'w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-white transition-all font-semibold group/btn',
+                promo.tipo === 'afiliado'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
+                  : 'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700'
+              ]"
+            >
+              <component :is="promo.tipo === 'afiliado' ? ExternalLink : Zap" class="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+              {{ promo.tipo === 'afiliado' ? 'Ver Oferta no AliExpress' : 'Comprar Agora' }}
+            </a>
+            <button
+              v-else
+              @click="handlePromoClick(promo)"
+              class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 transition-all font-semibold group/btn"
+            >
+              <Zap class="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+              Aproveitar Promoção
+            </button>
           </div>
         </article>
       </div>
@@ -203,7 +338,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Gift, Search, Filter, Calendar, Zap, RotateCcw } from 'lucide-vue-next'
+import { Gift, Search, Filter, Calendar, Zap, RotateCcw, ExternalLink, Star, Shield } from 'lucide-vue-next'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
 import { useFirestore } from '@/composables/useFirestore'
@@ -216,6 +351,24 @@ const promos = ref([])
 const searchQuery = ref('')
 const selectedStatus = ref('')
 const sortBy = ref('desconto')
+
+// Test promotion data with affiliate link
+const testPromo = {
+  id: 'aliexpress-test-001',
+  titulo: 'Oferta Especial AliExpress - Componentes de PC',
+  descricao: 'Descontos exclusivos em processadores, placas-mãe, memórias RAM e SSDs. Produtos selecionados com garantia e frete internacional.',
+  desconto: 25,
+  dataInicio: new Date('2025-11-15'),
+  dataFim: new Date('2025-12-15'),
+  fotos: [
+    'https://ae01.alicdn.com/kf/S123456789012345678.jpg', // Placeholder - would be actual product images
+    'https://ae01.alicdn.com/kf/S123456789012345679.jpg'
+  ],
+  linkCompra: 'https://s.click.aliexpress.com/e/_c3aNuuJr',
+  categoria: 'Hardware',
+  tipo: 'afiliado',
+  destaque: true
+}
 
 // Computed
 const filteredPromos = computed(() => {
@@ -322,14 +475,26 @@ const handlePromoClick = (promo) => {
   console.log('Promoção clicada:', promo)
 }
 
+// Methods
+const trackAffiliateClick = (promo) => {
+  if (promo.tipo === 'afiliado') {
+    // Track affiliate click (could integrate with analytics)
+    console.log('Affiliate click tracked:', promo.id)
+    // You could add Google Analytics, Facebook Pixel, etc. here
+  }
+}
+
 // Lifecycle
 onMounted(async () => {
   try {
     loading.value = true
     const data = await getActivePromos()
-    promos.value = data || []
+    // Add test promotion for demonstration
+    promos.value = [testPromo, ...(data || [])]
   } catch (error) {
     console.error('Erro ao carregar promoções:', error)
+    // Fallback to test promo only
+    promos.value = [testPromo]
   } finally {
     loading.value = false
   }
