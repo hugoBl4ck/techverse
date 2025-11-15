@@ -10,6 +10,7 @@ import { toast } from 'vue-sonner';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pencil, ClipboardCopy, X, XCircle } from 'lucide-vue-next';
 
 const { storeId } = useCurrentStore();
@@ -147,9 +148,17 @@ onMounted(() => {
   loadOrdensServico();
 });
 
-const todasOrdensServico = computed(() => {
+const ordensAtivas = computed(() => {
    if (!ordensServico.value) return [];
    return ordensServico.value
+     .filter(os => os.status !== 'cancelada')
+     .sort((a, b) => new Date(b.date) - new Date(a.date));
+});
+
+const ordensCanceladas = computed(() => {
+   if (!ordensServico.value) return [];
+   return ordensServico.value
+     .filter(os => os.status === 'cancelada')
      .sort((a, b) => new Date(b.date) - new Date(a.date));
 });
 </script>
@@ -171,69 +180,111 @@ const todasOrdensServico = computed(() => {
       <p>Carregando ordens de serviço...</p>
     </div>
 
-    <div v-else>
+    <div v-else class="space-y-6">
+      <!-- Ordens Ativas -->
       <Card>
         <CardHeader>
-          <CardTitle>Todas as Ordens de Serviço</CardTitle>
+          <CardTitle>Ordens de Serviço Ativas</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul v-if="todasOrdensServico.length > 0" class="space-y-3">
-            <li
-              v-for="(os, index) in todasOrdensServico"
-              :key="os.id"
-              :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} flex items-center justify-between p-4 rounded-lg border card-hover ${os.status === 'cancelada' ? 'bg-red-50 dark:bg-red-950 opacity-60' : 'hover:bg-muted/50 cursor-pointer'}`"
-            >
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <strong class="text-lg">{{ os.customerName }}</strong>
-                  <span class="text-xs text-muted-foreground">
-                    {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
-                  </span>
-                  <span
-                    v-if="os.status === 'cancelada'"
-                    class="inline-flex items-center text-xs font-semibold px-2 py-1 rounded-full bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200"
-                  >
-                    Cancelada
-                  </span>
-                </div>
-                <p class="text-sm text-muted-foreground mt-1">
+          <Table v-if="ordensAtivas.length > 0">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Serviço</TableHead>
+                <TableHead class="text-right">Valor</TableHead>
+                <TableHead class="text-center">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow
+                v-for="(os, index) in ordensAtivas"
+                :key="os.id"
+                :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} hover:bg-muted/50`"
+              >
+                <TableCell>
+                  <strong>{{ os.customerName }}</strong>
+                </TableCell>
+                <TableCell>
+                  {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                </TableCell>
+                <TableCell>
                   {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
-                </p>
-                <p class="text-sm font-semibold mt-1">Total: R$ {{ (os.totalAmount || 0).toFixed(2) }}</p>
-              </div>
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <Button
-                  v-if="os.status !== 'cancelada'"
-                  variant="outline"
-                  size="sm"
-                  @click="generateReceipt(os)"
-                >
-                  Gerar Recibo
-                </Button>
-                <RouterLink
-                  v-if="os.status !== 'cancelada'"
-                  :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }"
-                >
-                  <Button variant="ghost" size="icon">
-                    <Pencil class="h-4 w-4" />
-                  </Button>
-                </RouterLink>
-                <Button
-                  v-if="os.status !== 'cancelada'"
-                  variant="destructive"
-                  size="icon"
-                  :disabled="cancelingOsId === os.id"
-                  @click="cancelarOrdem(os)"
-                  title="Cancelar ordem de serviço"
-                >
-                  <XCircle class="h-4 w-4" />
-                </Button>
-              </div>
-            </li>
-          </ul>
+                </TableCell>
+                <TableCell class="text-right font-semibold">
+                  R$ {{ (os.totalAmount || 0).toFixed(2) }}
+                </TableCell>
+                <TableCell class="text-center">
+                  <div class="flex items-center justify-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      @click="generateReceipt(os)"
+                    >
+                      Recibo
+                    </Button>
+                    <RouterLink :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }">
+                      <Button variant="ghost" size="icon">
+                        <Pencil class="h-4 w-4" />
+                      </Button>
+                    </RouterLink>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      :disabled="cancelingOsId === os.id"
+                      @click="cancelarOrdem(os)"
+                      title="Cancelar ordem de serviço"
+                    >
+                      <XCircle class="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
           <p v-else class="text-muted-foreground text-center py-8">
-            Nenhuma ordem de serviço encontrada.
+            Nenhuma ordem de serviço ativa encontrada.
           </p>
+        </CardContent>
+      </Card>
+
+      <!-- Ordens Canceladas -->
+      <Card v-if="ordensCanceladas.length > 0">
+        <CardHeader>
+          <CardTitle>Ordens de Serviço Canceladas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Serviço</TableHead>
+                <TableHead class="text-right">Valor</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow
+                v-for="(os, index) in ordensCanceladas"
+                :key="os.id"
+                :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} bg-red-50 dark:bg-red-950 opacity-60`"
+              >
+                <TableCell>
+                  <strong>{{ os.customerName }}</strong>
+                </TableCell>
+                <TableCell>
+                  {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                </TableCell>
+                <TableCell>
+                  {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
+                </TableCell>
+                <TableCell class="text-right font-semibold">
+                  R$ {{ (os.totalAmount || 0).toFixed(2) }}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
