@@ -361,8 +361,9 @@ const testPromo = {
   dataInicio: new Date('2025-11-15'),
   dataFim: new Date('2025-12-15'),
   fotos: [
-    'https://ae01.alicdn.com/kf/S123456789012345678.jpg', // Placeholder - would be actual product images
-    'https://ae01.alicdn.com/kf/S123456789012345679.jpg'
+    'https://picsum.photos/200/200?random=1',
+    'https://picsum.photos/200/200?random=2',
+    'https://picsum.photos/200/200?random=3'
   ],
   linkCompra: 'https://s.click.aliexpress.com/e/_c3aNuuJr',
   categoria: 'Hardware',
