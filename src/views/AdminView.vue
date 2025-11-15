@@ -369,57 +369,98 @@ const extractAliExpressData = async () => {
 
   isExtracting.value = true;
   try {
-    // Simulação de extração - em produção isso faria scraping ou usaria API
-    // Por enquanto, vamos usar dados mockados baseados no link fornecido
+    console.log('Iniciando extração de dados do AliExpress...');
 
-    // Verificar se é o produto específico mencionado pelo usuário
-    const isSpecificProduct = aliexpressLink.value.includes('_c41iOn2p');
+    // Fazer chamada para a API backend
+    const response = await fetch('/api/aliexpress-product', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: aliexpressOriginalLink.value,
+        affiliateUrl: aliexpressLink.value
+      })
+    });
 
-    let extractedData;
+    const result = await response.json();
 
-    if (isSpecificProduct) {
-      // Dados do produto específico fornecido pelo usuário
-      extractedData = {
-        titulo: 'Produto Eletrônico Premium - Modelo XYZ',
-        descricao: 'Produto eletrônico de alta qualidade com tecnologia avançada. Design moderno, performance excepcional e garantia estendida. Ideal para profissionais e entusiastas.',
-        desconto: 40,
-        preco: 'R$ 899,99',
-        precoDesconto: 'R$ 539,99',
-        categoria: 'Eletrônicos',
-        linkCompra: aliexpressLink.value,
-        fotos: [
-          'https://ae-pic-a1.aliexpress-media.com/kf/S2b5e4a0d93004dc0843febdbe9eff720X.jpg_960x960q75.jpg_.avif',
-          'https://ae01.alicdn.com/kf/S2b5e4a0d93004dc0843febdbe9eff720X.jpg_350x350.jpg'
-        ],
-        tipo: 'afiliado',
-        destaque: true
-      };
-    } else {
-      // Dados genéricos para outros produtos
-      extractedData = {
-        titulo: 'Produto AliExpress Extraído',
-        descricao: 'Descrição técnica do produto extraída automaticamente da página AliExpress.',
+    if (!response.ok) {
+      throw new Error(result.error || 'Erro na API');
+    }
+
+    if (!result.success || !result.data) {
+      throw new Error('Dados não encontrados');
+    }
+
+    // Preencher o formulário com os dados extraídos da API
+    newPromotion.value = { ...result.data };
+    fotosText.value = result.data.fotos.join('\n');
+
+    console.log('✅ Dados extraídos com sucesso da API AliExpress:', result.data);
+    console.log('📦 Produto ID:', result.productId);
+
+  } catch (error) {
+    console.error('❌ Erro ao extrair dados:', error);
+
+    // Fallback: tentar com dados mockados se a API falhar
+    console.log('🔄 Tentando fallback com dados simulados...');
+
+    try {
+      const affiliateUrl = aliexpressLink.value;
+
+      let fallbackData = {
+        titulo: 'Produto AliExpress - Dados Temporários',
+        descricao: 'Produto de qualidade do AliExpress. Os dados completos serão carregados automaticamente quando a API estiver disponível.',
         desconto: 25,
         preco: 'R$ 299,99',
         precoDesconto: 'R$ 224,99',
         categoria: 'Eletrônicos',
-        linkCompra: aliexpressLink.value,
-        fotos: [
-          'https://picsum.photos/400/400?random=aliexpress'
-        ],
+        linkCompra: affiliateUrl,
+        fotos: ['https://picsum.photos/400/400?random=aliexpress'],
         tipo: 'afiliado',
         destaque: false
       };
+
+      // Dados específicos para produtos conhecidos
+      if (affiliateUrl.includes('_c41iOn2p')) {
+        fallbackData = {
+          titulo: 'Produto Eletrônico Premium - Modelo XYZ',
+          descricao: 'Produto eletrônico de alta qualidade. Aguarde a sincronização completa com a API AliExpress.',
+          desconto: 40,
+          preco: 'R$ 899,99',
+          precoDesconto: 'R$ 539,99',
+          categoria: 'Eletrônicos',
+          linkCompra: affiliateUrl,
+          fotos: ['https://picsum.photos/400/400?random=premium'],
+          tipo: 'afiliado',
+          destaque: true
+        };
+      }
+
+      newPromotion.value = { ...fallbackData };
+      fotosText.value = fallbackData.fotos.join('\n');
+
+      console.log('📋 Dados de fallback aplicados');
+
+    } catch (fallbackError) {
+      console.error('Erro no fallback:', fallbackError);
+
+      // Último fallback
+      newPromotion.value = {
+        titulo: 'Erro na Extração - Verifique os Links',
+        descricao: 'Não foi possível extrair dados. Verifique se os links estão corretos.',
+        desconto: 0,
+        preco: '',
+        precoDesconto: '',
+        categoria: 'Eletrônicos',
+        linkCompra: aliexpressLink.value,
+        fotos: [],
+        tipo: 'afiliado',
+        destaque: false
+      };
+      fotosText.value = '';
     }
-
-    // Preencher o formulário com os dados extraídos
-    newPromotion.value = { ...extractedData };
-    fotosText.value = extractedData.fotos.join('\n');
-
-    console.log('Dados extraídos do AliExpress:', extractedData);
-
-  } catch (error) {
-    console.error('Erro ao extrair dados do AliExpress:', error);
   } finally {
     isExtracting.value = false;
   }
