@@ -11,7 +11,6 @@ import Calendar from '@/components/ui/calendar/Calendar.vue';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Pencil, ClipboardCopy, X, XCircle } from 'lucide-vue-next';
 
 const { storeId } = useCurrentStore();
@@ -189,13 +188,22 @@ const ultimosServicos = computed(() => {
     </div>
 
     <div v-else>
-      <Tabs v-model="activeTab" class="w-full">
-        <TabsList class="mb-4">
-          <TabsTrigger value="agenda">Agenda</TabsTrigger>
-          <TabsTrigger value="ultimos">Últimos 10 Serviços</TabsTrigger>
-        </TabsList>
+      <div class="mb-4 flex gap-2">
+        <Button 
+          @click="activeTab = 'agenda'"
+          :variant="activeTab === 'agenda' ? 'default' : 'outline'"
+        >
+          Agenda
+        </Button>
+        <Button 
+          @click="activeTab = 'ultimos'"
+          :variant="activeTab === 'ultimos' ? 'default' : 'outline'"
+        >
+          Últimos 10 Serviços
+        </Button>
+      </div>
 
-        <TabsContent value="agenda" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div v-show="activeTab === 'agenda'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card class="md:col-span-1">
             <CardHeader>
               <CardTitle>Selecione uma data</CardTitle>
@@ -265,9 +273,9 @@ const ultimosServicos = computed(() => {
               </p>
             </CardContent>
           </Card>
-        </TabsContent>
+      </div>
 
-        <TabsContent value="ultimos">
+      <div v-show="activeTab === 'ultimos'">
           <Card>
             <CardHeader>
               <CardTitle>Últimos 10 Serviços</CardTitle>
@@ -332,8 +340,7 @@ const ultimosServicos = computed(() => {
               </p>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+      </div>
     </div>
 
     <!-- Modal for Receipt -->
