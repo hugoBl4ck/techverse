@@ -7,7 +7,6 @@ import { useCurrentStore } from '@/composables/useCurrentStore';
 import { useTransacoes } from '@/composables/useTransacoes';
 import { toast } from 'vue-sonner';
 
-import Calendar from '@/components/ui/calendar/Calendar.vue';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,11 +17,9 @@ const { registrarVenda } = useTransacoes(storeId);
 
 const ordensServico = ref([]);
 const isLoading = ref(true);
-const selectedDate = ref(new Date());
 const receiptText = ref('');
 const showReceiptModal = ref(false);
 const cancelingOsId = ref(null);
-const activeTab = ref('agenda');
 
 function generateReceipt(os) {
   const serviceDate = new Date(os.date);
@@ -150,30 +147,17 @@ onMounted(() => {
   loadOrdensServico();
 });
 
-const filteredOrdensServico = computed(() => {
-   if (!ordensServico.value) return [];
-   const filtered = ordensServico.value.filter((os) => {
-     const serviceDate = new Date(os.date);
-     serviceDate.setHours(0, 0, 0, 0);
-     const selected = new Date(selectedDate.value);
-     selected.setHours(0, 0, 0, 0);
-     return serviceDate.getTime() === selected.getTime();
-   });
-   return filtered;
-});
-
-const ultimosServicos = computed(() => {
+const todasOrdensServico = computed(() => {
    if (!ordensServico.value) return [];
    return ordensServico.value
-     .sort((a, b) => new Date(b.date) - new Date(a.date))
-     .slice(0, 10);
+     .sort((a, b) => new Date(b.date) - new Date(a.date));
 });
 </script>
 
 <template>
   <main class="flex-1 p-4 md:p-6">
     <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-bold">Agenda de Ordens de Serviço</h1>
+      <h1 class="text-2xl font-bold">Ordens de Serviço</h1>
       <RouterLink to="/ordens-servico/nova">
         <Button>Nova Ordem de Serviço</Button>
       </RouterLink>
@@ -188,159 +172,70 @@ const ultimosServicos = computed(() => {
     </div>
 
     <div v-else>
-      <div class="mb-4 flex gap-2">
-        <Button 
-          @click="activeTab = 'agenda'"
-          :variant="activeTab === 'agenda' ? 'default' : 'outline'"
-        >
-          Agenda
-        </Button>
-        <Button 
-          @click="activeTab = 'ultimos'"
-          :variant="activeTab === 'ultimos' ? 'default' : 'outline'"
-        >
-          Últimos 10 Serviços
-        </Button>
-      </div>
-
-      <div v-show="activeTab === 'agenda'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card class="md:col-span-1">
-            <CardHeader>
-              <CardTitle>Selecione uma data</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Calendar v-model="selectedDate" />
-            </CardContent>
-          </Card>
-          <Card class="md:col-span-2">
-            <CardHeader>
-              <CardTitle>Ordens de Serviço para {{ selectedDate.toLocaleDateString('pt-BR') }}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul v-if="filteredOrdensServico.length > 0" class="space-y-3">
-                <li 
-                  v-for="(os, index) in filteredOrdensServico" 
-                  :key="os.id" 
-                  :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} flex items-center justify-between p-4 rounded-lg border card-hover ${os.status === 'cancelada' ? 'bg-red-50 dark:bg-red-950 opacity-60' : 'hover:bg-muted/50 cursor-pointer'}`"
+      <Card>
+        <CardHeader>
+          <CardTitle>Todas as Ordens de Serviço</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul v-if="todasOrdensServico.length > 0" class="space-y-3">
+            <li
+              v-for="(os, index) in todasOrdensServico"
+              :key="os.id"
+              :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} flex items-center justify-between p-4 rounded-lg border card-hover ${os.status === 'cancelada' ? 'bg-red-50 dark:bg-red-950 opacity-60' : 'hover:bg-muted/50 cursor-pointer'}`"
+            >
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <strong class="text-lg">{{ os.customerName }}</strong>
+                  <span class="text-xs text-muted-foreground">
+                    {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                  </span>
+                  <span
+                    v-if="os.status === 'cancelada'"
+                    class="inline-flex items-center text-xs font-semibold px-2 py-1 rounded-full bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200"
+                  >
+                    Cancelada
+                  </span>
+                </div>
+                <p class="text-sm text-muted-foreground mt-1">
+                  {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
+                </p>
+                <p class="text-sm font-semibold mt-1">Total: R$ {{ (os.totalAmount || 0).toFixed(2) }}</p>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <Button
+                  v-if="os.status !== 'cancelada'"
+                  variant="outline"
+                  size="sm"
+                  @click="generateReceipt(os)"
                 >
-                  <div>
-                    <div class="flex items-center gap-2 mb-1">
-                      <strong class="text-lg">{{ os.customerName }}</strong>
-                      <span 
-                        v-if="os.status === 'cancelada'"
-                        class="inline-flex items-center text-xs font-semibold px-2 py-1 rounded-full bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200"
-                      >
-                        Cancelada
-                      </span>
-                    </div>
-                    <p class="text-sm text-muted-foreground mt-1">
-                      {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
-                    </p>
-                    <p class="text-sm font-semibold mt-1">Total: R$ {{ (os.totalAmount || 0).toFixed(2) }}</p>
-                  </div>
-                  <div class="flex items-center gap-2 flex-shrink-0">
-                    <Button 
-                      v-if="os.status !== 'cancelada'"
-                      variant="outline" 
-                      size="sm" 
-                      @click="generateReceipt(os)"
-                    >
-                      Gerar Recibo
-                    </Button>
-                    <RouterLink 
-                      v-if="os.status !== 'cancelada'"
-                      :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }"
-                    >
-                      <Button variant="ghost" size="icon">
-                        <Pencil class="h-4 w-4" />
-                      </Button>
-                    </RouterLink>
-                    <Button 
-                      v-if="os.status !== 'cancelada'"
-                      variant="destructive" 
-                      size="icon"
-                      :disabled="cancelingOsId === os.id"
-                      @click="cancelarOrdem(os)"
-                      title="Cancelar ordem de serviço"
-                    >
-                      <XCircle class="h-4 w-4" />
-                    </Button>
-                  </div>
-                </li>
-              </ul>
-              <p v-else class="text-muted-foreground text-center py-8">
-                Nenhuma Ordem de Serviço agendada para esta data.
-              </p>
-            </CardContent>
-          </Card>
-      </div>
-
-      <div v-show="activeTab === 'ultimos'">
-          <Card>
-            <CardHeader>
-              <CardTitle>Últimos 10 Serviços</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul v-if="ultimosServicos.length > 0" class="space-y-3">
-                <li 
-                  v-for="(os, index) in ultimosServicos" 
-                  :key="os.id" 
-                  :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} flex items-center justify-between p-4 rounded-lg border card-hover ${os.status === 'cancelada' ? 'bg-red-50 dark:bg-red-950 opacity-60' : 'hover:bg-muted/50 cursor-pointer'}`"
+                  Gerar Recibo
+                </Button>
+                <RouterLink
+                  v-if="os.status !== 'cancelada'"
+                  :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }"
                 >
-                  <div>
-                    <div class="flex items-center gap-2 mb-1">
-                      <strong class="text-lg">{{ os.customerName }}</strong>
-                      <span class="text-xs text-muted-foreground">
-                        {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
-                      </span>
-                      <span 
-                        v-if="os.status === 'cancelada'"
-                        class="inline-flex items-center text-xs font-semibold px-2 py-1 rounded-full bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200"
-                      >
-                        Cancelada
-                      </span>
-                    </div>
-                    <p class="text-sm text-muted-foreground mt-1">
-                      {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
-                    </p>
-                    <p class="text-sm font-semibold mt-1">Total: R$ {{ (os.totalAmount || 0).toFixed(2) }}</p>
-                  </div>
-                  <div class="flex items-center gap-2 flex-shrink-0">
-                    <Button 
-                      v-if="os.status !== 'cancelada'"
-                      variant="outline" 
-                      size="sm" 
-                      @click="generateReceipt(os)"
-                    >
-                      Gerar Recibo
-                    </Button>
-                    <RouterLink 
-                      v-if="os.status !== 'cancelada'"
-                      :to="{ name: 'OrdemServicoEditar', params: { id: os.id } }"
-                    >
-                      <Button variant="ghost" size="icon">
-                        <Pencil class="h-4 w-4" />
-                      </Button>
-                    </RouterLink>
-                    <Button 
-                      v-if="os.status !== 'cancelada'"
-                      variant="destructive" 
-                      size="icon"
-                      :disabled="cancelingOsId === os.id"
-                      @click="cancelarOrdem(os)"
-                      title="Cancelar ordem de serviço"
-                    >
-                      <XCircle class="h-4 w-4" />
-                    </Button>
-                  </div>
-                </li>
-              </ul>
-              <p v-else class="text-muted-foreground text-center py-8">
-                Nenhuma ordem de serviço encontrada.
-              </p>
-            </CardContent>
-          </Card>
-      </div>
+                  <Button variant="ghost" size="icon">
+                    <Pencil class="h-4 w-4" />
+                  </Button>
+                </RouterLink>
+                <Button
+                  v-if="os.status !== 'cancelada'"
+                  variant="destructive"
+                  size="icon"
+                  :disabled="cancelingOsId === os.id"
+                  @click="cancelarOrdem(os)"
+                  title="Cancelar ordem de serviço"
+                >
+                  <XCircle class="h-4 w-4" />
+                </Button>
+              </div>
+            </li>
+          </ul>
+          <p v-else class="text-muted-foreground text-center py-8">
+            Nenhuma ordem de serviço encontrada.
+          </p>
+        </CardContent>
+      </Card>
     </div>
 
     <!-- Modal for Receipt -->
