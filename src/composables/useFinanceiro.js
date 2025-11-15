@@ -48,9 +48,8 @@ export function useFinanceiro(storeId) {
         const precoVenda = parseFloat(data.precoVenda || data.preco_venda || 0)
         const precoCusto = parseFloat(data.precoCusto || data.custo || 0)
         const quantidade = parseFloat(data.quantidade || data.estoque || 0)
-        const margem = calcularMargemLucro(precoVenda, precoCusto)
 
-        const produto = {
+        return {
           id: doc.id,
           nome: data.nome || 'Sem nome',
           sku: data.sku || data.codigo || data.id,
@@ -58,24 +57,9 @@ export function useFinanceiro(storeId) {
           custo: precoCusto,
           estoque: quantidade,
           ...data,
-          margem_lucro: margem
+          margem_lucro: calcularMargemLucro(precoVenda, precoCusto)
         }
-
-        console.log('🔍 Produto carregado:', {
-          id: produto.id,
-          nome: produto.nome,
-          preco_venda: produto.preco_venda,
-          custo: produto.custo,
-          estoque: produto.estoque,
-          margem_lucro: produto.margem_lucro,
-          raw_data: data
-        })
-
-        return produto
       })
-
-      console.log('📊 Total produtos carregados:', produtos.value.length)
-      console.log('💰 Valor estoque total calculado:', valorEstoqueTotal.value)
     } catch (err) {
       error.value = err.message
     } finally {

@@ -46,33 +46,12 @@ export function useTransacoes(storeId) {
       
       const snapshot = await getDocs(q)
 
-      transacoes.value = snapshot.docs.map(doc => {
-        const data = doc.data()
-        const transacao = {
-          id: doc.id,
-          ...data,
-          data_transacao: data.data_transacao?.toDate?.() || new Date(data.data_transacao),
-          data_pagamento: data.data_pagamento?.toDate?.() || null
-        }
-
-        console.log('🔍 Transação carregada:', {
-          id: transacao.id,
-          tipo: transacao.tipo,
-          valor: transacao.valor,
-          categoria: transacao.categoria,
-          data_transacao: transacao.data_transacao,
-          raw_data: data
-        })
-
-        return transacao
-      })
-
-      console.log('✅ Transações carregadas:', transacoes.value.length)
-      console.log('💵 Totais calculados:', {
-        totalVendas: totalVendas.value,
-        totalDespesas: totalDespesas.value,
-        margemMedia: margemMedia.value
-      })
+      transacoes.value = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        data_transacao: doc.data().data_transacao?.toDate?.() || new Date(doc.data().data_transacao),
+        data_pagamento: doc.data().data_pagamento?.toDate?.() || null
+      }))
     } catch (err) {
       error.value = err.message
       console.error('❌ Erro ao carregar transações:', err)

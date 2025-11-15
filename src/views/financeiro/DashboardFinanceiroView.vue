@@ -80,22 +80,12 @@ const totaisFiltrados = computed(() => {
     if (t.tipo === 'despesa') despesa += t.valor
   })
 
-  const totais = {
+  return {
     receita: parseFloat(receita.toFixed(2)),
     despesa: parseFloat(despesa.toFixed(2)),
     lucro: parseFloat((receita - despesa).toFixed(2)),
     margem: receita > 0 ? ((receita - despesa) / receita * 100).toFixed(2) : 0
   }
-
-  console.log('📈 Totais filtrados calculados:', {
-    periodo: periodo.value,
-    dataInicio: dataInicio.value,
-    dataFim: dataFim.value,
-    transacoesFiltradas: transacoesFiltradas.value.length,
-    totais
-  })
-
-  return totais
 })
 
 // Dados para gráficos
@@ -136,24 +126,13 @@ const cores = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6']
 // Carrega dados ao montar
 onMounted(async () => {
   if (storeId.value) {
-    console.log('📊 Carregando dados financeiros para store:', storeId.value)
     try {
       await loadProdutos()
       await loadTransacoes()
       atualizarDatas()
-
-      // Log valores calculados após carregamento
-      console.log('🏪 Valores calculados após carregamento:', {
-        valorEstoqueTotal: valorEstoqueTotal.value,
-        quantidadeEmTransito: quantidadeEmTransito.value,
-        valorEmTransito: valorEmTransito.value,
-        produtosCount: produtos.value.length
-      })
     } catch (err) {
       console.error('❌ Erro ao carregar dados financeiros:', err)
     }
-  } else {
-    console.warn('⚠️ StoreId não disponível')
   }
 })
 
