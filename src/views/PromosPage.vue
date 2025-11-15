@@ -355,15 +355,13 @@ const sortBy = ref('desconto')
 // Test promotion data with affiliate link
 const testPromo = {
   id: 'aliexpress-test-001',
-  titulo: 'Oferta Especial AliExpress - Componentes de PC',
-  descricao: 'Descontos exclusivos em processadores, placas-mãe, memórias RAM e SSDs. Produtos selecionados com garantia e frete internacional.',
-  desconto: 25,
+  titulo: 'MACHINIST B450 Motherboard AMD Processor Dual-channel DDR4 Memory AM4 Mainboard M.2 NVME (Supports Ryzen 5500 5600 5600G CPU)',
+  descricao: 'Placa-mãe B450 de alta performance com suporte aos processadores AMD Ryzen 5000 series. Dual-channel DDR4, slots M.2 NVMe para SSDs ultrarrápidos, USB 3.1, e todas as features necessárias para builds gaming e workstation.',
+  desconto: 35,
   dataInicio: new Date('2025-11-15'),
-  dataFim: new Date('2025-12-15'),
+  dataFim: new Date('2025-12-30'),
   fotos: [
-    'https://picsum.photos/200/200?random=1',
-    'https://picsum.photos/200/200?random=2',
-    'https://picsum.photos/200/200?random=3'
+    'https://ae-pic-a1.aliexpress-media.com/kf/S38903a9e49484defa52d952d76394200A.jpg_960x960q75.jpg_.avif'
   ],
   linkCompra: 'https://s.click.aliexpress.com/e/_c3aNuuJr',
   categoria: 'Hardware',
