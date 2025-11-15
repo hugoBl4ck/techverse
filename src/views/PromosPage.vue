@@ -91,6 +91,14 @@
                     <div class="text-4xl font-bold text-blue-600 dark:text-blue-400">
                       {{ promo.desconto }}% OFF
                     </div>
+                    <div v-if="promo.preco && promo.precoDesconto" class="mt-2">
+                      <div class="text-sm text-slate-500 dark:text-slate-400 line-through">
+                        {{ promo.preco }}
+                      </div>
+                      <div class="text-xl font-bold text-green-600 dark:text-green-400">
+                        {{ promo.precoDesconto }}
+                      </div>
+                    </div>
                     <Badge variant="default" class="bg-blue-600 text-white mt-2">
                       <Shield class="w-3 h-3 mr-1" />
                       Compra Segura
@@ -352,22 +360,37 @@ const searchQuery = ref('')
 const selectedStatus = ref('')
 const sortBy = ref('desconto')
 
-// Test promotion data with affiliate link
-const testPromo = {
-  id: 'aliexpress-test-001',
-  titulo: 'MACHINIST B450 Motherboard AMD Processor Dual-channel DDR4 Memory AM4 Mainboard M.2 NVME (Supports Ryzen 5500 5600 5600G CPU)',
-  descricao: 'Placa-mãe B450 de alta performance com suporte aos processadores AMD Ryzen 5000 series. Dual-channel DDR4, slots M.2 NVMe para SSDs ultrarrápidos, USB 3.1, e todas as features necessárias para builds gaming e workstation.',
-  desconto: 35,
-  dataInicio: new Date('2025-11-15'),
-  dataFim: new Date('2025-12-30'),
-  fotos: [
-    'https://ae-pic-a1.aliexpress-media.com/kf/S38903a9e49484defa52d952d76394200A.jpg_960x960q75.jpg_.avif'
-  ],
-  linkCompra: 'https://s.click.aliexpress.com/e/_c3aNuuJr',
-  categoria: 'Hardware',
-  tipo: 'afiliado',
-  destaque: true
+// Function to extract basic info from AliExpress link (simplified)
+const extractAliExpressInfo = (affiliateLink, originalLink) => {
+  // This is a simplified extraction - in production you'd use proper scraping
+  // For now, we'll use the data you provided
+
+  return {
+    id: 'aliexpress-b450-motherboard',
+    titulo: 'MACHINIST B450 Motherboard AMD Processor Dual-channel DDR4 Memory AM4 Mainboard M.2 NVME (Supports Ryzen 5500 5600 5600G CPU)',
+    descricao: 'Placa-mãe B450 de alta performance com suporte aos processadores AMD Ryzen 5000 series. Dual-channel DDR4 com suporte até 128GB, slots M.2 NVMe para SSDs ultrarrápidos (PCIe 3.0), USB 3.1 Gen1, HDMI 2.0, DisplayPort 1.4, Gigabit Ethernet, e todas as features necessárias para builds gaming e workstation. Compatível com Ryzen 5 5500, Ryzen 5 5600, Ryzen 5 5600G e outros processadores AMD.',
+    desconto: 35,
+    dataInicio: new Date('2025-11-15'),
+    dataFim: new Date('2025-12-30'),
+    fotos: [
+      'https://ae-pic-a1.aliexpress-media.com/kf/S38903a9e49484defa52d952d76394200A.jpg_960x960q75.jpg_.avif',
+      'https://ae01.alicdn.com/kf/S38903a9e49484defa52d952d76394200A.jpg_350x350.jpg'
+    ],
+    linkCompra: affiliateLink,
+    linkOriginal: originalLink,
+    categoria: 'Hardware',
+    tipo: 'afiliado',
+    destaque: true,
+    preco: 'R$ 551,88',
+    precoDesconto: 'R$ 220,98'
+  }
 }
+
+// Test promotion data with affiliate link
+const testPromo = extractAliExpressInfo(
+  'https://s.click.aliexpress.com/e/_c2wEqpQ1',
+  'https://pt.aliexpress.com/item/1005006997378224.html?spm=a2g0o.detail.pcDetailTopMoreOtherSeller.1.1900em4Tem4TFM&gps-id=pcDetailTopMoreOtherSeller&scm=1007.40196.439370.0&scm_id=1007.40196.439370.0&scm-url=1007.40196.439370.0&pvid=44a7659a-d220-4cb8-8a90-32078f2e5933&_t=gps-id:pcDetailTopMoreOtherSeller,scm-url:1007.40196.439370.0,pvid:44a7659a-d220-4cb8-8a90-32078f2e5933,tpp_buckets:668%232846%238107%231934&pdp_ext_f=%7B%22order%22%3A%226984%22%2C%22eval%22%3A%221%22%2C%22orig_sl_item_id%22%3A%221005006997378224%22%2C%22orig_item_id%22%3A%221005006802925639%22%2C%22sceneId%22%3A%2230050%22%2C%22fromPage%22%3A%22recommend%22%7D&pdp_npi=6%40dis%21BRL%21551.88%21220.98%21%21%21683.02%21273.49%21%402101d97817631854014998963ed847%2112000038991645066%21rec%21BR%212555967370%21XZ%211%210%21n_tag%3A-29919%3Bd%3A8425fd2f%3Bm03_new_user%3A-29895%3BpisId%3A5000000193373821&utparam-url=scene%3ApcDetailTopMoreOtherSeller%7Cquery_from%3A%7Cx_object_id%3A1005006997378224%7C_p_origin_prod%3A1005006802925639'
+)
 
 // Computed
 const filteredPromos = computed(() => {
