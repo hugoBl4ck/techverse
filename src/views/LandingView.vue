@@ -506,8 +506,8 @@ const resetQuiz = () => {
               </p>
 
               <!-- Quiz Interativo -->
-              <div class="mb-8">
-                <Card class="p-6 bg-background/50 border border-border/50">
+              <div class="mb-8 fade-in">
+                <Card class="p-6 bg-background/50 border border-border/50 card-premium">
                   <h4 class="font-display text-xl font-bold text-foreground mb-4 text-center">Descubra se seu PC precisa de otimização</h4>
                   <div v-if="quizStep < 3" class="text-center">
                     <div v-if="quizStep === 0">
@@ -543,7 +543,7 @@ const resetQuiz = () => {
                 </Card>
               </div>
 
-              <div class="text-center mb-6">
+              <div class="text-center mb-6 fade-in" style="animation-delay: 0.1s">
                 <p class="text-2xl font-bold text-accent">{{ clientesOtimizados }} clientes já otimizados</p>
               </div>
 
@@ -571,7 +571,7 @@ const resetQuiz = () => {
                 </div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 0.2s">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-primary" />
@@ -580,7 +580,7 @@ const resetQuiz = () => {
                   <h4 class="font-semibold text-foreground mb-3">João Silva</h4>
                   <p class="text-sm text-muted-foreground">"Eu tinha percebido que o meu pc estava travando sem explicação, quando fui ver a minha frequencia estava limitada, minha placa de vídeo estava só usando 256mb por vez em vez de 8gb, isso fez total diferença em minha gameplay"</p>
                 </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 0.4s">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-accent" />
@@ -589,7 +589,7 @@ const resetQuiz = () => {
                   <h4 class="font-semibold text-foreground mb-3">Maria Santos</h4>
                   <p class="text-sm text-muted-foreground">"Comprei um par de memória 3600mhz e estava somente usando 2400mhz, pensei se que só era comprar e instalar, agora sim estou usando os 3600mhz"</p>
                 </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 0.6s">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-secondary" />
@@ -598,7 +598,7 @@ const resetQuiz = () => {
                   <h4 class="font-semibold text-foreground mb-3">Pedro Oliveira</h4>
                   <p class="text-sm text-muted-foreground">"Comprei um notebook gamer e ele veio com linux, com a otimização consegui instalar o windows 11, e agora estou jogando todos os jogos, inclusive o BF6 com o secureboot"</p>
                 </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 0.8s">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-primary" />
@@ -607,7 +607,7 @@ const resetQuiz = () => {
                   <h4 class="font-semibold text-foreground mb-3">Ana Costa</h4>
                   <p class="text-sm text-muted-foreground">"Agora consigo jogar os jogos que exigem secure boot com essa otimização, recomendo."</p>
                 </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 1s">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-accent" />
@@ -619,7 +619,7 @@ const resetQuiz = () => {
               </div>
 
               <!-- Processo Humano-Centrado -->
-              <div class="mb-12">
+              <div class="mb-12 fade-in" style="animation-delay: 0.3s">
                 <h4 class="font-display text-2xl font-bold text-foreground mb-8 text-center">Como Funciona: Especialistas Humanos + IA</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div class="text-center animate-fade-in" style="animation-delay: 0.8s">
@@ -655,33 +655,34 @@ const resetQuiz = () => {
 
               <!-- Galeria de Imagens com Overlay de Gradiente -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.2s">
                   <img src="/Captura-de-tela-comparativo-pbo.png" alt="Comparativo PBO Ativo" class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
-                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.4s">
                   <img src="/Captura-de-tela-comparativo-pbo1.png" alt="Comparativo PBO Ativo 1" class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
-                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.6s">
                   <img src="/Captura-de-tela-comparativo-pbo2.png" alt="Comparativo PBO Ativo 2" class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
               </div>
 
               <div
-                class="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                class="flex flex-col sm:flex-row gap-4 justify-center items-center fade-in"
+                style="animation-delay: 1.8s"
               >
                 <Button
                   @click="navigateToOtimizacao"
-                  class="font-body bg-gradient-to-r from-accent to-primary hover:shadow-xl hover:shadow-accent/40 text-white border-0 h-12 px-8 rounded-full transition-all"
+                  class="font-body bg-gradient-to-r from-accent to-primary hover:shadow-xl hover:shadow-accent/40 text-white border-0 h-12 px-8 rounded-full transition-all btn-glow"
                 >
                   Solicitar Análise Agora
                   <ArrowRight class="w-4 h-4 ml-2" />
                 </Button>
                 <Button
                   variant="outline"
-                  class="font-body border-2 border-accent/40 hover:bg-accent/5 h-12 px-8 rounded-full transition-all"
+                  class="font-body border-2 border-accent/40 hover:bg-accent/5 h-12 px-8 rounded-full transition-all card-premium"
                 >
                   Saiba Como Funciona
                 </Button>
@@ -695,16 +696,16 @@ const resetQuiz = () => {
               </div>
 
               <!-- Notas para Casos Extremos -->
-              <div class="mt-8 pt-8 border-t border-border/20">
+              <div class="mt-8 pt-8 border-t border-border/20 fade-in" style="animation-delay: 2s">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
-                  <div class="flex items-start gap-3">
+                  <div class="flex items-start gap-3 card-premium p-4 rounded-lg">
                     <Shield class="w-5 h-5 text-primary mt-0.5" />
                     <div>
                       <p class="font-semibold text-foreground mb-1">Compatibilidade</p>
                       <p>Suportamos desktops, notebooks gamers, workstations e setups customizados. Para notebooks com BIOS limitado, oferecemos alternativas seguras.</p>
                     </div>
                   </div>
-                  <div class="flex items-start gap-3">
+                  <div class="flex items-start gap-3 card-premium p-4 rounded-lg">
                     <User class="w-5 h-5 text-accent mt-0.5" />
                     <div>
                       <p class="font-semibold text-foreground mb-1">Acessibilidade</p>
