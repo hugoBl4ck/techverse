@@ -12,13 +12,35 @@ import {
   LogIn,
   Cpu,
   User,
+  HelpCircle,
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { ref, computed } from "vue";
 import TechVerseLogo from "@/components/TechVerseLogo.vue";
 
+// Componente simples de tooltip
+const Tooltip = {
+  props: ['text'],
+  template: `
+    <div class="relative inline-block group">
+      <HelpCircle class="w-4 h-4 text-muted-foreground hover:text-primary cursor-help inline ml-1" />
+      <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-background border border-border rounded-lg shadow-lg text-sm text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 z-50 max-w-xs">
+        {{ text }}
+      </div>
+    </div>
+  `,
+  components: { HelpCircle }
+};
+
 const router = useRouter();
 const hoveredFeature = ref(null);
+
+// Quiz state
+const quizStep = ref(0);
+const quizAnswers = ref([]);
+
+// Registrar componente
+const components = { Tooltip };
 
 const clientesOtimizados = computed(() => {
   const hoje = new Date();
@@ -38,6 +60,18 @@ const navigateToLogin = () => {
 
 const navigateToOtimizacao = () => {
   router.push("/otimizacao");
+};
+
+const answerQuiz = (answer) => {
+  quizAnswers.value.push(answer);
+  if (quizStep.value < 2) {
+    quizStep.value++;
+  }
+};
+
+const resetQuiz = () => {
+  quizStep.value = 0;
+  quizAnswers.value = [];
 };
 </script>
 
@@ -415,7 +449,7 @@ const navigateToOtimizacao = () => {
       </section>
 
       <!-- Otimização Section -->
-      <section class="py-24 px-4 sm:px-6 lg:px-8 relative">
+      <section class="py-32 px-4 sm:px-6 lg:px-8 relative">
         <div class="max-w-4xl mx-auto">
           <Card
             class="relative overflow-hidden p-12 md:p-16 bg-gradient-to-br from-background/80 via-background/70 to-background/80 border-2 border-accent/50 backdrop-blur-xl shadow-2xl shadow-accent/20"
@@ -460,41 +494,83 @@ const navigateToOtimizacao = () => {
               <p
                 class="text-lg text-muted-foreground text-center font-body mb-8 leading-relaxed max-w-3xl mx-auto"
               >
-                Você sabe que seu equipamento pode entregar muito mais? Está sofrendo com travamentos e lentidão? Suspeita que não está aproveitando todo o poder de processamento que pagou?
+                Imagine isso: você está no meio de uma partida intensa, o coração acelerado, e de repente... travamento. A tela congela, o mouse para de responder, e aquela frustração toma conta. Ou pior: trabalhando em um projeto urgente, o software demora uma eternidade para processar, e você sente que seu equipamento está te sabotando.
                 <br><br>
-                Frequências incorretas, Resize BAR desativado, XMP não configurado... esses são problemas comuns que fazem seu PC rodar abaixo do potencial.
+                João, um gamer apaixonado, vivia isso todos os dias. "Eu tinha percebido que o meu pc estava travando sem explicação", ele conta. "Quando fui ver, a frequência estava limitada, minha placa de vídeo usava apenas 256MB em vez de 8GB. Isso fez total diferença na minha gameplay."
                 <br><br>
-                Nossa análise profissional identifica e corrige todas essas configurações para você extrair o máximo do seu hardware.
+                Maria, profissional que investiu em memórias de 3600MHz, descobriu que rodava a apenas 2400MHz. "Pensei que era só comprar e instalar", diz ela. "Agora sim estou usando os 3600MHz."
+                <br><br>
+                Esses são problemas comuns: frequências incorretas, Resize BAR<Tooltip text="Tecnologia que permite acesso direto à memória da GPU, melhorando performance em jogos." /> desativado, XMP<Tooltip text="Extreme Memory Profile: perfil que permite memórias RAM rodarem na velocidade máxima suportada." /> não configurado. Eles fazem seu PC rodar abaixo do potencial, desperdiçando o investimento que você fez.
+                <br><br>
+                Nossa análise combina expertise humana e inteligência artificial para identificar e corrigir cada configuração, extraindo o máximo do seu hardware e devolvendo aquela sensação de poder e controle.
               </p>
+
+              <!-- Quiz Interativo -->
+              <div class="mb-8">
+                <Card class="p-6 bg-background/50 border border-border/50">
+                  <h4 class="font-display text-xl font-bold text-foreground mb-4 text-center">Descubra se seu PC precisa de otimização</h4>
+                  <div v-if="quizStep < 3" class="text-center">
+                    <div v-if="quizStep === 0">
+                      <p class="text-muted-foreground mb-4">Como você usa seu computador?</p>
+                      <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                        <Button @click="answerQuiz('gaming')" variant="outline" class="flex-1">Jogos e entretenimento</Button>
+                        <Button @click="answerQuiz('work')" variant="outline" class="flex-1">Trabalho profissional</Button>
+                        <Button @click="answerQuiz('general')" variant="outline" class="flex-1">Uso geral</Button>
+                      </div>
+                    </div>
+                    <div v-if="quizStep === 1">
+                      <p class="text-muted-foreground mb-4">Você enfrenta travamentos ou lentidão?</p>
+                      <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                        <Button @click="answerQuiz('frequent')" variant="outline" class="flex-1">Frequentemente</Button>
+                        <Button @click="answerQuiz('sometimes')" variant="outline" class="flex-1">Às vezes</Button>
+                        <Button @click="answerQuiz('rarely')" variant="outline" class="flex-1">Raramente</Button>
+                      </div>
+                    </div>
+                    <div v-if="quizStep === 2">
+                      <p class="text-muted-foreground mb-4">Você já configurou BIOS ou overclock?</p>
+                      <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                        <Button @click="answerQuiz('yes')" variant="outline" class="flex-1">Sim, já tentei</Button>
+                        <Button @click="answerQuiz('no')" variant="outline" class="flex-1">Não, nunca</Button>
+                        <Button @click="answerQuiz('unsure')" variant="outline" class="flex-1">Não tenho certeza</Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-center">
+                    <p class="text-muted-foreground mb-4">Baseado nas suas respostas, recomendamos:</p>
+                    <p class="font-semibold text-accent mb-4">{{ quizAnswers.includes('frequent') || quizAnswers.includes('sometimes') ? 'Uma análise completa de otimização!' : 'Uma verificação preventiva para garantir performance máxima.' }}</p>
+                    <Button @click="resetQuiz" variant="outline" size="sm">Refazer Quiz</Button>
+                  </div>
+                </Card>
+              </div>
 
               <div class="text-center mb-6">
                 <p class="text-2xl font-bold text-accent">{{ clientesOtimizados }} clientes já otimizados</p>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="text-center">
-                  <div class="w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-3">
-                    <Zap class="w-6 h-6 text-accent" />
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="text-center animate-fade-in" style="animation-delay: 0.2s">
+                  <div class="w-16 h-16 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-4">
+                    <Zap class="w-8 h-8 text-accent" />
                   </div>
-                  <h4 class="font-semibold text-foreground mb-2">Para Gamers</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Para Gamers</h4>
                   <p class="text-sm text-muted-foreground">Que sabem que seu setup pode rodar jogos em máxima performance</p>
                 </div>
-                <div class="text-center">
-                  <div class="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-3">
-                    <TrendingUp class="w-6 h-6 text-primary" />
+                <div class="text-center animate-fade-in" style="animation-delay: 0.4s">
+                  <div class="w-16 h-16 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                    <TrendingUp class="w-8 h-8 text-primary" />
                   </div>
-                  <h4 class="font-semibold text-foreground mb-2">Para Profissionais</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Para Profissionais</h4>
                   <p class="text-sm text-muted-foreground">Que precisam de resposta instantânea em softwares pesados</p>
                 </div>
-                <div class="text-center">
-                  <div class="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center mx-auto mb-3">
-                    <Shield class="w-6 h-6 text-secondary" />
+                <div class="text-center animate-fade-in" style="animation-delay: 0.6s">
+                  <div class="w-16 h-16 rounded-lg bg-secondary/20 flex items-center justify-center mx-auto mb-4">
+                    <Shield class="w-8 h-8 text-secondary" />
                   </div>
-                  <h4 class="font-semibold text-foreground mb-2">Para Todos</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Para Todos</h4>
                   <p class="text-sm text-muted-foreground">Que querem verificar se estão usando o hardware que pagaram</p>
                 </div>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 <Card class="p-6 bg-background/50 border border-border/50 text-center">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
@@ -538,8 +614,43 @@ const navigateToOtimizacao = () => {
                     </div>
                   </div>
                   <h4 class="font-semibold text-foreground mb-3">Carlos Pereira</h4>
-                  <p class="text-sm text-muted-foreground">"Solicitei a limpeza do meu pc pois estava com super aquecimento, quando fui ver, as configurações do PBO estavam todas erradas."</p>
+                  <p class="text-sm text-muted-foreground">"Solicitei a limpeza do meu pc pois estava com super aquecimento, quando fui ver, as configurações do PBO<Tooltip text="Precision Boost Overdrive: tecnologia AMD para overclock automático da CPU." /> estavam todas erradas."</p>
                 </Card>
+              </div>
+
+              <!-- Processo Humano-Centrado -->
+              <div class="mb-12">
+                <h4 class="font-display text-2xl font-bold text-foreground mb-8 text-center">Como Funciona: Especialistas Humanos + IA</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div class="text-center animate-fade-in" style="animation-delay: 0.8s">
+                    <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                      <User class="w-7 h-7 text-primary" />
+                    </div>
+                    <h5 class="font-semibold text-foreground mb-2">1. Análise Inicial</h5>
+                    <p class="text-sm text-muted-foreground">Especialista humano avalia seu setup e necessidades específicas</p>
+                  </div>
+                  <div class="text-center animate-fade-in" style="animation-delay: 1s">
+                    <div class="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
+                      <Wand2 class="w-7 h-7 text-accent" />
+                    </div>
+                    <h5 class="font-semibold text-foreground mb-2">2. Diagnóstico com IA</h5>
+                    <p class="text-sm text-muted-foreground">Inteligência artificial identifica configurações subótimas automaticamente</p>
+                  </div>
+                  <div class="text-center animate-fade-in" style="animation-delay: 1.2s">
+                    <div class="w-14 h-14 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4">
+                      <Cpu class="w-7 h-7 text-secondary" />
+                    </div>
+                    <h5 class="font-semibold text-foreground mb-2">3. Configuração Especializada</h5>
+                    <p class="text-sm text-muted-foreground">Técnico experiente aplica otimizações seguras e testadas</p>
+                  </div>
+                  <div class="text-center animate-fade-in" style="animation-delay: 1.4s">
+                    <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                      <TrendingUp class="w-7 h-7 text-primary" />
+                    </div>
+                    <h5 class="font-semibold text-foreground mb-2">4. Teste e Validação</h5>
+                    <p class="text-sm text-muted-foreground">Verificação completa para garantir performance máxima e estabilidade</p>
+                  </div>
+                </div>
               </div>
 
               <!-- Galeria de Imagens com Overlay de Gradiente -->
@@ -574,6 +685,33 @@ const navigateToOtimizacao = () => {
                 >
                   Saiba Como Funciona
                 </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  class="font-body text-muted-foreground hover:text-primary h-8 px-4 rounded-full transition-all"
+                >
+                  💬 Dar Feedback
+                </Button>
+              </div>
+
+              <!-- Notas para Casos Extremos -->
+              <div class="mt-8 pt-8 border-t border-border/20">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
+                  <div class="flex items-start gap-3">
+                    <Shield class="w-5 h-5 text-primary mt-0.5" />
+                    <div>
+                      <p class="font-semibold text-foreground mb-1">Compatibilidade</p>
+                      <p>Suportamos desktops, notebooks gamers, workstations e setups customizados. Para notebooks com BIOS limitado, oferecemos alternativas seguras.</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <User class="w-5 h-5 text-accent mt-0.5" />
+                    <div>
+                      <p class="font-semibold text-foreground mb-1">Acessibilidade</p>
+                      <p>Processo adaptado para usuários com necessidades especiais. Suporte remoto completo e orientações passo-a-passo.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>
@@ -809,5 +947,21 @@ const navigateToOtimizacao = () => {
 
 .animate-blob {
   animation: blob 7s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
+  opacity: 0;
 }
 </style>
