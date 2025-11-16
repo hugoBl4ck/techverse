@@ -235,7 +235,7 @@ const resetQuiz = () => {
       <!-- Hero Section com Efeito Moderno -->
       <section
         class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 relative overflow-hidden"
-        style="background-image: url('/topography-gradient.svg'); background-size: 300px 300px; background-repeat: repeat; background-position: 0 0;"
+        style="background-image: url('/topography.svg'); background-size: 300px 300px; background-repeat: repeat; background-position: 0 0;"
       >
         <!-- Animated circles behind hero -->
         <div class="absolute inset-0 overflow-hidden">
