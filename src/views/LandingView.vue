@@ -10,6 +10,7 @@ import {
   Shield,
   TrendingUp,
   LogIn,
+  Cpu,
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
@@ -24,6 +25,10 @@ const navigateToApp = () => {
 
 const navigateToLogin = () => {
   router.push("/login");
+};
+
+const navigateToOtimizacao = () => {
+  router.push("/otimizacao");
 };
 </script>
 
@@ -400,6 +405,105 @@ const navigateToLogin = () => {
         </div>
       </section>
 
+      <!-- Otimização Section -->
+      <section class="py-24 px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-4xl mx-auto">
+          <Card
+            class="relative overflow-hidden p-12 md:p-16 bg-gradient-to-br from-background/80 via-background/70 to-background/80 border-2 border-accent/50 backdrop-blur-xl shadow-2xl shadow-accent/20"
+          >
+            <!-- Animated elements inside card -->
+            <div
+              class="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-accent/20 to-primary/10 rounded-full blur-3xl -z-10 opacity-30"
+            ></div>
+            <div
+              class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-primary/15 to-secondary/5 rounded-full blur-3xl -z-10 opacity-20"
+            ></div>
+
+            <div class="relative z-10">
+              <div class="text-center mb-8">
+                <span
+                  class="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-accent/20 to-primary/20 border border-accent/30 mb-4"
+                >
+                  <span class="text-accent font-semibold font-body text-sm"
+                    >⚡ Serviço Premium de Otimização</span
+                  >
+                </span>
+              </div>
+
+              <div class="flex justify-center mb-6">
+                <div
+                  class="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center"
+                >
+                  <Cpu class="w-10 h-10 text-accent" />
+                </div>
+              </div>
+
+              <h3
+                class="font-display text-4xl md:text-5xl font-bold text-foreground mb-6 text-center"
+              >
+                Seu PC está
+                <span
+                  class="bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary"
+                  >100% Otimizado</span
+                >?
+              </h3>
+
+              <p
+                class="text-lg text-muted-foreground text-center font-body mb-8 leading-relaxed max-w-3xl mx-auto"
+              >
+                Você sabe que seu equipamento pode entregar muito mais? Está sofrendo com travamentos e lentidão? Suspeita que não está aproveitando todo o poder de processamento que pagou?
+                <br><br>
+                Frequências incorretas, Resize BAR desativado, XMP não configurado... esses são problemas comuns que fazem seu PC rodar abaixo do potencial.
+                <br><br>
+                Nossa análise profissional identifica e corrige todas essas configurações para você extrair o máximo do seu hardware.
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="text-center">
+                  <div class="w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-3">
+                    <Zap class="w-6 h-6 text-accent" />
+                  </div>
+                  <h4 class="font-semibold text-foreground mb-2">Para Gamers</h4>
+                  <p class="text-sm text-muted-foreground">Que sabem que seu setup pode rodar jogos em máxima performance</p>
+                </div>
+                <div class="text-center">
+                  <div class="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-3">
+                    <TrendingUp class="w-6 h-6 text-primary" />
+                  </div>
+                  <h4 class="font-semibold text-foreground mb-2">Para Profissionais</h4>
+                  <p class="text-sm text-muted-foreground">Que precisam de resposta instantânea em softwares pesados</p>
+                </div>
+                <div class="text-center">
+                  <div class="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center mx-auto mb-3">
+                    <Shield class="w-6 h-6 text-secondary" />
+                  </div>
+                  <h4 class="font-semibold text-foreground mb-2">Para Todos</h4>
+                  <p class="text-sm text-muted-foreground">Que querem verificar se estão usando o hardware que pagaram</p>
+                </div>
+              </div>
+
+              <div
+                class="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              >
+                <Button
+                  @click="navigateToOtimizacao"
+                  class="font-body bg-gradient-to-r from-accent to-primary hover:shadow-xl hover:shadow-accent/40 text-white border-0 h-12 px-8 rounded-full transition-all"
+                >
+                  Solicitar Análise Agora
+                  <ArrowRight class="w-4 h-4 ml-2" />
+                </Button>
+                <Button
+                  variant="outline"
+                  class="font-body border-2 border-accent/40 hover:bg-accent/5 h-12 px-8 rounded-full transition-all"
+                >
+                  Saiba Como Funciona
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </section>
+
       <!-- Monetização Section com Design Premium -->
       <section class="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <!-- Background with gradient -->
@@ -531,6 +635,13 @@ const navigateToLogin = () => {
           <div>
             <p class="font-semibold text-foreground mb-3 text-sm">Produto</p>
             <ul class="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <a
+                  href="/otimizacao"
+                  class="hover:text-primary transition-colors"
+                  >Otimização</a
+                >
+              </li>
               <li>
                 <a
                   href="/atualizacoes"
