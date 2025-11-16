@@ -16,7 +16,6 @@ import {
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { ref, computed } from "vue";
-import TechVerseLogo from "@/components/TechVerseLogo.vue";
 
 // Componente simples de tooltip
 const Tooltip = {
@@ -204,7 +203,7 @@ const resetQuiz = () => {
           class="flex items-center gap-2 cursor-pointer"
           @click="router.push('/landing')"
         >
-          <TechVerseLogo />
+          <img src="/techlogo.svg" alt="TechVerse Logo" class="w-8 h-8" />
           <span
             class="font-display text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary"
           >
@@ -253,6 +252,10 @@ const resetQuiz = () => {
         </div>
 
         <div class="max-w-4xl mx-auto text-center relative z-10">
+          <div class="mb-8 flex justify-center">
+            <img src="/tech.svg" alt="TechVerse" class="w-32 h-32 md:w-40 md:h-40 object-contain" />
+          </div>
+
           <div
             class="inline-block mb-8 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 backdrop-blur"
           >
@@ -936,7 +939,7 @@ const resetQuiz = () => {
         >
           <div>
             <div class="flex items-center gap-2 mb-4">
-              <TechVerseLogo />
+              <img src="/techlogo.svg" alt="TechVerse Logo" class="w-6 h-6" />
               <span class="font-display text-lg font-bold text-foreground"
                 >TechVerse</span
               >
