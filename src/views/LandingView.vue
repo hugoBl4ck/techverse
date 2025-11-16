@@ -627,10 +627,9 @@ const resetQuiz = () => {
                   <h4 class="font-semibold text-foreground mb-3">João S., São Paulo-SP</h4>
                   <p class="text-sm text-muted-foreground">"Eu tinha percebido que o meu pc estava travando sem explicação, quando fui ver a minha frequencia estava limitada, minha placa de vídeo estava só usando 256mb por vez em vez de 8gb, isso fez total diferença em minha gameplay"</p>
                 </Card>
-                <Card class="relative overflow-hidden p-6 text-center border border-border/50">
-                  <img src="/girlgamer1.jpg" alt="Gamer satisfeita com a otimização de memória RAM." class="absolute top-0 left-0 w-full h-full object-cover z-0" />
-                  <div class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-60 z-10"></div>
-                  <div class="relative z-20">
+                <div class="relative overflow-hidden rounded-lg border border-border/50 p-6 text-center h-64" style="background-image: url('/girlgamer1.jpg'); background-size: cover; background-position: center;">
+                  <div class="absolute inset-0 bg-black/60"></div>
+                  <div class="relative z-10 flex flex-col justify-center items-center h-full">
                     <div class="flex justify-center mb-4">
                       <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
                         <User class="w-6 h-6 text-accent" />
@@ -639,7 +638,7 @@ const resetQuiz = () => {
                     <h4 class="font-semibold text-white mb-3">Maria S., Curitiba-PR</h4>
                     <p class="text-sm text-gray-200">"Comprei um par de memória 3600mhz e estava somente usando 2400mhz, pensei se que só era comprar e instalar, agora sim estou usando os 3600mhz"</p>
                   </div>
-                </Card>
+                </div>
                 <Card class="p-6 bg-background/50 border border-border/50 text-center">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
