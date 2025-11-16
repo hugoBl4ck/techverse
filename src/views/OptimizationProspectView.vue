@@ -90,7 +90,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Abra o HWiNFO64 como administrador. Na tela inicial, clique em "Run" para iniciar o monitoramento.
                 </p>
-                <img :src="hwinfoStart" alt="Tela inicial do HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img src="/images/hwinfo-tela-inicial.png" alt="Tela inicial do HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
@@ -98,7 +98,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Na seção "CPU" ou "Processor", localize "Core Clock" ou "CPU Clock". Tire print desta área mostrando a frequência atual.
                 </p>
-                <img :src="hwinfoCpu" alt="Frequência do processador no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img src="/images/hwinfo-cpu-frequencia.png" alt="Frequência do processador no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
@@ -106,7 +106,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Procure por "Resizable BAR" ou "ReBAR" na seção de GPU/Placa de Vídeo. Deve mostrar "Enabled" ou "Supported".
                 </p>
-                <img :src="hwinfoResizeBar" alt="Status do Resize BAR no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img src="/images/hwinfo-resize-bar.png" alt="Status do Resize BAR no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
@@ -114,7 +114,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Na seção "Memory" ou "RAM", veja "DRAM Frequency" e se o XMP está ativo (XMP Profile).
                 </p>
-                <img :src="hwinfoMemoryXmp" alt="Frequência da memória e XMP no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img src="/images/hwinfo-memoria-xmp.png" alt="Frequência da memória e XMP no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
