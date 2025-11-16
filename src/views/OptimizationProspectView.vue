@@ -17,47 +17,33 @@ import hwinfoMemoryXmp from '@/assets/images/hwinfo-memoria-xmp.png'
 // Gallery videos
 const galleryVideos = [
   {
-    src: '/videos/PinDown.io_@AJ_builds_1763266593.mp4',
     title: 'PC Gamer RGB Montado',
-    poster: '' // Adicione poster se quiser
+    src: '/videos/otimizacaovideo1.webm'
   },
   {
-    src: '/videos/PinDown.io_@AJ_builds_1763266741.mp4',
     title: 'Workstation Profissional',
-    poster: ''
+    src: '/videos/otimizacaovideo2.webm'
   },
   {
-    src: '/videos/PinDown.io_@AJ_builds_1763266804.mp4',
     title: 'PC Compacto High-End',
-    poster: ''
+    src: '/videos/otimizacaovideo3.webm'
   }
 ]
 
 // Video controls
 const videoRefs = ref([])
-const playingVideo = ref(null)
 
-const playVideo = (index) => {
-  const video = videoRefs.value[index]
-  if (video) {
-    // Pause other videos
-    videoRefs.value.forEach((v, i) => {
-      if (i !== index && v) v.pause()
-    })
-
-    if (video.paused) {
-      video.play()
-      playingVideo.value = index
-    } else {
+const onVideoPlay = (index) => {
+  // Pause other videos when one starts playing
+  videoRefs.value.forEach((video, i) => {
+    if (i !== index && video) {
       video.pause()
-      playingVideo.value = null
     }
-  }
+  })
 }
 
-const onVideoLoad = (index) => {
-  // Video loaded successfully
-  console.log(`Video ${index} loaded`)
+const onVideoPause = (index) => {
+  // Video paused
 }
 
 const router = useRouter()
@@ -232,31 +218,23 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
               <div
                 v-for="(video, index) in galleryVideos"
                 :key="index"
-                class="aspect-video bg-muted rounded-lg overflow-hidden group cursor-pointer"
-                @click="playVideo(index)"
+                class="aspect-video bg-muted rounded-lg overflow-hidden"
               >
                 <video
                   :ref="el => videoRefs[index] = el"
                   :src="video.src"
-                  :poster="video.poster || undefined"
                   :title="video.title"
-                  class="w-full h-full object-cover"
+                  class="w-full h-full object-cover rounded-lg"
                   preload="metadata"
-                  muted
+                  controls
                   playsinline
-                  @loadedmetadata="onVideoLoad(index)"
+                  @play="onVideoPlay(index)"
+                  @pause="onVideoPause(index)"
                 >
                   <p class="text-center text-muted-foreground p-4">
                     Vídeo não suportado pelo seu navegador
                   </p>
                 </video>
-                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
-                    <svg class="w-8 h-8 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                </div>
               </div>
             </div>
 
