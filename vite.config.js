@@ -10,6 +10,7 @@ import path from 'path'
 const DOMAIN = 'https://techverseapp.vercel.app'
 const publicRoutes = [
   { path: '/landing', priority: '1.0', changefreq: 'monthly' },
+  { path: '/otimizacao', priority: '0.9', changefreq: 'monthly' },
   { path: '/donate', priority: '0.9', changefreq: 'monthly' },
   { path: '/noticias', priority: '0.9', changefreq: 'weekly' },
   { path: '/promocoes', priority: '0.8', changefreq: 'weekly' },
