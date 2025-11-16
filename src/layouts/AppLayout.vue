@@ -14,12 +14,7 @@
           <Button v-if="isMobile" variant="ghost" size="icon" @click="showMobileSidebar = !showMobileSidebar" class="hover:bg-primary/20">
             <Menu class="size-6" />
           </Button>
-          <div class="flex items-center gap-2">
-            <TechVerseLogo />
-            <div class="font-display text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary">
-              TechVerse
-            </div>
-          </div>
+          <TechVerseLogoSvg size="default" :clickable="true" />
         </div>
         <div class="flex items-center space-x-4">
           <!-- Notification Bell -->
@@ -195,7 +190,7 @@ import { RouterView } from 'vue-router'
 import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
 import SidebarMenu from '@/components/ui/SidebarMenu.vue'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
-import TechVerseLogo from '@/components/TechVerseLogo.vue'
+import TechVerseLogoSvg from '@/components/TechVerseLogoSvg.vue'
 import { getAuth, signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import { GripVertical, Menu, X, Bell, AlertCircle } from 'lucide-vue-next'

@@ -203,7 +203,7 @@ const resetQuiz = () => {
           class="flex items-center gap-2 cursor-pointer"
           @click="router.push('/landing')"
         >
-          <img src="/techlogo.svg" alt="TechVerse Logo" class="w-8 h-8" />
+          <img src="/techLOGO.svg" alt="TechVerse Logo" class="w-8 h-8" />
           <span
             class="font-display text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary"
           >
@@ -939,7 +939,7 @@ const resetQuiz = () => {
         >
           <div>
             <div class="flex items-center gap-2 mb-4">
-              <img src="/techlogo.svg" alt="TechVerse Logo" class="w-6 h-6" />
+              <img src="/techLOGO.svg" alt="TechVerse Logo" class="w-6 h-6" />
               <span class="font-display text-lg font-bold text-foreground"
                 >TechVerse</span
               >
