@@ -618,15 +618,18 @@ const resetQuiz = () => {
                 </div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
-                  <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                      <User class="w-6 h-6 text-primary" />
+                                <div class="relative overflow-hidden rounded-lg border border-border/50 p-6 text-center h-64" style="background-image: url('/depoimentogamer1.jpg'); background-size: cover; background-position: center;">
+                  <div class="absolute inset-0 bg-black/60"></div>
+                  <div class="relative z-10 flex flex-col justify-center items-center h-full">
+                    <div class="flex justify-center mb-4">
+                      <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                        <User class="w-6 h-6 text-primary" />
+                      </div>
                     </div>
+                    <h4 class="font-semibold text-white mb-3">João S., São Paulo-SP</h4>
+                    <p class="text-sm text-gray-200">"Eu tinha percebido que o meu pc estava travando sem explicação, quando fui ver a minha frequencia estava limitada, minha placa de vídeo estava só usando 256mb por vez em vez de 8gb, isso fez total diferença em minha gameplay"</p>
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">João S., São Paulo-SP</h4>
-                  <p class="text-sm text-muted-foreground">"Eu tinha percebido que o meu pc estava travando sem explicação, quando fui ver a minha frequencia estava limitada, minha placa de vídeo estava só usando 256mb por vez em vez de 8gb, isso fez total diferença em minha gameplay"</p>
-                </Card>
+                </div>
                 <div class="relative overflow-hidden rounded-lg border border-border/50 p-6 text-center h-64" style="background-image: url('/girlgamer1.jpg'); background-size: cover; background-position: center;">
                   <div class="absolute inset-0 bg-black/60"></div>
                   <div class="relative z-10 flex flex-col justify-center items-center h-full">
@@ -639,15 +642,18 @@ const resetQuiz = () => {
                     <p class="text-sm text-gray-200">"Comprei um par de memória 3600mhz e estava somente usando 2400mhz, pensei se que só era comprar e instalar, agora sim estou usando os 3600mhz"</p>
                   </div>
                 </div>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
-                  <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
-                      <User class="w-6 h-6 text-secondary" />
+                <div class="relative overflow-hidden rounded-lg border border-border/50 p-6 text-center h-64" style="background-image: url('/depoimentogamer2.jpg'); background-size: cover; background-position: center;">
+                  <div class="absolute inset-0 bg-black/60"></div>
+                  <div class="relative z-10 flex flex-col justify-center items-center h-full">
+                    <div class="flex justify-center mb-4">
+                      <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                        <User class="w-6 h-6 text-secondary" />
+                      </div>
                     </div>
+                    <h4 class="font-semibold text-white mb-3">Pedro O., Rio de Janeiro-RJ</h4>
+                    <p class="text-sm text-gray-200">"Comprei um notebook gamer e ele veio com linux, com a otimização consegui instalar o windows 11, e agora estou jogando todos os jogos, inclusive o BF6 com o secureboot"</p>
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">Pedro O., Rio de Janeiro-RJ</h4>
-                  <p class="text-sm text-muted-foreground">"Comprei um notebook gamer e ele veio com linux, com a otimização consegui instalar o windows 11, e agora estou jogando todos os jogos, inclusive o BF6 com o secureboot"</p>
-                </Card>
+                </div>
                 <Card class="p-6 bg-background/50 border border-border/50 text-center">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
