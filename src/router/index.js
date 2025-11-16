@@ -37,6 +37,12 @@ const routes = [
     meta: { title: "Atualizações TechVerse", requiresAuth: false },
   },
   {
+    path: "/otimizacao",
+    name: "Otimizacao",
+    component: () => import("@/views/OptimizationProspectView.vue"),
+    meta: { title: "Solicitar Análise de Otimização", requiresAuth: false },
+  },
+  {
     path: "/login",
     name: "Login",
     component: () => import("@/views/LoginView.vue"),
