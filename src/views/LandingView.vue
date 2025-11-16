@@ -34,6 +34,7 @@ const Tooltip = {
 
 const router = useRouter();
 const hoveredFeature = ref(null);
+const currentTestimonial = ref(0);
 
 // Quiz state
 const quizStep = ref(0);
@@ -52,20 +53,75 @@ const clientesOtimizados = computed(() => {
 });
 
 const navigateToApp = () => {
-  router.push("/app/clientes");
+  window.location.href = "https://techverseapp.vercel.app/dashboard";
 };
 
 const navigateToLogin = () => {
-  router.push("/login");
+  window.location.href = "https://techverseapp.vercel.app/login";
 };
 
 const navigateToOtimizacao = () => {
-  router.push("/otimizacao");
+  window.location.href = "https://techverseapp.vercel.app/otimizacao";
 };
 
 const navigateToFeature = (feature) => {
-  // Placeholder navigation
-  router.push(`/features/${feature}`);
+  const routes = {
+    'gestao-clientes': 'https://techverseapp.vercel.app/clientes',
+    'importacao-ia': 'https://techverseapp.vercel.app/inventario/importar-ia',
+    'canvas-montagem': 'https://techverseapp.vercel.app/kits/builder'
+  };
+  window.location.href = routes[feature] || "https://techverseapp.vercel.app/dashboard";
+};
+
+// Dados dos depoimentos
+const testimonials = [
+  {
+    id: 1,
+    name: "João S., São Paulo-SP",
+    image: "/depoimentogamer1.jpg",
+    color: "bg-primary",
+    text: "Eu tinha percebido que o meu pc estava travando sem explicação, quando fui ver a minha frequencia estava limitada, minha placa de vídeo estava só usando 256mb por vez em vez de 8gb, isso fez total diferença em minha gameplay"
+  },
+  {
+    id: 2,
+    name: "Maria S., Curitiba-PR",
+    image: "/girlgamer1.jpg",
+    color: "bg-accent",
+    text: "Comprei um par de memória 3600mhz e estava somente usando 2400mhz, pensei se que só era comprar e instalar, agora sim estou usando os 3600mhz"
+  },
+  {
+    id: 3,
+    name: "Pedro O., Rio de Janeiro-RJ",
+    image: "/depoimentogamer2.jpg",
+    color: "bg-secondary",
+    text: "Comprei um notebook gamer e ele veio com linux, com a otimização consegui instalar o windows 11, e agora estou jogando todos os jogos, inclusive o BF6 com o secureboot"
+  },
+  {
+    id: 4,
+    name: "Ana C., Belo Horizonte-MG",
+    image: "/depoimentogamer1.jpg",
+    color: "bg-primary",
+    text: "Agora consigo jogar os jogos que exigem secure boot com essa otimização, recomendo."
+  },
+  {
+    id: 5,
+    name: "Carlos P., Salvador-BA",
+    image: "/depoimentogamer2.jpg",
+    color: "bg-accent",
+    text: "Solicitei a limpeza do meu pc pois estava com super aquecimento, quando fui ver, as configurações do PBO estavam todas erradas."
+  }
+];
+
+const nextTestimonial = () => {
+  currentTestimonial.value = (currentTestimonial.value + 1) % testimonials.length;
+};
+
+const prevTestimonial = () => {
+  currentTestimonial.value = (currentTestimonial.value - 1 + testimonials.length) % testimonials.length;
+};
+
+const goToTestimonial = (index) => {
+  currentTestimonial.value = index;
 };
 
 const answerQuiz = (answer) => {
@@ -617,61 +673,77 @@ const resetQuiz = () => {
                   <p class="text-sm text-muted-foreground">Que querem verificar se estão usando o hardware que pagaram</p>
                 </div>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                                <div class="relative overflow-hidden rounded-lg border border-border/50 p-6 text-center h-64" style="background-image: url('/depoimentogamer1.jpg'); background-size: cover; background-position: center;">
-                  <div class="absolute inset-0 bg-black/60"></div>
-                  <div class="relative z-10 flex flex-col justify-center items-center h-full">
-                    <div class="flex justify-center mb-4">
-                      <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                        <User class="w-6 h-6 text-primary" />
+
+              <!-- Carousel de Depoimentos -->
+              <div class="max-w-4xl mx-auto mb-12">
+                <div class="relative overflow-hidden rounded-2xl border border-border/50 shadow-2xl shadow-primary/10">
+                  <!-- Slide atual -->
+                  <div class="relative h-80 md:h-96 transition-all duration-500">
+                    <div 
+                      :key="currentTestimonial"
+                      class="absolute inset-0 transition-opacity duration-500"
+                    >
+                      <div 
+                        class="relative w-full h-full rounded-2xl overflow-hidden"
+                        :style="{
+                          backgroundImage: `url('${testimonials[currentTestimonial].image}')`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }"
+                      >
+                        <div class="absolute inset-0 bg-black/60"></div>
+                        <div class="relative z-10 flex flex-col justify-center items-center h-full p-8 text-center">
+                          <div class="flex justify-center mb-4">
+                            <div :class="`w-14 h-14 rounded-full ${testimonials[currentTestimonial].color}/20 flex items-center justify-center`">
+                              <User class="w-7 h-7" :class="`text-${testimonials[currentTestimonial].color.replace('bg-', '')}`" />
+                            </div>
+                          </div>
+                          <h4 class="font-semibold text-white mb-4 text-lg">{{ testimonials[currentTestimonial].name }}</h4>
+                          <p class="text-sm md:text-base text-gray-200 max-w-2xl">{{ testimonials[currentTestimonial].text }}</p>
+                        </div>
                       </div>
                     </div>
-                    <h4 class="font-semibold text-white mb-3">João S., São Paulo-SP</h4>
-                    <p class="text-sm text-gray-200">"Eu tinha percebido que o meu pc estava travando sem explicação, quando fui ver a minha frequencia estava limitada, minha placa de vídeo estava só usando 256mb por vez em vez de 8gb, isso fez total diferença em minha gameplay"</p>
+                  </div>
+
+                  <!-- Controles de navegação -->
+                  <button
+                    @click="prevTestimonial"
+                    class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-white p-2 rounded-full transition-all hover:scale-110"
+                    aria-label="Depoimento anterior"
+                  >
+                    <ArrowRight class="w-5 h-5 rotate-180" />
+                  </button>
+
+                  <button
+                    @click="nextTestimonial"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-primary/80 hover:bg-primary text-white p-2 rounded-full transition-all hover:scale-110"
+                    aria-label="Próximo depoimento"
+                  >
+                    <ArrowRight class="w-5 h-5" />
+                  </button>
+
+                  <!-- Indicadores de slide -->
+                  <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                    <button
+                      v-for="(testimonial, index) in testimonials"
+                      :key="index"
+                      @click="goToTestimonial(index)"
+                      :class="[
+                        'w-2 h-2 rounded-full transition-all',
+                        index === currentTestimonial
+                          ? 'bg-white w-8'
+                          : 'bg-white/50 hover:bg-white/70'
+                      ]"
+                      :aria-label="`Ir para depoimento ${index + 1}`"
+                      :aria-current="index === currentTestimonial"
+                    />
                   </div>
                 </div>
-                <div class="relative overflow-hidden rounded-lg border border-border/50 p-6 text-center h-64" style="background-image: url('/girlgamer1.jpg'); background-size: cover; background-position: center;">
-                  <div class="absolute inset-0 bg-black/60"></div>
-                  <div class="relative z-10 flex flex-col justify-center items-center h-full">
-                    <div class="flex justify-center mb-4">
-                      <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
-                        <User class="w-6 h-6 text-accent" />
-                      </div>
-                    </div>
-                    <h4 class="font-semibold text-white mb-3">Maria S., Curitiba-PR</h4>
-                    <p class="text-sm text-gray-200">"Comprei um par de memória 3600mhz e estava somente usando 2400mhz, pensei se que só era comprar e instalar, agora sim estou usando os 3600mhz"</p>
-                  </div>
+
+                <!-- Contador de slides -->
+                <div class="text-center mt-4 text-muted-foreground text-sm">
+                  {{ currentTestimonial + 1 }} / {{ testimonials.length }}
                 </div>
-                <div class="relative overflow-hidden rounded-lg border border-border/50 p-6 text-center h-64" style="background-image: url('/depoimentogamer2.jpg'); background-size: cover; background-position: center;">
-                  <div class="absolute inset-0 bg-black/60"></div>
-                  <div class="relative z-10 flex flex-col justify-center items-center h-full">
-                    <div class="flex justify-center mb-4">
-                      <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
-                        <User class="w-6 h-6 text-secondary" />
-                      </div>
-                    </div>
-                    <h4 class="font-semibold text-white mb-3">Pedro O., Rio de Janeiro-RJ</h4>
-                    <p class="text-sm text-gray-200">"Comprei um notebook gamer e ele veio com linux, com a otimização consegui instalar o windows 11, e agora estou jogando todos os jogos, inclusive o BF6 com o secureboot"</p>
-                  </div>
-                </div>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
-                  <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                      <User class="w-6 h-6 text-primary" />
-                    </div>
-                  </div>
-                  <h4 class="font-semibold text-foreground mb-3">Ana C., Belo Horizonte-MG</h4>
-                  <p class="text-sm text-muted-foreground">"Agora consigo jogar os jogos que exigem secure boot com essa otimização, recomendo."</p>
-                </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center">
-                  <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
-                      <User class="w-6 h-6 text-accent" />
-                    </div>
-                  </div>
-                  <h4 class="font-semibold text-foreground mb-3">Carlos P., Salvador-BA</h4>
-                  <p class="text-sm text-muted-foreground">"Solicitei a limpeza do meu pc pois estava com super aquecimento, quando fui ver, as configurações do PBO estavam todas erradas."</p>
-                </Card>
               </div>
 
               <!-- Galeria de Imagens com Overlay de Gradiente -->
