@@ -14,6 +14,52 @@ import hwinfoCpu from '@/assets/images/hwinfo-cpu-frequencia.png'
 import hwinfoResizeBar from '@/assets/images/hwinfo-resize-bar.png'
 import hwinfoMemoryXmp from '@/assets/images/hwinfo-memoria-xmp.png'
 
+// Gallery videos
+const galleryVideos = [
+  {
+    src: '/videos/PinDown.io_@AJ_builds_1763266593.mp4',
+    title: 'PC Gamer RGB Montado',
+    poster: '' // Adicione poster se quiser
+  },
+  {
+    src: '/videos/PinDown.io_@AJ_builds_1763266741.mp4',
+    title: 'Workstation Profissional',
+    poster: ''
+  },
+  {
+    src: '/videos/PinDown.io_@AJ_builds_1763266804.mp4',
+    title: 'PC Compacto High-End',
+    poster: ''
+  }
+]
+
+// Video controls
+const videoRefs = ref([])
+const playingVideo = ref(null)
+
+const playVideo = (index) => {
+  const video = videoRefs.value[index]
+  if (video) {
+    // Pause other videos
+    videoRefs.value.forEach((v, i) => {
+      if (i !== index && v) v.pause()
+    })
+
+    if (video.paused) {
+      video.play()
+      playingVideo.value = index
+    } else {
+      video.pause()
+      playingVideo.value = null
+    }
+  }
+}
+
+const onVideoLoad = (index) => {
+  // Video loaded successfully
+  console.log(`Video ${index} loaded`)
+}
+
 const router = useRouter()
 
 // Form data
@@ -170,6 +216,58 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 Enviar para WhatsApp
               </Button>
             </form>
+          </CardContent>
+        </Card>
+      </section>
+
+      <!-- Galeria de PCs Montados -->
+      <section class="mb-12">
+        <Card>
+          <CardHeader>
+            <CardTitle class="text-2xl">Galeria de PCs Montados</CardTitle>
+            <p class="text-muted-foreground">Veja exemplos de montagens realizadas e inspire-se para seu próximo PC</p>
+          </CardHeader>
+          <CardContent>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div
+                v-for="(video, index) in galleryVideos"
+                :key="index"
+                class="aspect-video bg-muted rounded-lg overflow-hidden group cursor-pointer"
+                @click="playVideo(index)"
+              >
+                <video
+                  :ref="el => videoRefs[index] = el"
+                  :src="video.src"
+                  :poster="video.poster || undefined"
+                  :title="video.title"
+                  class="w-full h-full object-cover"
+                  preload="metadata"
+                  muted
+                  playsinline
+                  @loadedmetadata="onVideoLoad(index)"
+                >
+                  <p class="text-center text-muted-foreground p-4">
+                    Vídeo não suportado pelo seu navegador
+                  </p>
+                </video>
+                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 text-center">
+              <p class="text-sm text-muted-foreground mb-4">
+                Gostou dos exemplos? Entre em contato para montar o seu PC personalizado!
+              </p>
+              <Button @click="submitToWhatsApp" variant="outline" class="bg-accent/10 hover:bg-accent/20">
+                Solicitar Montagem Personalizada
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </section>
