@@ -38,6 +38,7 @@ const hoveredFeature = ref(null);
 // Quiz state
 const quizStep = ref(0);
 const quizAnswers = ref([]);
+const selectedAnswer = ref(null);
 
 // Registrar componente
 const components = { Tooltip };
@@ -63,15 +64,20 @@ const navigateToOtimizacao = () => {
 };
 
 const answerQuiz = (answer) => {
+  selectedAnswer.value = answer;
   quizAnswers.value.push(answer);
+  console.log('Quiz answered', { step: quizStep.value + 1, answer });
   if (quizStep.value < 2) {
     quizStep.value++;
+    selectedAnswer.value = null;
   }
 };
 
 const resetQuiz = () => {
   quizStep.value = 0;
   quizAnswers.value = [];
+  selectedAnswer.value = null;
+  console.log('Quiz reset');
 };
 </script>
 
@@ -491,47 +497,66 @@ const resetQuiz = () => {
                 >?
               </h3>
 
-              <p
-                class="text-lg text-muted-foreground text-center font-body mb-8 leading-relaxed max-w-3xl mx-auto"
-              >
-                Imagine isso: você está no meio de uma partida intensa, o coração acelerado, e de repente... travamento. A tela congela, o mouse para de responder, e aquela frustração toma conta. Ou pior: trabalhando em um projeto urgente, o software demora uma eternidade para processar, e você sente que seu equipamento está te sabotando.
-                <br><br>
-                João, um gamer apaixonado, vivia isso todos os dias. "Eu tinha percebido que o meu pc estava travando sem explicação", ele conta. "Quando fui ver, a frequência estava limitada, minha placa de vídeo usava apenas 256MB em vez de 8GB. Isso fez total diferença na minha gameplay."
-                <br><br>
-                Maria, profissional que investiu em memórias de 3600MHz, descobriu que rodava a apenas 2400MHz. "Pensei que era só comprar e instalar", diz ela. "Agora sim estou usando os 3600MHz."
-                <br><br>
-                Esses são problemas comuns: frequências incorretas, Resize BAR<Tooltip text="Tecnologia que permite acesso direto à memória da GPU, melhorando performance em jogos." /> desativado, XMP<Tooltip text="Extreme Memory Profile: perfil que permite memórias RAM rodarem na velocidade máxima suportada." /> não configurado. Eles fazem seu PC rodar abaixo do potencial, desperdiçando o investimento que você fez.
-                <br><br>
-                Nossa análise combina expertise humana e inteligência artificial para identificar e corrigir cada configuração, extraindo o máximo do seu hardware e devolvendo aquela sensação de poder e controle.
-              </p>
+              <div class="text-lg text-muted-foreground text-center font-body mb-8 leading-relaxed max-w-3xl mx-auto">
+                <h4 class="font-display text-2xl font-bold text-foreground mb-4">Problemas Comuns que Afetam Todos</h4>
+                <p class="mb-6">
+                  Imagine isso: você está no meio de uma partida intensa, o coração acelerado, e de repente... travamento. A tela congela, o mouse para de responder, e aquela frustração toma conta. Ou pior: trabalhando em um projeto urgente, o software demora uma eternidade para processar, e você sente que seu equipamento está te sabotando.
+                </p>
+
+                <h4 class="font-display text-2xl font-bold text-foreground mb-4">Histórias Reais de Clientes</h4>
+                <p class="mb-4">
+                  João, um gamer apaixonado, vivia isso todos os dias. "Eu tinha percebido que o meu pc estava travando sem explicação", ele conta. "Quando fui ver, a frequência estava limitada, minha placa de vídeo usava apenas 256MB em vez de 8GB. Isso fez total diferença na minha gameplay."
+                </p>
+                <p class="mb-4">
+                  Maria, profissional que investiu em memórias de 3600MHz, descobriu que rodava a apenas 2400MHz. "Pensei que era só comprar e instalar", diz ela. "Agora sim estou usando os 3600MHz."
+                </p>
+                <p class="mb-6">
+                  Carlos, streamer que precisa de estabilidade máxima, enfrentava quedas de FPS inexplicáveis. "Com a otimização, meu stream ficou suave e os viewers notaram a diferença", ele diz.
+                </p>
+
+                <h4 class="font-display text-2xl font-bold text-foreground mb-4">Nossa Solução Especializada</h4>
+                <p class="mb-4">
+                  Esses são problemas comuns: frequências incorretas, Resize BAR<Tooltip text="Tecnologia que permite acesso direto à memória da GPU, melhorando performance em jogos." /> desativado, XMP<Tooltip text="Extreme Memory Profile: perfil que permite memórias RAM rodarem na velocidade máxima suportada." /> não configurado. Eles fazem seu PC rodar abaixo do potencial, desperdiçando o investimento que você fez.
+                </p>
+                <p>
+                  Nossa análise combina expertise humana e inteligência artificial para identificar e corrigir cada configuração, extraindo o máximo do seu hardware e devolvendo aquela sensação de poder e controle.
+                </p>
+              </div>
 
               <!-- Quiz Interativo -->
               <div class="mb-8 fade-in">
                 <Card class="p-6 bg-background/50 border border-border/50 card-premium">
                   <h4 class="font-display text-xl font-bold text-foreground mb-4 text-center">Descubra se seu PC precisa de otimização</h4>
                   <div v-if="quizStep < 3" class="text-center">
-                    <div v-if="quizStep === 0">
-                      <p class="text-muted-foreground mb-4">Como você usa seu computador?</p>
+                    <!-- Progress Indicator -->
+                    <div class="mb-6">
+                      <div class="flex justify-center items-center gap-2 mb-2">
+                        <div v-for="step in 3" :key="step" class="w-3 h-3 rounded-full" :class="step <= quizStep + 1 ? 'bg-accent' : 'bg-muted-foreground/30'"></div>
+                      </div>
+                      <p class="text-sm text-muted-foreground">Pergunta {{ quizStep + 1 }} de 3</p>
+                    </div>
+                    <div v-if="quizStep === 0" role="radiogroup" aria-labelledby="quiz-q1">
+                      <p id="quiz-q1" class="text-muted-foreground mb-4">Como você usa seu computador?</p>
                       <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                        <Button @click="answerQuiz('gaming')" variant="outline" class="flex-1">Jogos e entretenimento</Button>
-                        <Button @click="answerQuiz('work')" variant="outline" class="flex-1">Trabalho profissional</Button>
-                        <Button @click="answerQuiz('general')" variant="outline" class="flex-1">Uso geral</Button>
+                        <Button @click="answerQuiz('gaming')" :variant="selectedAnswer === 'gaming' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'gaming' ? 'bg-accent text-white' : ''">Jogos e entretenimento</Button>
+                        <Button @click="answerQuiz('work')" :variant="selectedAnswer === 'work' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'work' ? 'bg-accent text-white' : ''">Trabalho profissional</Button>
+                        <Button @click="answerQuiz('general')" :variant="selectedAnswer === 'general' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'general' ? 'bg-accent text-white' : ''">Uso geral</Button>
                       </div>
                     </div>
-                    <div v-if="quizStep === 1">
-                      <p class="text-muted-foreground mb-4">Você enfrenta travamentos ou lentidão?</p>
+                    <div v-if="quizStep === 1" role="radiogroup" aria-labelledby="quiz-q2">
+                      <p id="quiz-q2" class="text-muted-foreground mb-4">Você enfrenta travamentos ou lentidão?</p>
                       <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                        <Button @click="answerQuiz('frequent')" variant="outline" class="flex-1">Frequentemente</Button>
-                        <Button @click="answerQuiz('sometimes')" variant="outline" class="flex-1">Às vezes</Button>
-                        <Button @click="answerQuiz('rarely')" variant="outline" class="flex-1">Raramente</Button>
+                        <Button @click="answerQuiz('frequent')" :variant="selectedAnswer === 'frequent' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'frequent' ? 'bg-accent text-white' : ''">Frequentemente</Button>
+                        <Button @click="answerQuiz('sometimes')" :variant="selectedAnswer === 'sometimes' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'sometimes' ? 'bg-accent text-white' : ''">Às vezes</Button>
+                        <Button @click="answerQuiz('rarely')" :variant="selectedAnswer === 'rarely' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'rarely' ? 'bg-accent text-white' : ''">Raramente</Button>
                       </div>
                     </div>
-                    <div v-if="quizStep === 2">
-                      <p class="text-muted-foreground mb-4">Você já configurou BIOS ou overclock?</p>
+                    <div v-if="quizStep === 2" role="radiogroup" aria-labelledby="quiz-q3">
+                      <p id="quiz-q3" class="text-muted-foreground mb-4">Você já configurou BIOS ou overclock?</p>
                       <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                        <Button @click="answerQuiz('yes')" variant="outline" class="flex-1">Sim, já tentei</Button>
-                        <Button @click="answerQuiz('no')" variant="outline" class="flex-1">Não, nunca</Button>
-                        <Button @click="answerQuiz('unsure')" variant="outline" class="flex-1">Não tenho certeza</Button>
+                        <Button @click="answerQuiz('yes')" :variant="selectedAnswer === 'yes' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'yes' ? 'bg-accent text-white' : ''">Sim, já tentei</Button>
+                        <Button @click="answerQuiz('no')" :variant="selectedAnswer === 'no' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'no' ? 'bg-accent text-white' : ''">Não, nunca</Button>
+                        <Button @click="answerQuiz('unsure')" :variant="selectedAnswer === 'unsure' ? 'default' : 'outline'" class="flex-1" :class="selectedAnswer === 'unsure' ? 'bg-accent text-white' : ''">Não tenho certeza</Button>
                       </div>
                     </div>
                   </div>
@@ -547,26 +572,40 @@ const resetQuiz = () => {
                 <p class="text-2xl font-bold text-accent">{{ clientesOtimizados }} clientes já otimizados</p>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
                 <div class="text-center animate-fade-in" style="animation-delay: 0.2s">
                   <div class="w-16 h-16 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-4">
                     <Zap class="w-8 h-8 text-accent" />
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">Para Gamers</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Gamers</h4>
                   <p class="text-sm text-muted-foreground">Que sabem que seu setup pode rodar jogos em máxima performance</p>
                 </div>
                 <div class="text-center animate-fade-in" style="animation-delay: 0.4s">
                   <div class="w-16 h-16 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-4">
                     <TrendingUp class="w-8 h-8 text-primary" />
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">Para Profissionais</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Profissionais</h4>
                   <p class="text-sm text-muted-foreground">Que precisam de resposta instantânea em softwares pesados</p>
                 </div>
                 <div class="text-center animate-fade-in" style="animation-delay: 0.6s">
                   <div class="w-16 h-16 rounded-lg bg-secondary/20 flex items-center justify-center mx-auto mb-4">
                     <Shield class="w-8 h-8 text-secondary" />
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">Para Todos</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Streamers</h4>
+                  <p class="text-sm text-muted-foreground">Que exigem estabilidade máxima para transmissões ao vivo</p>
+                </div>
+                <div class="text-center animate-fade-in" style="animation-delay: 0.8s">
+                  <div class="w-16 h-16 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-4">
+                    <Cpu class="w-8 h-8 text-accent" />
+                  </div>
+                  <h4 class="font-semibold text-foreground mb-3">Designers</h4>
+                  <p class="text-sm text-muted-foreground">Que trabalham com renderização e edição de vídeo</p>
+                </div>
+                <div class="text-center animate-fade-in" style="animation-delay: 1s">
+                  <div class="w-16 h-16 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                    <User class="w-8 h-8 text-primary" />
+                  </div>
+                  <h4 class="font-semibold text-foreground mb-3">Todos</h4>
                   <p class="text-sm text-muted-foreground">Que querem verificar se estão usando o hardware que pagaram</p>
                 </div>
               </div>
@@ -653,43 +692,46 @@ const resetQuiz = () => {
                 </div>
               </div>
 
-              <!-- Galeria de Imagens com Overlay de Gradiente -->
+              <!-- Galeria de Resultados -->
+              <h4 class="font-display text-2xl font-bold text-foreground mb-6 text-center">Resultados Visuais da Otimização</h4>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.2s">
-                  <img src="/Captura-de-tela-comparativo-pbo.png" alt="Comparativo PBO Ativo" class="w-full h-48 object-cover" />
+                  <img src="/Captura-de-tela-comparativo-pbo.png" alt="Comparativo PBO Ativo" class="w-full h-48 object-cover" loading="lazy" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
                 <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.4s">
-                  <img src="/Captura-de-tela-comparativo-pbo1.png" alt="Comparativo PBO Ativo 1" class="w-full h-48 object-cover" />
+                  <img src="/Captura-de-tela-comparativo-pbo1.png" alt="Comparativo PBO Ativo 1" class="w-full h-48 object-cover" loading="lazy" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
                 <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.6s">
-                  <img src="/Captura-de-tela-comparativo-pbo2.png" alt="Comparativo PBO Ativo 2" class="w-full h-48 object-cover" />
+                  <img src="/Captura-de-tela-comparativo-pbo2.png" alt="Comparativo PBO Ativo 2" class="w-full h-48 object-cover" loading="lazy" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
               </div>
 
               <div
-                class="flex flex-col sm:flex-row gap-4 justify-center items-center fade-in"
+                class="flex flex-col sm:flex-row gap-4 justify-center items-center fade-in ab-test-variant-a"
                 style="animation-delay: 1.8s"
               >
                 <Button
-                  @click="navigateToOtimizacao"
-                  class="font-body bg-gradient-to-r from-accent to-primary hover:shadow-xl hover:shadow-accent/40 text-white border-0 h-12 px-8 rounded-full transition-all btn-glow"
+                  @click="() => { navigateToOtimizacao(); console.log('CTA clicked: Solicitar Análise'); }"
+                  class="font-body bg-gradient-to-r from-accent to-primary hover:shadow-xl hover:shadow-accent/40 text-white border-0 h-12 px-8 rounded-full transition-all btn-glow quiz-button"
                 >
                   Solicitar Análise Agora
                   <ArrowRight class="w-4 h-4 ml-2" />
                 </Button>
                 <Button
+                  @click="() => console.log('CTA clicked: Saiba Como Funciona')"
                   variant="outline"
-                  class="font-body border-2 border-accent/40 hover:bg-accent/5 h-12 px-8 rounded-full transition-all card-premium"
+                  class="font-body border-2 border-accent/40 hover:bg-accent/5 h-12 px-8 rounded-full transition-all card-premium quiz-button"
                 >
                   Saiba Como Funciona
                 </Button>
                 <Button
+                  @click="() => console.log('CTA clicked: Dar Feedback')"
                   variant="ghost"
                   size="sm"
-                  class="font-body text-muted-foreground hover:text-primary h-8 px-4 rounded-full transition-all"
+                  class="font-body text-muted-foreground hover:text-primary h-8 px-4 rounded-full transition-all quiz-button"
                 >
                   💬 Dar Feedback
                 </Button>
@@ -964,5 +1006,32 @@ const resetQuiz = () => {
 .animate-fade-in {
   animation: fadeIn 1s ease-out forwards;
   opacity: 0;
+}
+
+/* A/B Testing Variants */
+.ab-test-variant-a .quiz-button {
+  border-radius: 8px;
+}
+
+.ab-test-variant-b .quiz-button {
+  border-radius: 50px;
+}
+
+/* Mobile Responsiveness Adjustments */
+@media (max-width: 640px) {
+  .quiz-button {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+}
+
+/* Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-blob {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 </style>
