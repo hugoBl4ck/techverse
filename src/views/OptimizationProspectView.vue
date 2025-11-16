@@ -90,7 +90,9 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Abra o HWiNFO64 como administrador. Na tela inicial, clique em "Run" para iniciar o monitoramento.
                 </p>
-                <img src="/hwinfo-start.png" alt="Tela inicial do HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <div class="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center">
+                  <p class="text-muted-foreground">Adicione a imagem hwinfo-start.png na pasta public</p>
+                </div>
               </div>
 
               <div>
@@ -98,7 +100,9 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Na seção "CPU" ou "Processor", localize "Core Clock" ou "CPU Clock". Tire print desta área mostrando a frequência atual.
                 </p>
-                <img src="/hwinfo-cpu.png" alt="Frequência do processador no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <div class="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center">
+                  <p class="text-muted-foreground">Adicione a imagem hwinfo-cpu.png na pasta public</p>
+                </div>
               </div>
 
               <div>
@@ -106,7 +110,9 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Procure por "Resizable BAR" ou "ReBAR" na seção de GPU/Placa de Vídeo. Deve mostrar "Enabled" ou "Supported".
                 </p>
-                <img src="/hwinfo-resize-bar.png" alt="Status do Resize BAR no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <div class="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center">
+                  <p class="text-muted-foreground">Adicione a imagem hwinfo-resize-bar.png na pasta public</p>
+                </div>
               </div>
 
               <div>
@@ -114,7 +120,9 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Na seção "Memory" ou "RAM", veja "DRAM Frequency" e se o XMP está ativo (XMP Profile).
                 </p>
-                <img src="/hwinfo-memory-xmp.png" alt="Frequência da memória e XMP no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <div class="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center">
+                  <p class="text-muted-foreground">Adicione a imagem hwinfo-memory-xmp.png na pasta public</p>
+                </div>
               </div>
 
               <div>
