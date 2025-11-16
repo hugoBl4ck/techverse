@@ -63,6 +63,11 @@ const navigateToOtimizacao = () => {
   router.push("/otimizacao");
 };
 
+const navigateToFeature = (feature) => {
+  // Placeholder navigation
+  router.push(`/features/${feature}`);
+};
+
 const answerQuiz = (answer) => {
   selectedAnswer.value = answer;
   quizAnswers.value.push(answer);
@@ -254,10 +259,10 @@ const resetQuiz = () => {
                 <Zap class="w-5 h-5 text-primary" />
               </div>
               <div class="text-left">
-                <p class="text-xs text-muted-foreground">Rápido</p>
                 <p class="text-sm font-semibold text-foreground">
                   Sem configuração
                 </p>
+                <p class="text-xs text-muted-foreground">Rápido</p>
               </div>
             </div>
             <div class="flex items-center justify-center gap-3">
@@ -267,8 +272,8 @@ const resetQuiz = () => {
                 <Shield class="w-5 h-5 text-accent" />
               </div>
               <div class="text-left">
-                <p class="text-xs text-muted-foreground">Seguro</p>
                 <p class="text-sm font-semibold text-foreground">Seus dados</p>
+                <p class="text-xs text-muted-foreground">Seguro</p>
               </div>
             </div>
             <div class="flex items-center justify-center gap-3">
@@ -278,8 +283,8 @@ const resetQuiz = () => {
                 <TrendingUp class="w-5 h-5 text-secondary" />
               </div>
               <div class="text-left">
-                <p class="text-xs text-muted-foreground">Inteligente</p>
                 <p class="text-sm font-semibold text-foreground">Com IA</p>
+                <p class="text-xs text-muted-foreground">Inteligente</p>
               </div>
             </div>
           </div>
@@ -316,6 +321,7 @@ const resetQuiz = () => {
             <div
               @mouseenter="hoveredFeature = 1"
               @mouseleave="hoveredFeature = null"
+              @click="navigateToFeature('gestao-clientes')"
               class="group relative"
             >
               <Card
@@ -362,6 +368,7 @@ const resetQuiz = () => {
             <div
               @mouseenter="hoveredFeature = 2"
               @mouseleave="hoveredFeature = null"
+              @click="navigateToFeature('importacao-ia')"
               class="group relative md:scale-105 md:translate-y-8"
             >
               <Card
@@ -408,6 +415,7 @@ const resetQuiz = () => {
             <div
               @mouseenter="hoveredFeature = 3"
               @mouseleave="hoveredFeature = null"
+              @click="navigateToFeature('canvas-montagem')"
               class="group relative"
             >
               <Card
@@ -610,101 +618,65 @@ const resetQuiz = () => {
                 </div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 0.2s">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-primary" />
                     </div>
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">João Silva</h4>
+                  <h4 class="font-semibold text-foreground mb-3">João S., São Paulo-SP</h4>
                   <p class="text-sm text-muted-foreground">"Eu tinha percebido que o meu pc estava travando sem explicação, quando fui ver a minha frequencia estava limitada, minha placa de vídeo estava só usando 256mb por vez em vez de 8gb, isso fez total diferença em minha gameplay"</p>
                 </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 0.4s">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-accent" />
                     </div>
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">Maria Santos</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Maria S., Curitiba-PR</h4>
                   <p class="text-sm text-muted-foreground">"Comprei um par de memória 3600mhz e estava somente usando 2400mhz, pensei se que só era comprar e instalar, agora sim estou usando os 3600mhz"</p>
                 </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 0.6s">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-secondary" />
                     </div>
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">Pedro Oliveira</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Pedro O., Rio de Janeiro-RJ</h4>
                   <p class="text-sm text-muted-foreground">"Comprei um notebook gamer e ele veio com linux, com a otimização consegui instalar o windows 11, e agora estou jogando todos os jogos, inclusive o BF6 com o secureboot"</p>
                 </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 0.8s">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-primary" />
                     </div>
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">Ana Costa</h4>
+                  <h4 class="font-semibold text-foreground mb-3">Ana C., Belo Horizonte-MG</h4>
                   <p class="text-sm text-muted-foreground">"Agora consigo jogar os jogos que exigem secure boot com essa otimização, recomendo."</p>
                 </Card>
-                <Card class="p-6 bg-background/50 border border-border/50 text-center card-premium fade-in" style="animation-delay: 1s">
+                <Card class="p-6 bg-background/50 border border-border/50 text-center">
                   <div class="flex justify-center mb-4">
                     <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
                       <User class="w-6 h-6 text-accent" />
                     </div>
                   </div>
-                  <h4 class="font-semibold text-foreground mb-3">Carlos Pereira</h4>
-                  <p class="text-sm text-muted-foreground">"Solicitei a limpeza do meu pc pois estava com super aquecimento, quando fui ver, as configurações do PBO<Tooltip text="Precision Boost Overdrive: tecnologia AMD para overclock automático da CPU." /> estavam todas erradas."</p>
+                  <h4 class="font-semibold text-foreground mb-3">Carlos P., Salvador-BA</h4>
+                  <p class="text-sm text-muted-foreground">"Solicitei a limpeza do meu pc pois estava com super aquecimento, quando fui ver, as configurações do PBO estavam todas erradas."</p>
                 </Card>
               </div>
 
-              <!-- Processo Humano-Centrado -->
-              <div class="mb-12 fade-in" style="animation-delay: 0.3s">
-                <h4 class="font-display text-2xl font-bold text-foreground mb-8 text-center">Como Funciona: Especialistas Humanos + IA</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div class="text-center animate-fade-in" style="animation-delay: 0.8s">
-                    <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
-                      <User class="w-7 h-7 text-primary" />
-                    </div>
-                    <h5 class="font-semibold text-foreground mb-2">1. Análise Inicial</h5>
-                    <p class="text-sm text-muted-foreground">Especialista humano avalia seu setup e necessidades específicas</p>
-                  </div>
-                  <div class="text-center animate-fade-in" style="animation-delay: 1s">
-                    <div class="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
-                      <Wand2 class="w-7 h-7 text-accent" />
-                    </div>
-                    <h5 class="font-semibold text-foreground mb-2">2. Diagnóstico com IA</h5>
-                    <p class="text-sm text-muted-foreground">Inteligência artificial identifica configurações subótimas automaticamente</p>
-                  </div>
-                  <div class="text-center animate-fade-in" style="animation-delay: 1.2s">
-                    <div class="w-14 h-14 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4">
-                      <Cpu class="w-7 h-7 text-secondary" />
-                    </div>
-                    <h5 class="font-semibold text-foreground mb-2">3. Configuração Especializada</h5>
-                    <p class="text-sm text-muted-foreground">Técnico experiente aplica otimizações seguras e testadas</p>
-                  </div>
-                  <div class="text-center animate-fade-in" style="animation-delay: 1.4s">
-                    <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
-                      <TrendingUp class="w-7 h-7 text-primary" />
-                    </div>
-                    <h5 class="font-semibold text-foreground mb-2">4. Teste e Validação</h5>
-                    <p class="text-sm text-muted-foreground">Verificação completa para garantir performance máxima e estabilidade</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Galeria de Resultados -->
-              <h4 class="font-display text-2xl font-bold text-foreground mb-6 text-center">Resultados Visuais da Otimização</h4>
+              <!-- Galeria de Imagens com Overlay de Gradiente -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.2s">
-                  <img src="/Captura-de-tela-comparativo-pbo.png" alt="Comparativo PBO Ativo" class="w-full h-48 object-cover" loading="lazy" />
+                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                  <img src="/Captura-de-tela-comparativo-pbo.png" alt="Gráfico de benchmark mostrando ganhos de performance com PBO ativado." class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
-                <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.4s">
-                  <img src="/Captura-de-tela-comparativo-pbo1.png" alt="Comparativo PBO Ativo 1" class="w-full h-48 object-cover" loading="lazy" />
+                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                  <img src="/Captura-de-tela-comparativo-pbo1.png" alt="Tela de configuração da BIOS com a opção Precision Boost Overdrive destacada." class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
-                <div class="relative overflow-hidden rounded-lg shadow-lg card-hover fade-in" style="animation-delay: 1.6s">
-                  <img src="/Captura-de-tela-comparativo-pbo2.png" alt="Comparativo PBO Ativo 2" class="w-full h-48 object-cover" loading="lazy" />
+                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                  <img src="/Captura-de-tela-comparativo-pbo2.png" alt="Comparativo de temperatura do processador antes e depois da otimização PBO." class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
               </div>
@@ -723,7 +695,8 @@ const resetQuiz = () => {
                 <Button
                   @click="() => console.log('CTA clicked: Saiba Como Funciona')"
                   variant="outline"
-                  class="font-body border-2 border-accent/40 hover:bg-accent/5 h-12 px-8 rounded-full transition-all card-premium quiz-button"
+                  class="font-body border-2 border-accent/40 hover:bg-accent/5 h-12 px-8 rounded-full transition-all opacity-50 cursor-not-allowed"
+                  disabled
                 >
                   Saiba Como Funciona
                 </Button>
@@ -827,7 +800,8 @@ const resetQuiz = () => {
                 </Button>
                 <Button
                   variant="outline"
-                  class="font-body border-2 border-primary/40 hover:bg-primary/5 h-12 px-8 rounded-full transition-all"
+                  class="font-body border-2 border-primary/40 hover:bg-primary/5 h-12 px-8 rounded-full transition-all opacity-50 cursor-not-allowed"
+                  disabled
                 >
                   Saiba Mais
                 </Button>
@@ -924,19 +898,13 @@ const resetQuiz = () => {
             <p class="font-semibold text-foreground mb-3 text-sm">Empresa</p>
             <ul class="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" class="hover:text-primary transition-colors"
-                  >Blog</a
-                >
+                <span class="opacity-50">Blog</span>
               </li>
               <li>
-                <a href="#" class="hover:text-primary transition-colors"
-                  >Contato</a
-                >
+                <span class="opacity-50">Contato</span>
               </li>
               <li>
-                <a href="#" class="hover:text-primary transition-colors"
-                  >Status</a
-                >
+                <span class="opacity-50">Status</span>
               </li>
             </ul>
           </div>
@@ -944,19 +912,13 @@ const resetQuiz = () => {
             <p class="font-semibold text-foreground mb-3 text-sm">Legal</p>
             <ul class="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" class="hover:text-primary transition-colors"
-                  >Privacidade</a
-                >
+                <span class="opacity-50">Privacidade</span>
               </li>
               <li>
-                <a href="#" class="hover:text-primary transition-colors"
-                  >Termos</a
-                >
+                <span class="opacity-50">Termos</span>
               </li>
               <li>
-                <a href="#" class="hover:text-primary transition-colors"
-                  >Cookies</a
-                >
+                <span class="opacity-50">Cookies</span>
               </li>
             </ul>
           </div>
