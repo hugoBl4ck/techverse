@@ -8,6 +8,12 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from "vue-router"
 import TechVerseLogo from "@/components/TechVerseLogo.vue"
 
+// Import HWiNFO images
+import hwinfoStart from '@/assets/images/hwinfo-tela-inicial.png'
+import hwinfoCpu from '@/assets/images/hwinfo-cpu-frequencia.png'
+import hwinfoResizeBar from '@/assets/images/hwinfo-resize-bar.png'
+import hwinfoMemoryXmp from '@/assets/images/hwinfo-memoria-xmp.png'
+
 const router = useRouter()
 
 // Form data
@@ -90,7 +96,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Abra o HWiNFO64 como administrador. Na tela inicial, clique em "Run" para iniciar o monitoramento.
                 </p>
-                <img src="/images/hwinfo-tela-inicial.png" alt="Tela inicial do HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img :src="hwinfoStart" alt="Tela inicial do HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
@@ -98,7 +104,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Na seção "CPU" ou "Processor", localize "Core Clock" ou "CPU Clock". Tire print desta área mostrando a frequência atual.
                 </p>
-                <img src="/images/hwinfo-cpu-frequencia.png" alt="Frequência do processador no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img :src="hwinfoCpu" alt="Frequência do processador no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
@@ -106,7 +112,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Procure por "Resizable BAR" ou "ReBAR" na seção de GPU/Placa de Vídeo. Deve mostrar "Enabled" ou "Supported".
                 </p>
-                <img src="/images/hwinfo-resize-bar.png" alt="Status do Resize BAR no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img :src="hwinfoResizeBar" alt="Status do Resize BAR no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
@@ -114,7 +120,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                 <p class="text-muted-foreground mb-2">
                   Na seção "Memory" ou "RAM", veja "DRAM Frequency" e se o XMP está ativo (XMP Profile).
                 </p>
-                <img src="/images/hwinfo-memoria-xmp.png" alt="Frequência da memória e XMP no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img :src="hwinfoMemoryXmp" alt="Frequência da memória e XMP no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
