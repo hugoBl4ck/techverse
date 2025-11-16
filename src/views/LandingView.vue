@@ -545,15 +545,15 @@ const navigateToOtimizacao = () => {
               <!-- Galeria de Imagens com Overlay de Gradiente -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="relative overflow-hidden rounded-lg shadow-lg">
-                  <img src="/assets/images/Captura-de-tela-comparativo-pbo.png" alt="Comparativo PBO Ativo" class="w-full h-48 object-cover" />
+                  <img src="/Captura-de-tela-comparativo-pbo.png" alt="Comparativo PBO Ativo" class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
                 <div class="relative overflow-hidden rounded-lg shadow-lg">
-                  <img src="/assets/images/Captura-de-tela-comparativo-pbo1.png" alt="Comparativo PBO Ativo 1" class="w-full h-48 object-cover" />
+                  <img src="/Captura-de-tela-comparativo-pbo1.png" alt="Comparativo PBO Ativo 1" class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
                 <div class="relative overflow-hidden rounded-lg shadow-lg">
-                  <img src="/assets/images/Captura-de-tela-comparativo-pbo2.png" alt="Comparativo PBO Ativo 2" class="w-full h-48 object-cover" />
+                  <img src="/Captura-de-tela-comparativo-pbo2.png" alt="Comparativo PBO Ativo 2" class="w-full h-48 object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
               </div>
