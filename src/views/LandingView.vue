@@ -13,11 +13,19 @@ import {
   Cpu,
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import TechVerseLogo from "@/components/TechVerseLogo.vue";
 
 const router = useRouter();
 const hoveredFeature = ref(null);
+
+const clientesOtimizados = computed(() => {
+  const hoje = new Date();
+  const dataInicial = new Date('2023-01-01');
+  const diffTime = hoje - dataInicial;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return 30 + (diffDays * 5);
+});
 
 const navigateToApp = () => {
   router.push("/app/clientes");
@@ -458,6 +466,10 @@ const navigateToOtimizacao = () => {
                 Nossa análise profissional identifica e corrige todas essas configurações para você extrair o máximo do seu hardware.
               </p>
 
+              <div class="text-center mb-6">
+                <p class="text-2xl font-bold text-accent">{{ clientesOtimizados }} clientes já otimizados</p>
+              </div>
+
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="text-center">
                   <div class="w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center mx-auto mb-3">
@@ -479,6 +491,59 @@ const navigateToOtimizacao = () => {
                   </div>
                   <h4 class="font-semibold text-foreground mb-2">Para Todos</h4>
                   <p class="text-sm text-muted-foreground">Que querem verificar se estão usando o hardware que pagaram</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <Card class="p-6 bg-background/50 border border-border/50">
+                  <p class="text-sm text-muted-foreground mb-4">"Eu tinha percebido que o meu pc estava travando sem explicação, quando fui ver a minha frequencia estava limitada, minha placa de vídeo estava só usando 256mb por vez em vez de 8gb, isso fez total diferença em minha gameplay"</p>
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold text-foreground">João Silva</span>
+                    <span class="text-sm text-muted-foreground">WhatsApp: 779982675**</span>
+                  </div>
+                </Card>
+                <Card class="p-6 bg-background/50 border border-border/50">
+                  <p class="text-sm text-muted-foreground mb-4">"Comprei um par de memória 3600mhz e estava somente usando 2400mhz, pensei se que só era comprar e instalar, agora sim estou usando os 3600mhz"</p>
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold text-foreground">Maria Santos</span>
+                    <span class="text-sm text-muted-foreground">WhatsApp: 119876543**</span>
+                  </div>
+                </Card>
+                <Card class="p-6 bg-background/50 border border-border/50">
+                  <p class="text-sm text-muted-foreground mb-4">"Comprei um notebook gamer e ele veio com linux, com a otimização consegui instalar o windows 11, e agora estou jogando todos os jogos, inclusive o BF6 com o secureboot"</p>
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold text-foreground">Pedro Oliveira</span>
+                    <span class="text-sm text-muted-foreground">WhatsApp: 859876543**</span>
+                  </div>
+                </Card>
+                <Card class="p-6 bg-background/50 border border-border/50">
+                  <p class="text-sm text-muted-foreground mb-4">"Agora consigo jogar os jogos que exigem secure boot com essa otimização, recomendo."</p>
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold text-foreground">Ana Costa</span>
+                    <span class="text-sm text-muted-foreground">WhatsApp: 719876543**</span>
+                  </div>
+                </Card>
+                <Card class="p-6 bg-background/50 border border-border/50">
+                  <p class="text-sm text-muted-foreground mb-4">"Solicitei a limpeza do meu pc pois estava com super aquecimento, quando fui ver, as configurações do PBO estavam todas erradas."</p>
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold text-foreground">Carlos Pereira</span>
+                    <span class="text-sm text-muted-foreground">WhatsApp: 619876543**</span>
+                  </div>
+                </Card>
+              </div>
+
+              <!-- Galeria de Imagens com Overlay de Gradiente -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                  <img src="/hwinfo-cpu-frequencia.png" alt="Frequência CPU" class="w-full h-48 object-cover" />
+                  <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
+                </div>
+                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                  <img src="/hwinfo-memoria-xmp.png" alt="Memória XMP" class="w-full h-48 object-cover" />
+                  <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
+                </div>
+                <div class="relative overflow-hidden rounded-lg shadow-lg">
+                  <img src="/hwinfo-resize-bar.png" alt="Resize Bar" class="w-full h-48 object-cover" />
+                  <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40"></div>
                 </div>
               </div>
 
