@@ -54,7 +54,7 @@ const clientes = ref([]);
 const ordemServico = ref({
   customerId: null,
   customerName: '',
-  date: new Date(),
+  date: null,
   price: 0,
   observations: '',
   computerConfiguration: '',
@@ -230,6 +230,11 @@ async function handleSubmit() {
      return;
    }
 
+   if (!ordemServico.value.date) {
+     toast.error('Por favor, informe a data do serviço.');
+     return;
+   }
+
    if (!storeId.value) {
      toast.error('Erro: Usuário não autenticado.');
      return;
@@ -335,8 +340,8 @@ async function handleSubmit() {
             </Select>
           </div>
           <div class="grid gap-2">
-            <Label for="data">Data da Ordem de Serviço</Label>
-            <Input id="data" v-model="dateForInput" type="datetime-local" />
+            <Label for="data">Data do Serviço (quando foi realizado) *</Label>
+            <Input id="data" v-model="dateForInput" type="datetime-local" required />
           </div>
           <div class="grid gap-2">
             <Label for="servico-catalogo">Serviço do Catálogo (Opcional)</Label>
