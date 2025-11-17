@@ -83,8 +83,8 @@ export function useTransacoes(storeId) {
         cliente_id: vendaData.cliente_id || null,
         ordem_servico_id: vendaData.ordem_servico_id || null,
         status: 'concluida',
-        data_transacao: Timestamp.now(),
-        data_pagamento: vendaData.data_pagamento ? Timestamp.fromDate(new Date(vendaData.data_pagamento)) : Timestamp.now(),
+        data_transacao: vendaData.data_transacao ? Timestamp.fromDate(new Date(vendaData.data_transacao)) : Timestamp.now(),
+        data_pagamento: vendaData.data_pagamento ? Timestamp.fromDate(new Date(vendaData.data_pagamento)) : (vendaData.data_transacao ? Timestamp.fromDate(new Date(vendaData.data_transacao)) : Timestamp.now()),
         metodo_pagamento: vendaData.metodo_pagamento || 'pix',
         createdAt: Timestamp.now()
       }
@@ -124,7 +124,7 @@ export function useTransacoes(storeId) {
         categoria: despesaData.categoria || 'operacional',
         produtos: despesaData.produtos || [],
         status: despesaData.status || 'concluida',
-        data_transacao: vendaData.data_transacao ? Timestamp.fromDate(new Date(vendaData.data_transacao)) : Timestamp.now(),
+        data_transacao: despesaData.data_transacao ? Timestamp.fromDate(new Date(despesaData.data_transacao)) : Timestamp.now(),
         data_pagamento: despesaData.data_pagamento ? Timestamp.fromDate(new Date(despesaData.data_pagamento)) : Timestamp.now(),
         metodo_pagamento: despesaData.metodo_pagamento || 'dinheiro',
         createdAt: Timestamp.now()
