@@ -107,7 +107,17 @@ const dateForInput = computed({
   },
   set(value) {
     // Para input type="date", value é no formato YYYY-MM-DD
-    ordemServico.value.date = value ? new Date(value) : new Date();
+    if (value) {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        ordemServico.value.date = date;
+      } else {
+        console.warn('Data inválida recebida:', value);
+        ordemServico.value.date = new Date();
+      }
+    } else {
+      ordemServico.value.date = new Date();
+    }
   }
 });
 
@@ -256,9 +266,13 @@ async function handleSubmit() {
      surcharge: ordemServico.value.surcharge || 0,
      totalAmount: totalAmount.value,
      status: ordemServico.value.status || 'aberta',
-     date: ordemServico.value.date instanceof Date 
-       ? ordemServico.value.date 
-       : new Date(ordemServico.value.date || new Date()),
+     date: (() => {
+       if (ordemServico.value.date instanceof Date && !isNaN(ordemServico.value.date.getTime())) {
+         return ordemServico.value.date;
+       }
+       const date = new Date(ordemServico.value.date || new Date());
+       return !isNaN(date.getTime()) ? date : new Date();
+     })(),
    };
 
    try {
@@ -284,7 +298,16 @@ async function handleSubmit() {
        }
 
        // Registra automaticamente como transação no financeiro
-       const serviceDate = ordemServico.value.date?.toDate ? ordemServico.value.date.toDate() : ordemServico.value.date;
+       const serviceDate = (() => {
+         if (ordemServico.value.date?.toDate) {
+           return ordemServico.value.date.toDate();
+         }
+         if (ordemServico.value.date instanceof Date && !isNaN(ordemServico.value.date.getTime())) {
+           return ordemServico.value.date;
+         }
+         const date = new Date(ordemServico.value.date || new Date());
+         return !isNaN(date.getTime()) ? date : new Date();
+       })();
        await registrarVenda({
          descricao: `Ordem de Serviço #${osId} - ${cliente.nome}`,
          valor: totalAmount.value,
