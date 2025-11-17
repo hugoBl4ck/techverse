@@ -207,7 +207,7 @@ const ordensCanceladas = computed(() => {
                   <strong>{{ os.customerName }}</strong>
                 </TableCell>
                 <TableCell>
-                  {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                  {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) }}
                 </TableCell>
                 <TableCell>
                   {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
@@ -280,7 +280,7 @@ const ordensCanceladas = computed(() => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                  {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) }}
                 </TableCell>
                 <TableCell>
                   {{ Array.isArray(os.observations) ? os.observations.join(', ') : os.observations }}
