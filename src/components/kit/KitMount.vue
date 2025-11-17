@@ -4,7 +4,6 @@ import { ref, computed, watch, onMounted } from 'vue';
 const props = defineProps({ kit: Object });
 
 onMounted(() => {
-  console.log(`KitMount component for kitId ${props.kit.id} mounted.`);
 });
 
 import draggable from 'vuedraggable';

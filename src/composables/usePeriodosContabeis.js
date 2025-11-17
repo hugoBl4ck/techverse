@@ -49,8 +49,6 @@ export function usePeriodosContabeis(storeId) {
         data_fim: doc.data().data_fim?.toDate?.(),
         fechado_em: doc.data().fechado_em?.toDate?.()
       }))
-
-      console.log('✅ Períodos carregados:', periodos.value.length)
     } catch (err) {
       error.value = err.message
       console.error('❌ Erro ao carregar períodos:', err)
@@ -155,8 +153,6 @@ export function usePeriodosContabeis(storeId) {
       const periodosRef = collection(db, 'stores', storeId.value, 'periodos_contabeis')
       const docRef = await addDoc(periodosRef, periodoDados)
       
-      console.log('✅ Período fechado:', docRef.id, `${mes}/${ano}`)
-
       await loadPeriodos()
       return docRef.id
     } catch (err) {
@@ -182,8 +178,6 @@ export function usePeriodosContabeis(storeId) {
         status: 'aberto',
         reaberto_em: Timestamp.now()
       })
-
-      console.log('✅ Período reaberto:', periodoId)
 
       await loadPeriodos()
       return true

@@ -126,7 +126,6 @@ const goToTestimonial = (index) => {
 const answerQuiz = (answer) => {
   selectedAnswer.value = answer;
   quizAnswers.value.push(answer);
-  console.log('Quiz answered', { step: quizStep.value + 1, answer });
   if (quizStep.value < 2) {
     quizStep.value++;
     selectedAnswer.value = null;
@@ -137,7 +136,6 @@ const resetQuiz = () => {
   quizStep.value = 0;
   quizAnswers.value = [];
   selectedAnswer.value = null;
-  console.log('Quiz reset');
 };
 </script>
 
@@ -771,14 +769,13 @@ const resetQuiz = () => {
                 style="animation-delay: 1.8s"
               >
                 <Button
-                  @click="() => { navigateToOtimizacao(); console.log('CTA clicked: Solicitar Análise'); }"
+                  @click="() => { navigateToOtimizacao(); }"
                   class="font-body bg-gradient-to-r from-accent to-primary hover:shadow-xl hover:shadow-accent/40 text-white border-0 h-12 px-8 rounded-full transition-all btn-glow quiz-button"
                 >
                   Solicitar Análise Agora
                   <ArrowRight class="w-4 h-4 ml-2" />
                 </Button>
                 <Button
-                  @click="() => console.log('CTA clicked: Saiba Como Funciona')"
                   variant="outline"
                   class="font-body border-2 border-accent/40 hover:bg-accent/5 h-12 px-8 rounded-full transition-all opacity-50 cursor-not-allowed"
                   disabled
@@ -786,7 +783,6 @@ const resetQuiz = () => {
                   Saiba Como Funciona
                 </Button>
                 <Button
-                  @click="() => console.log('CTA clicked: Dar Feedback')"
                   variant="ghost"
                   size="sm"
                   class="font-body text-muted-foreground hover:text-primary h-8 px-4 rounded-full transition-all quiz-button"

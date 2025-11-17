@@ -54,8 +54,6 @@ export function useMovimentacaoEstoque(storeId) {
         ...doc.data(),
         data_movimento: doc.data().data_movimento?.toDate?.() || new Date(doc.data().data_movimento)
       }))
-
-      console.log('✅ Movimentações carregadas:', movimentacoes.value.length)
     } catch (err) {
       error.value = err.message
       console.error('❌ Erro ao carregar movimentações:', err)
@@ -105,8 +103,7 @@ export function useMovimentacaoEstoque(storeId) {
 
       // Adicionar movimentação
       const docRef = await addDoc(movimentacaoRef, movimentacaoData)
-      console.log('✅ Movimentação de saída criada:', docRef.id)
-
+      
       // Atualizar quantidade de cada produto
       for (const produto of produtos) {
         const produtoRef = doc(db, 'stores', storeId.value, 'itens', produto.produtoId)
@@ -118,7 +115,6 @@ export function useMovimentacaoEstoque(storeId) {
       }
 
       await batch.commit()
-      console.log('✅ Estoque atualizado para', produtos.length, 'produtos')
 
       await loadMovimentacoes()
       
@@ -174,8 +170,7 @@ export function useMovimentacaoEstoque(storeId) {
       }
 
       const docRef = await addDoc(movRef, movimentacao)
-      console.log('✅ Entrada de estoque registrada:', docRef.id)
-
+      
       // Atualizar quantidade de produtos
       for (const produto of entradaData.produtos) {
         const produtoRef = doc(db, 'stores', storeId.value, 'itens', produto.produtoId)
@@ -187,7 +182,6 @@ export function useMovimentacaoEstoque(storeId) {
       }
 
       await batch.commit()
-      console.log('✅ Estoque atualizado para', entradaData.produtos.length, 'produtos')
 
       await loadMovimentacoes()
       return docRef.id
@@ -223,8 +217,7 @@ export function useMovimentacaoEstoque(storeId) {
       }
 
       const docRef = await addDoc(movRef, ajuste)
-      console.log('✅ Ajuste registrado:', docRef.id)
-
+      
       // Atualizar quantidade de produtos
       for (const produto of ajusteData.produtos) {
         const produtoRef = doc(db, 'stores', storeId.value, 'itens', produto.produtoId)
@@ -237,7 +230,6 @@ export function useMovimentacaoEstoque(storeId) {
       }
 
       await batch.commit()
-      console.log('✅ Estoque ajustado para', ajusteData.produtos.length, 'produtos')
 
       await loadMovimentacoes()
       return docRef.id

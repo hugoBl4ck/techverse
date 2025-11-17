@@ -369,10 +369,7 @@ const extractAliExpressData = async () => {
 
   isExtracting.value = true;
   try {
-    console.log('🔄 Modo desenvolvimento - simulando extração de dados do AliExpress...');
-    console.log('📝 URL original:', aliexpressOriginalLink.value);
-    console.log('🔗 URL afiliada:', aliexpressLink.value);
-
+    
     // Simular delay da API
     await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -440,16 +437,11 @@ const extractAliExpressData = async () => {
       mock: true,
       message: 'Dados simulados - API real funcionará no Vercel'
     };
-
-    console.log('📋 Resposta simulada da API:', mockResponse);
-
+    
     // Preencher o formulário com os dados simulados
     newPromotion.value = { ...mockData };
     fotosText.value = mockData.fotos.join('\n');
-
-    console.log('✅ Dados simulados aplicados com sucesso');
-    console.log('📦 Dados:', mockData);
-
+    
   } catch (error) {
     console.error('❌ Erro na simulação:', error);
 

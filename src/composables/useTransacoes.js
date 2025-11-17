@@ -93,8 +93,7 @@ export function useTransacoes(storeId) {
       }
 
       const docRef = await addDoc(transacoesRef, venda)
-      console.log('✅ Venda registrada:', docRef.id)
-
+      
       await loadTransacoes()
       return docRef.id
     } catch (err) {
@@ -135,8 +134,7 @@ export function useTransacoes(storeId) {
       }
 
       const docRef = await addDoc(transacoesRef, despesa)
-      console.log('✅ Despesa registrada:', docRef.id)
-
+      
       await loadTransacoes()
       return docRef.id
     } catch (err) {
@@ -160,8 +158,7 @@ export function useTransacoes(storeId) {
       }
 
       await updateDoc(transacaoRef, dadosAtualizar)
-      console.log('✅ Transação atualizada:', transacaoId)
-
+      
       await loadTransacoes()
       return true
     } catch (err) {
@@ -179,7 +176,6 @@ export function useTransacoes(storeId) {
 
     try {
       await deleteDoc(doc(db, 'stores', storeId.value, 'transacoes_financeiras', transacaoId))
-      console.log('✅ Transação deletada:', transacaoId)
       await loadTransacoes()
       return true
     } catch (err) {

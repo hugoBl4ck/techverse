@@ -494,14 +494,12 @@ const resetFilters = () => {
 
 const handlePromoClick = (promo) => {
   // Aqui você pode adicionar lógica para abrir modal, redirecionar, etc
-  console.log('Promoção clicada:', promo)
 }
 
 // Methods
 const trackAffiliateClick = (promo) => {
   if (promo.tipo === 'afiliado') {
     // Track affiliate click (could integrate with analytics)
-    console.log('Affiliate click tracked:', promo.id)
     // You could add Google Analytics, Facebook Pixel, etc. here
   }
 }

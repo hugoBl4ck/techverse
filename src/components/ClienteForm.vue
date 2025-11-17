@@ -76,11 +76,9 @@ async function handleSubmit() {
     if (props.id) {
       const docRef = doc(clientesCol, props.id);
       await updateDoc(docRef, clienteData);
-      console.log('Cliente atualizado!');
       toast.success('Cliente atualizado com sucesso!', { id: loadingToast });
     } else {
       await addDoc(clientesCol, clienteData);
-      console.log('Cliente salvo!');
       toast.success('Cliente cadastrado com sucesso!', { id: loadingToast });
     }
     router.push('/clientes');

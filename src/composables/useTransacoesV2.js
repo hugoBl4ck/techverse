@@ -60,8 +60,6 @@ export function useTransacoesV2(storeId) {
         data_transacao: doc.data().data_transacao?.toDate?.() || new Date(doc.data().data_transacao),
         data_pagamento: doc.data().data_pagamento?.toDate?.() || null
       }))
-
-      console.log('✅ Transações carregadas:', transacoes.value.length)
     } catch (err) {
       error.value = err.message
       console.error('❌ Erro ao carregar transações:', err)
@@ -135,12 +133,10 @@ export function useTransacoesV2(storeId) {
 
       // Adicionar transação
       const docRef = await addDoc(transacoesRef, venda)
-      console.log('✅ Venda registrada com COGS:', docRef.id)
-
+      
       // ✅ NOVO: Registrar saída de estoque automaticamente
       const resultadoEstoque = await registrarSaidaPorVenda(docRef.id, vendaData.produtos)
       if (resultadoEstoque) {
-        console.log('✅ Estoque atualizado para venda:', docRef.id)
       }
 
       await loadTransacoes()
@@ -192,8 +188,7 @@ export function useTransacoesV2(storeId) {
       }
 
       const docRef = await addDoc(transacoesRef, despesa)
-      console.log('✅ Despesa registrada:', docRef.id)
-
+      
       await loadTransacoes()
       return docRef.id
     } catch (err) {
@@ -217,8 +212,7 @@ export function useTransacoesV2(storeId) {
       }
 
       await updateDoc(transacaoRef, dadosAtualizar)
-      console.log('✅ Transação atualizada:', transacaoId)
-
+      
       await loadTransacoes()
       return true
     } catch (err) {
@@ -236,7 +230,6 @@ export function useTransacoesV2(storeId) {
 
     try {
       await deleteDoc(doc(db, 'stores', storeId.value, 'transacoes_financeiras', transacaoId))
-      console.log('✅ Transação deletada:', transacaoId)
       await loadTransacoes()
       return true
     } catch (err) {
@@ -356,13 +349,9 @@ export function useTransacoesV2(storeId) {
     return {
       // Demonstração de Resultado do Exercício (DRE)
       receita_bruta: totais.receita,
-      (-) : {
-        custo_bens_vendidos: totais.cogs
-      },
-      (=) : {
-        lucro_bruto: totais.margem_bruta,
-        percentual_margem_bruta: totais.percentual_margem_bruta
-      },
+      custo_bens_vendidos: totais.cogs,
+      lucro_bruto: totais.margem_bruta,
+      percentual_margem_bruta: totais.percentual_margem_bruta,
       despesas_operacionais: totais.despesa,
       lucro_liquido: totais.lucro_liquido,
       percentual_margem_liquida: totais.percentual_margem_liquida

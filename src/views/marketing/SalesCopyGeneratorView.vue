@@ -82,7 +82,6 @@ const { storeId, authReady } = useCurrentStore();
 // Watch para quando storeId está pronto
 watch(storeId, (newStoreId) => {
   if (newStoreId) {
-    console.log('Marketing: StoreId pronto:', newStoreId);
     fetchItems();
   }
 }, { immediate: true });

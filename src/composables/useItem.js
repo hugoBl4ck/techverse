@@ -104,10 +104,8 @@ export function useItem(itemId = null) {
 
     try {
       // Simulação de upload para fins de desenvolvimento
-      console.log(`[SIMULAÇÃO] Upload do arquivo: ${file.name}`);
       await new Promise(resolve => setTimeout(resolve, 1500));
       const fakeUrl = `https://fake-storage.vercel.app/${Date.now()}-${file.name}`;
-      console.log(`[SIMULAÇÃO] Arquivo disponível em: ${fakeUrl}`);
       return fakeUrl;
 
     } catch (e) {

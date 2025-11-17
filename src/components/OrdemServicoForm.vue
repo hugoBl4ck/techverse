@@ -30,18 +30,13 @@ const { registrarVenda } = useTransacoes(storeId);
 const isEditMode = computed(() => !!props.id);
 
 onMounted(() => {
-  console.log('OrdemServicoForm Mounted - Multi-tenant');
-  console.log('  props.id:', props.id);
-  console.log('  isEditMode:', isEditMode.value);
-  console.log('  storeId:', storeId.value);
-  
   if (!storeId.value) {
     console.error('Usuário não autenticado!');
     toast.error('Erro: Usuário não autenticado');
     router.push('/login');
     return;
   }
-  
+
   loadData();
 });
 
@@ -145,30 +140,25 @@ const loadData = async () => {
   }
 
   isLoading.value = true;
-  console.log('Carregando dados para store:', storeId.value);
 
   try {
     // Load services from catalog (per store)
     const catalogoServicosCol = collection(db, 'stores', storeId.value, 'catalogo_servicos');
     const catalogoServicosSnapshot = await getDocs(catalogoServicosCol);
     catalogoServicos.value = catalogoServicosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log('Catálogo carregado:', catalogoServicos.value.length);
 
     // Load clients
     const clientesCol = collection(db, 'stores', storeId.value, 'clientes');
     const clientesSnapshot = await getDocs(clientesCol);
     clientes.value = clientesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log('Clientes carregados:', clientes.value.length);
 
     // Load inventory items
     const inventoryCol = collection(db, 'stores', storeId.value, 'itens');
     const inventorySnapshot = await getDocs(inventoryCol);
     inventoryItems.value = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log('Inventário carregado:', inventoryItems.value.length);
 
     // If in edit mode, load service order data
     if (isEditMode.value) {
-    console.log('Modo edição: carregando ordem de serviço ID:', props.id);
     const osDocRef = doc(db, 'stores', storeId.value, 'ordens_servico', props.id);
     const osDoc = await getDoc(osDocRef);
     if (osDoc.exists()) {
@@ -183,7 +173,6 @@ const loadData = async () => {
         return inventoryItem ? { ...loadedItem, ...inventoryItem } : loadedItem;
     });
     selectedClienteId.value = osData.customerId || '';
-    console.log('Ordem de serviço carregada com sucesso');
     } else {
         console.error('Ordem de Serviço não encontrada');
          toast.error('Ordem de serviço não encontrada!');
@@ -271,28 +260,23 @@ async function handleSubmit() {
      let osId;
      
      if (isEditMode.value) {
-       console.log('Atualizando ordem de serviço ID:', props.id);
        const osDocRef = doc(osCol, props.id);
        await updateDoc(osDocRef, osData);
        osId = props.id;
-       console.log('Ordem de Serviço atualizada com sucesso!');
        toast.success('Ordem de serviço atualizada!', { id: loadingToast });
      } else {
-       console.log('Criando nova ordem de serviço');
        const docRef = await addDoc(osCol, osData);
        osId = docRef.id;
-       console.log('Ordem de Serviço criada com sucesso!');
-       
+
        // Diminui o estoque dos itens utilizados
        for (const item of addedItems.value) {
          const itemDocRef = doc(db, 'stores', storeId.value, 'itens', item.id);
          const novaQuantidade = Math.max(0, (item.quantidade || 0) - item.quantity);
-         await updateDoc(itemDocRef, { 
-           quantidade: novaQuantidade 
+         await updateDoc(itemDocRef, {
+           quantidade: novaQuantidade
          });
-         console.log(`✅ Estoque atualizado - ${item.nome}: ${novaQuantidade} unidades`);
        }
-       
+
        // Registra automaticamente como transação no financeiro
        await registrarVenda({
          descricao: `Ordem de Serviço #${osId} - ${cliente.nome}`,
@@ -308,8 +292,7 @@ async function handleSubmit() {
            subtotal: (item.precoVenda || item.preco || 0) * item.quantity
          }))
        });
-       
-       console.log('✅ Transação registrada automaticamente no financeiro');
+
        toast.success('Ordem de serviço criada!', { id: loadingToast });
      }
      router.push('/ordens-servico');
