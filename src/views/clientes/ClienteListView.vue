@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
 import { db } from '@/firebase/config.js'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
 import { useCurrentStore } from '@/composables/useCurrentStore'
 
 import { Button } from '@/components/ui/button'
@@ -21,6 +21,38 @@ const { storeId } = useCurrentStore()
 const clients = ref([])
 const isLoading = ref(true)
 
+async function getUltimmoServico(clientId, customerId) {
+  try {
+    // Busca a última ordem de serviço do cliente
+    const q = query(
+      collection(db, 'stores', storeId.value, 'ordens_servico'),
+      where('customerId', '==', customerId),
+      where('status', '!=', 'cancelada'),
+      orderBy('status'),
+      orderBy('date', 'desc')
+    )
+    
+    const snapshot = await getDocs(q)
+    
+    if (snapshot.empty) {
+      return { servico: 'Nenhum serviço', data: '-' }
+    }
+    
+    const ultimoServico = snapshot.docs[0].data()
+    const data = ultimoServico.date?.toDate ? ultimoServico.date.toDate() : new Date(ultimoServico.date)
+    
+    return {
+      servico: Array.isArray(ultimoServico.observations) 
+        ? ultimoServico.observations.join(', ').substring(0, 50)
+        : (ultimoServico.observations || 'Serviço').substring(0, 50),
+      data: data.toLocaleDateString('pt-BR')
+    }
+  } catch (error) {
+    console.error('Erro ao buscar último serviço:', error)
+    return { servico: '-', data: '-' }
+  }
+}
+
 async function fetchClients() {
   if (!storeId.value) {
     console.error('StoreId não disponível');
@@ -31,10 +63,21 @@ async function fetchClients() {
   isLoading.value = true;
   try {
     const querySnapshot = await getDocs(collection(db, 'stores', storeId.value, 'clientes'))
-    clients.value = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }))
+    clients.value = await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const clientData = {
+          id: doc.id,
+          ...doc.data()
+        }
+        
+        // Busca o último serviço para cada cliente
+        const ultimoServico = await getUltimmoServico(doc.id, doc.id)
+        clientData.ultimoServico = ultimoServico.servico
+        clientData.dataServico = ultimoServico.data
+        
+        return clientData
+      })
+    )
   } catch (error) {
     console.error('Erro ao carregar clientes:', error);
     alert('Erro ao carregar clientes: ' + error.message);
@@ -77,12 +120,14 @@ watchEffect(() => {
     </div>
 
     <Table v-else>
-      <TableCaption>Uma lista de seus clientes cadastrados.</TableCaption>
+      <TableCaption>Uma lista de seus clientes cadastrados com histórico de serviços.</TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead>Nome</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Telefone</TableHead>
+          <TableHead>Último Serviço</TableHead>
+          <TableHead>Data do Serviço</TableHead>
           <TableHead class="text-right">Ações</TableHead>
         </TableRow>
       </TableHeader>
@@ -97,6 +142,14 @@ watchEffect(() => {
           </TableCell>
           <TableCell>{{ client.email }}</TableCell>
           <TableCell>{{ client.telefone }}</TableCell>
+          <TableCell class="text-sm" :title="client.ultimoServico">
+            {{ client.ultimoServico || '-' }}
+          </TableCell>
+          <TableCell class="text-sm font-medium">
+            <span :class="client.dataServico !== '-' ? 'text-green-600 dark:text-green-400' : 'text-gray-400'">
+              {{ client.dataServico || '-' }}
+            </span>
+          </TableCell>
           <TableCell class="text-right">
             <RouterLink :to="`/clientes/${client.id}/editar`">
               <Button variant="outline" size="sm">
