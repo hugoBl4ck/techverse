@@ -44,16 +44,16 @@ const atualizarDatas = () => {
 
   switch (periodo.value) {
     case 'dia':
-      inicio.setDate(hoje.getDate())
+      inicio.setHours(0, 0, 0, 0) // início do dia
       break
     case 'semana':
       inicio.setDate(hoje.getDate() - 7)
       break
     case 'mes':
-      inicio.setMonth(hoje.getMonth() - 1)
+      inicio.setDate(1) // primeiro dia do mês atual
       break
     case 'ano':
-      inicio.setFullYear(hoje.getFullYear() - 1)
+      inicio.setMonth(0, 1) // primeiro dia do ano atual
       break
   }
 
@@ -147,7 +147,8 @@ const dadosGraficoReceita = computed(() => {
   return dadosOrdenados.sort((a, b) => {
     const [diaA, mesA] = a.data.split('/').map(Number)
     const [diaB, mesB] = b.data.split('/').map(Number)
-    return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB)
+    const anoAtual = new Date().getFullYear()
+    return new Date(anoAtual, mesA - 1, diaA) - new Date(anoAtual, mesB - 1, diaB)
   })
 })
 
@@ -187,7 +188,8 @@ const dadosTabelaDiaria = computed(() => {
     .sort((a, b) => {
       const [diaA, mesA] = a.data.split('/').map(Number)
       const [diaB, mesB] = b.data.split('/').map(Number)
-      return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB)
+      const anoAtual = new Date().getFullYear()
+      return new Date(anoAtual, mesA - 1, diaA) - new Date(anoAtual, mesB - 1, diaB)
     })
 
   // Adiciona linha de total
