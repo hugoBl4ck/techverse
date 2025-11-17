@@ -49,11 +49,17 @@ async function getUltimmoServico(clientId, customerId) {
     const servicoData = ultimoServico.data()
     const data = servicoData.date?.toDate ? servicoData.date.toDate() : new Date(servicoData.date)
 
+    // Formatar data mantendo horário local
+    const year = data.getFullYear();
+    const month = String(data.getMonth() + 1).padStart(2, '0');
+    const day = String(data.getDate()).padStart(2, '0');
+    const dataFormatada = `${day}/${month}/${year}`;
+
     return {
       servico: Array.isArray(servicoData.observations)
         ? servicoData.observations.join(', ').substring(0, 50)
         : (servicoData.observations || 'Serviço').substring(0, 50),
-      data: data.toLocaleDateString('pt-BR')
+      data: dataFormatada
     }
   } catch (error) {
     console.error('Erro ao buscar último serviço:', error)
