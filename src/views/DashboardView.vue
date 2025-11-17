@@ -3,6 +3,7 @@ import { ref, onMounted, computed, watch } from "vue";
 import { db } from "@/firebase/config.js";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useCurrentStore } from "@/composables/useCurrentStore";
+import { useTransacoes } from "@/composables/useTransacoes";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,11 +28,27 @@ import {
 } from "recharts";
 
 const { storeId } = useCurrentStore();
+const { transacoes, loadTransacoes, filtrarPorPeriodo, isLoading: isLoadingTransacoesFromHook } = useTransacoes(storeId);
 
 const allServices = ref([]);
 const isLoading = ref(true);
+const isLoadingTransacoes = ref(true);
 const promotions = ref([]);
 const selectedPeriod = ref("current-month");
+
+// Loading combinado
+const isLoadingData = computed(() => isLoading.value || isLoadingTransacoesFromHook.value);
+
+// Número de serviços no período (baseado em transações)
+const servicesCount = computed(() => {
+  const { startDate, endDate } = getPeriodDates();
+  return transacoes.value.filter(t =>
+    t.tipo === 'venda' &&
+    t.categoria === 'servico' &&
+    new Date(t.data_transacao) >= startDate &&
+    new Date(t.data_transacao) <= endDate
+  ).length;
+});
 
 // Opções de período
 const periodOptions = [
@@ -98,6 +115,7 @@ watch(
   (newStoreId) => {
     if (newStoreId) {
       loadServices();
+      loadTransacoes();
     }
   },
   { immediate: true }
@@ -152,20 +170,31 @@ const filteredServices = computed(() => {
 
 // Faturamento do período selecionado
 const periodRevenue = computed(() => {
-  return filteredServices.value.reduce(
-    (total, service) => total + (service.totalAmount || 0),
-    0
+  const { startDate, endDate } = getPeriodDates();
+  const serviceTransactions = transacoes.value.filter(t =>
+    t.tipo === 'venda' &&
+    t.categoria === 'servico' &&
+    new Date(t.data_transacao) >= startDate &&
+    new Date(t.data_transacao) <= endDate
   );
+  return serviceTransactions.reduce((total, t) => total + (t.valor || 0), 0);
 });
 
 // Dados para o gráfico de barras (valores diários)
 const dailyRevenueData = computed(() => {
-  
+  const { startDate, endDate } = getPeriodDates();
+  const serviceTransactions = transacoes.value.filter(t =>
+    t.tipo === 'venda' &&
+    t.categoria === 'servico' &&
+    new Date(t.data_transacao) >= startDate &&
+    new Date(t.data_transacao) <= endDate
+  );
+
   const servicesByDay = {};
 
-  filteredServices.value.forEach((service) => {
-    const dateKey = new Date(service.date).toLocaleDateString("pt-BR");
-    const amount = service.totalAmount || 0;
+  serviceTransactions.forEach((transaction) => {
+    const dateKey = new Date(transaction.data_transacao).toLocaleDateString("pt-BR");
+    const amount = transaction.valor || 0;
     servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + amount;
   });
 
@@ -179,18 +208,25 @@ const dailyRevenueData = computed(() => {
       const [diaB, mesB, anoB] = b.name.split('/').map(Number);
       return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
     });
-    
+
   return result;
 });
 
 // Dados para o gráfico de linha (todos os dias do período)
 const monthlyLineData = computed(() => {
-  
+  const { startDate, endDate } = getPeriodDates();
+  const serviceTransactions = transacoes.value.filter(t =>
+    t.tipo === 'venda' &&
+    t.categoria === 'servico' &&
+    new Date(t.data_transacao) >= startDate &&
+    new Date(t.data_transacao) <= endDate
+  );
+
   const servicesByDay = {};
 
-  filteredServices.value.forEach((service) => {
-    const dateKey = new Date(service.date).toLocaleDateString("pt-BR");
-    const amount = service.totalAmount || 0;
+  serviceTransactions.forEach((transaction) => {
+    const dateKey = new Date(transaction.data_transacao).toLocaleDateString("pt-BR");
+    const amount = transaction.valor || 0;
     servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + amount;
   });
 
@@ -204,7 +240,7 @@ const monthlyLineData = computed(() => {
       const [diaB, mesB, anoB] = b.name.split('/').map(Number);
       return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
     });
-    
+
   return result;
 });
 </script>
@@ -218,7 +254,7 @@ const monthlyLineData = computed(() => {
       </router-link>
     </div>
 
-    <div v-if="isLoading" class="text-center py-8">
+    <div v-if="isLoadingData" class="text-center py-8">
       <p>Carregando dados...</p>
     </div>
 
@@ -301,7 +337,7 @@ const monthlyLineData = computed(() => {
           </CardHeader>
           <CardContent class="space-y-4">
             <p class="text-3xl font-bold text-purple-600">R$ {{ periodRevenue.toFixed(2) }}</p>
-            <p class="text-sm text-gray-600">{{ filteredServices.length }} serviço(s)</p>
+            <p class="text-sm text-gray-600">{{ servicesCount }} serviço(s)</p>
           </CardContent>
         </Card>
         <Card>
