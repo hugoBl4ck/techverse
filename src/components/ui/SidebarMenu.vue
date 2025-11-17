@@ -92,7 +92,7 @@
           </AccordionItem>
         </Accordion>
     
-    <RouterLink :to="isAuthenticated ? '/financeiro' : '/financeiro/demo'" v-slot="{ isExactActive }">
+    <RouterLink to="/financeiro" v-slot="{ isExactActive }">
       <Button
         variant="ghost"
         class="w-full justify-start gap-2"
@@ -102,7 +102,7 @@
         @click="handleNavigate"
       >
         <TrendingUp class="size-4" />
-        Financeiro {{ !isAuthenticated ? '(Demo)' : '' }}
+        Financeiro
       </Button>
     </RouterLink>
 

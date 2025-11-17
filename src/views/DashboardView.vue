@@ -314,24 +314,23 @@ const monthlyLineData = computed(() => {
         </CardHeader>
         <CardContent>
           <div v-if="dailyRevenueData.length > 0" class="w-full" style="height: auto; min-height: 300px;">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height="300">
               <BarChart
                 :data="dailyRevenueData"
-                margin="{ top: 20, right: 30, left: 0, bottom: 60 }"
+                :margin="{ top: 20, right: 30, left: 0, bottom: 60 }"
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="name" 
-                  angle={-45}
+                <XAxis
+                  dataKey="name"
+                  angle="-45"
                   textAnchor="end"
-                  height={60}
+                  height="60"
                 />
                 <YAxis />
-                <Tooltip 
-                  :formatter="(value) => `R$ ${value.toFixed(2)}`"
-                  contentStyle="{ backgroundColor: 'rgba(0, 0, 0, 0.8)', border: 'none', borderRadius: '4px', color: '#fff' }"
+                <Tooltip
+                  :formatter="(value) => [`R$ ${Number(value).toFixed(2)}`, 'Valor']"
                 />
-                <Bar dataKey="value" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="value" fill="#8b5cf6" :radius="[8, 8, 0, 0]" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -352,29 +351,28 @@ const monthlyLineData = computed(() => {
         </CardHeader>
         <CardContent>
           <div v-if="monthlyLineData.length > 0" class="w-full" style="height: auto; min-height: 300px;">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height="300">
               <LineChart
                 :data="monthlyLineData"
-                margin="{ top: 20, right: 30, left: 0, bottom: 60 }"
+                :margin="{ top: 20, right: 30, left: 0, bottom: 60 }"
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
+                <XAxis
                   dataKey="name"
-                  angle={-45}
+                  angle="-45"
                   textAnchor="end"
-                  height={60}
+                  height="60"
                 />
                 <YAxis />
-                <Tooltip 
-                  :formatter="(value) => `R$ ${value.toFixed(2)}`"
-                  contentStyle="{ backgroundColor: 'rgba(0, 0, 0, 0.8)', border: 'none', borderRadius: '4px', color: '#fff' }"
+                <Tooltip
+                  :formatter="(value) => [`R$ ${Number(value).toFixed(2)}`, 'Valor']"
                 />
                 <Line
                   type="monotone"
                   dataKey="value"
                   stroke="#8b5cf6"
-                  strokeWidth={2}
-                  dot="{ fill: '#8b5cf6', r: 4 }"
+                  strokeWidth="2"
+                  :dot="{ fill: '#8b5cf6', r: 4 }"
                 />
               </LineChart>
             </ResponsiveContainer>

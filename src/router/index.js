@@ -205,14 +205,7 @@ const routes = [
         name: "DashboardFinanceiro",
         component: () =>
           import("@/views/financeiro/DashboardFinanceiroView.vue"),
-        meta: { title: "Dashboard Financeiro", allowDemo: true },
-      },
-      {
-        path: "financeiro/demo",
-        name: "DashboardFinanceiroDemo",
-        component: () =>
-          import("@/views/financeiro/DashboardFinanceiroView.vue"),
-        meta: { title: "Dashboard Financeiro (Demo)", requiresAuth: false },
+        meta: { title: "Dashboard Financeiro" },
       },
       {
         path: "financeiro/produtos",
