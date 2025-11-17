@@ -54,7 +54,7 @@ const clientes = ref([]);
 const ordemServico = ref({
   customerId: null,
   customerName: '',
-  date: null,
+  date: new Date(),
   price: 0,
   observations: '',
   computerConfiguration: '',
