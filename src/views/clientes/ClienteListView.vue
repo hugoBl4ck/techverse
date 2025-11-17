@@ -23,31 +23,33 @@ const isLoading = ref(true)
 
 async function getUltimmoServico(clientId, customerId) {
   try {
-    // Busca todas as ordens de serviço do cliente, ordenadas por data descendente
-    const q = query(
-      collection(db, 'stores', storeId.value, 'ordens_servico'),
-      where('customerId', '==', customerId),
-      orderBy('date', 'desc')
-    )
+    console.log('🔍 Buscando último serviço para cliente:', clientId, 'customerId:', customerId)
 
+    // Busca todas as ordens de serviço (sem filtro para evitar problemas de índice)
+    const q = query(collection(db, 'stores', storeId.value, 'ordens_servico'))
     const snapshot = await getDocs(q)
 
-    if (snapshot.empty) {
+    // Filtra manualmente por customerId e status não cancelado
+    const servicosCliente = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .filter(servico => servico.customerId === customerId && servico.status !== 'cancelada')
+      .sort((a, b) => {
+        const dateA = a.date?.toDate ? a.date.toDate() : new Date(a.date)
+        const dateB = b.date?.toDate ? b.date.toDate() : new Date(b.date)
+        return dateB - dateA // Ordem descendente
+      })
+
+    console.log('📄 Serviços encontrados para cliente', customerId, ':', servicosCliente.length)
+
+    if (servicosCliente.length === 0) {
+      console.log('⚠️ Nenhum serviço encontrado para cliente:', customerId)
       return { servico: 'Nenhum serviço', data: '-' }
     }
 
-    // Encontra a primeira ordem que não está cancelada
-    const ultimoServico = snapshot.docs.find(doc => {
-      const data = doc.data()
-      return data.status !== 'cancelada'
-    })
+    const ultimoServico = servicosCliente[0]
+    console.log('✅ Último serviço encontrado:', ultimoServico)
 
-    if (!ultimoServico) {
-      return { servico: 'Nenhum serviço ativo', data: '-' }
-    }
-
-    const servicoData = ultimoServico.data()
-    const data = servicoData.date?.toDate ? servicoData.date.toDate() : new Date(servicoData.date)
+    const data = ultimoServico.date?.toDate ? ultimoServico.date.toDate() : new Date(ultimoServico.date)
 
     // Formatar data mantendo horário local
     const year = data.getFullYear();
@@ -56,9 +58,9 @@ async function getUltimmoServico(clientId, customerId) {
     const dataFormatada = `${day}/${month}/${year}`;
 
     return {
-      servico: Array.isArray(servicoData.observations)
-        ? servicoData.observations.join(', ').substring(0, 50)
-        : (servicoData.observations || 'Serviço').substring(0, 50),
+      servico: Array.isArray(ultimoServico.observations)
+        ? ultimoServico.observations.join(', ').substring(0, 50)
+        : (ultimoServico.observations || 'Serviço').substring(0, 50),
       data: dataFormatada
     }
   } catch (error) {
