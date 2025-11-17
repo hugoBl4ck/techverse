@@ -76,12 +76,12 @@ const selectedServicoCatalogo = computed(() =>
   catalogoServicos.value.find(s => s.id === selectedServicoId.value) || null
 );
 
-// Format date for datetime-local input
+// Format date for date input
 const dateForInput = computed({
   get() {
     try {
       if (!ordemServico.value.date) return '';
-      
+
       let date;
       if (ordemServico.value.date instanceof Date) {
         date = ordemServico.value.date;
@@ -93,20 +93,21 @@ const dateForInput = computed({
       } else {
         date = new Date(ordemServico.value.date);
       }
-      
+
       if (isNaN(date.getTime())) {
         console.warn('Data inválida:', ordemServico.value.date);
-        return new Date().toISOString().slice(0, 16);
+        return new Date().toISOString().slice(0, 10);
       }
-      
-      return date.toISOString().slice(0, 16);
+
+      return date.toISOString().slice(0, 10);
     } catch (error) {
       console.error('Erro ao formatar data:', error);
-      return new Date().toISOString().slice(0, 16);
+      return new Date().toISOString().slice(0, 10);
     }
   },
   set(value) {
-    ordemServico.value.date = value ? new Date(value) : new Date();
+    // Para input type="date", value é no formato YYYY-MM-DD
+    ordemServico.value.date = value ? new Date(value + 'T12:00:00') : new Date();
   }
 });
 
@@ -341,7 +342,7 @@ async function handleSubmit() {
           </div>
           <div class="grid gap-2">
             <Label for="data">Data do Serviço (quando foi realizado) *</Label>
-            <Input id="data" v-model="dateForInput" type="datetime-local" required />
+            <Input id="data" v-model="dateForInput" type="date" required />
           </div>
           <div class="grid gap-2">
             <Label for="servico-catalogo">Serviço do Catálogo (Opcional)</Label>
