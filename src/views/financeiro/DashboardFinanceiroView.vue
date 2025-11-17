@@ -93,31 +93,49 @@ const dadosGraficoReceita = computed(() => {
   const agrupado = {}
   transacoesFiltradas.value.forEach(t => {
     if (t.tipo === 'venda') {
-      const data = new Date(t.data_transacao).toLocaleDateString()
+      // Formata a data de forma consistente para o gráfico
+      const data = new Date(t.data_transacao).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit'
+      })
       agrupado[data] = (agrupado[data] || 0) + t.valor
     }
   })
-  return Object.entries(agrupado).map(([data, valor]) => ({ data, valor }))
+  // Ordena por data para melhor visualização
+  const dadosOrdenados = Object.entries(agrupado).map(([data, valor]) => ({ data, valor }))
+  return dadosOrdenados.sort((a, b) => {
+    const [diaA, mesA] = a.data.split('/').map(Number)
+    const [diaB, mesB] = b.data.split('/').map(Number)
+    return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB)
+  })
 })
 
 const dadosGraficoDespesa = computed(() => {
   const agrupado = {}
   transacoesFiltradas.value.forEach(t => {
     if (t.tipo === 'despesa') {
-      const data = new Date(t.data_transacao).toLocaleDateString()
+      const data = new Date(t.data_transacao).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit'
+      })
       agrupado[data] = (agrupado[data] || 0) + t.valor
     }
   })
-  return Object.entries(agrupado).map(([data, valor]) => ({ data, valor }))
+  const dadosOrdenados = Object.entries(agrupado).map(([data, valor]) => ({ data, valor }))
+  return dadosOrdenados.sort((a, b) => {
+    const [diaA, mesA] = a.data.split('/').map(Number)
+    const [diaB, mesB] = b.data.split('/').map(Number)
+    return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB)
+  })
 })
 
 const dadosGraficoCategorias = computed(() => {
   const agrupado = agruparPorCategoria(transacoesFiltradas.value)
   return Object.entries(agrupado).map(([categoria, dados]) => ({
     name: categoria,
-    receita: dados.receita,
-    despesa: dados.despesa,
-    lucro: dados.total
+    receita: parseFloat(dados.receita.toFixed(2)),
+    despesa: parseFloat(dados.despesa.toFixed(2)),
+    lucro: parseFloat(dados.total.toFixed(2))
   }))
 })
 
@@ -288,25 +306,19 @@ watch(() => storeId.value, (newStoreId) => {
       <!-- Gráfico de Receita vs Despesa -->
       <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle>Receita vs Despesa</CardTitle>
+          <CardTitle>Faturamento Diário</CardTitle>
         </CardHeader>
         <CardContent>
           <div v-if="dadosGraficoReceita.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
             Sem dados de transações no período
           </div>
-          <ResponsiveContainer v-else width="100%" height={300}>
-            <BarChart data={dadosGraficoReceita}>
+          <ResponsiveContainer v-else width="100%" height="300">
+            <BarChart :data="dadosGraficoReceita">
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--color-border))" />
               <XAxis dataKey="data" stroke="rgba(var(--color-muted-foreground))" />
               <YAxis stroke="rgba(var(--color-muted-foreground))" />
-              <Tooltip 
-                :contentStyle="{ 
-                  backgroundColor: 'rgba(var(--color-background))', 
-                  border: '1px solid rgba(var(--color-border))',
-                  borderRadius: '8px'
-                }"
-              />
-              <Bar dataKey="valor" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+              <Tooltip />
+              <Bar dataKey="valor" fill="#3b82f6" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -321,21 +333,15 @@ watch(() => storeId.value, (newStoreId) => {
           <div v-if="dadosGraficoCategorias.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
             Sem dados de categorias no período
           </div>
-          <ResponsiveContainer v-else width="100%" height={300}>
-            <BarChart data={dadosGraficoCategorias}>
+          <ResponsiveContainer v-else width="100%" height="300">
+            <BarChart :data="dadosGraficoCategorias">
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--color-border))" />
               <XAxis dataKey="name" stroke="rgba(var(--color-muted-foreground))" />
               <YAxis stroke="rgba(var(--color-muted-foreground))" />
-              <Tooltip 
-                :contentStyle="{ 
-                  backgroundColor: 'rgba(var(--color-background))', 
-                  border: '1px solid rgba(var(--color-border))',
-                  borderRadius: '8px'
-                }"
-              />
+              <Tooltip />
               <Legend />
-              <Bar dataKey="receita" fill="#10b981" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="despesa" fill="#ef4444" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="receita" fill="#10b981" />
+              <Bar dataKey="despesa" fill="#ef4444" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
