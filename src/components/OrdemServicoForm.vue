@@ -107,7 +107,7 @@ const dateForInput = computed({
   },
   set(value) {
     // Para input type="date", value é no formato YYYY-MM-DD
-    ordemServico.value.date = value ? new Date(value + 'T12:00:00') : new Date();
+    ordemServico.value.date = value ? new Date(value) : new Date();
   }
 });
 
