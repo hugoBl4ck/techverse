@@ -5,6 +5,8 @@ import { useFinanceiro } from '@/composables/useFinanceiro'
 import { useTransacoes } from '@/composables/useTransacoes'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { db } from '@/firebase/config.js'
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -32,6 +34,8 @@ const periodo = ref('mes') // dia, semana, mes, ano
 const filtroCategoria = ref('todas')
 const dataInicio = ref(null)
 const dataFim = ref(null)
+const services = ref([])
+const cancelledServiceIds = ref(new Set())
 
 // Calcula datas baseado no período selecionado
 const atualizarDatas = () => {
@@ -57,16 +61,48 @@ const atualizarDatas = () => {
   dataFim.value = hoje
 }
 
-// Transações filtradas
+// Carrega serviços para identificar cancelados
+const loadServices = async () => {
+  if (!storeId.value) return
+
+  try {
+    const servicesCol = collection(db, 'stores', storeId.value, 'ordens_servico')
+    const snapshot = await getDocs(servicesCol)
+
+    services.value = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      date: doc.data().date?.toDate?.() || new Date(doc.data().date)
+    }))
+
+    // Identifica IDs de serviços cancelados
+    cancelledServiceIds.value = new Set(
+      services.value
+        .filter(service => service.status === 'cancelada')
+        .map(service => service.id)
+    )
+  } catch (error) {
+    console.error('Erro ao carregar serviços:', error)
+    services.value = []
+    cancelledServiceIds.value = new Set()
+  }
+}
+
+// Transações filtradas (excluindo serviços cancelados)
 const transacoesFiltradas = computed(() => {
   if (!dataInicio.value || !dataFim.value) return transacoes.value
-  
+
   let filtradas = filtrarPorPeriodo(dataInicio.value, dataFim.value)
-  
+
+  // Exclui transações de serviços cancelados
+  filtradas = filtradas.filter(t =>
+    !t.ordem_servico_id || !cancelledServiceIds.value.has(t.ordem_servico_id)
+  )
+
   if (filtroCategoria.value !== 'todas') {
     filtradas = filtradas.filter(t => t.categoria === filtroCategoria.value)
   }
-  
+
   return filtradas
 })
 
@@ -189,6 +225,7 @@ onMounted(async () => {
     try {
       await loadProdutos()
       await loadTransacoes()
+      await loadServices()
       atualizarDatas()
     } catch (err) {
       console.error('❌ Erro ao carregar dados financeiros:', err)
@@ -206,6 +243,7 @@ watch(() => storeId.value, (newStoreId) => {
   if (newStoreId) {
     loadProdutos()
     loadTransacoes()
+    loadServices()
   }
 })
 </script>

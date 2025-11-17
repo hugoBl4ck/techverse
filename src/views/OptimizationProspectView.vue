@@ -204,11 +204,8 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-2 cursor-pointer" @click="router.push('/landing')">
+        <div class="flex items-center cursor-pointer" @click="router.push('/landing')">
           <TechVerseLogoSvg />
-          <span class="font-display text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary">
-            TechVerse
-          </span>
         </div>
         <div class="flex items-center gap-3">
           <Button @click="router.push('/login')" variant="outline" class="font-body border border-primary/30 text-primary hover:bg-primary/5">
