@@ -43,7 +43,10 @@ const periodOptions = [
 ];
 
 const loadServices = async () => {
+  console.log('🔍 Tentando carregar ordens de serviço...', { storeId: storeId.value });
+  
   if (!storeId.value) {
+    console.log('⚠️ StoreId não disponível');
     isLoading.value = false;
     return;
   }
@@ -60,16 +63,22 @@ const loadServices = async () => {
     const q = query(servicesCol, orderBy("date", "desc"));
     const servicesSnapshot = await getDocs(q);
 
+    console.log('📊 Snapshot recebido:', servicesSnapshot.size, 'documentos');
+    
     allServices.value = servicesSnapshot.docs.map((doc) => {
       const data = doc.data();
+      console.log('📋 Documento encontrado:', { id: doc.id, ...data });
       return {
         id: doc.id,
         ...data,
         date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
       };
     });
+    
+    console.log('✅ Serviços carregados:', allServices.value.length);
   } catch (error) {
-    // Handle error silently
+    console.error('❌ Erro ao carregar serviços:', error);
+    allServices.value = [];
   } finally {
     isLoading.value = false;
   }
@@ -157,36 +166,60 @@ const periodRevenue = computed(() => {
 
 // Dados para o gráfico de barras (valores diários)
 const dailyRevenueData = computed(() => {
+  console.log('📊 Calculando dailyRevenueData:', {
+    filteredServices: filteredServices.value.length,
+    allServices: allServices.value.length,
+    selectedPeriod: selectedPeriod.value
+  });
+  
   const servicesByDay = {};
 
   filteredServices.value.forEach((service) => {
     const dateKey = new Date(service.date).toLocaleDateString("pt-BR");
-    servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + (service.totalAmount || 0);
+    const amount = service.totalAmount || 0;
+    servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + amount;
+    console.log('💰 Serviço processado:', {
+      dateKey,
+      amount,
+      serviceId: service.id,
+      customerName: service.customerName
+    });
   });
 
-  return Object.entries(servicesByDay)
+  const result = Object.entries(servicesByDay)
     .map(([date, value]) => ({
       name: date,
       value: parseFloat(value.toFixed(2)),
     }))
     .sort((a, b) => new Date(a.name) - new Date(b.name));
+  
+  console.log('✅ dailyRevenueData final:', result);
+  return result;
 });
 
 // Dados para o gráfico de linha (todos os dias do período)
 const monthlyLineData = computed(() => {
+  console.log('📈 Calculando monthlyLineData:', {
+    filteredServices: filteredServices.value.length
+  });
+  
   const servicesByDay = {};
 
   filteredServices.value.forEach((service) => {
     const dateKey = new Date(service.date).toLocaleDateString("pt-BR");
-    servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + (service.totalAmount || 0);
+    const amount = service.totalAmount || 0;
+    servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + amount;
   });
 
-  return Object.entries(servicesByDay)
+  const result = Object.entries(servicesByDay)
     .map(([date, value]) => ({
       name: date,
       value: parseFloat(value.toFixed(2)),
     }))
     .sort((a, b) => new Date(a.name) - new Date(b.name));
+  
+  console.log('✅ monthlyLineData final:', result);
+  return result;
 });
 </script>
 
