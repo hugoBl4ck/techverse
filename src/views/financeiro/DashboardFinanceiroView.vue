@@ -90,27 +90,19 @@ const loadServices = async () => {
 
 // Transações filtradas (excluindo serviços cancelados)
 const transacoesFiltradas = computed(() => {
-  console.log('🔍 Filtrando transações - Período:', periodo.value, 'Total transações:', transacoes.value.length)
-  if (!dataInicio.value || !dataFim.value) {
-    console.log('⚠️ Datas não definidas')
-    return transacoes.value
-  }
+  if (!dataInicio.value || !dataFim.value) return transacoes.value
 
   let filtradas = filtrarPorPeriodo(dataInicio.value, dataFim.value)
-  console.log('📅 Após filtro período:', filtradas.length)
 
   // Exclui transações de serviços cancelados
   filtradas = filtradas.filter(t =>
     !t.ordem_servico_id || !cancelledServiceIds.value.has(t.ordem_servico_id)
   )
-  console.log('🚫 Após excluir cancelados:', filtradas.length)
 
   if (filtroCategoria.value !== 'todas') {
     filtradas = filtradas.filter(t => t.categoria === filtroCategoria.value)
-    console.log('🏷️ Após filtro categoria:', filtradas.length)
   }
 
-  console.log('✅ Transações filtradas finais:', filtradas.length)
   return filtradas
 })
 
@@ -455,20 +447,24 @@ watch(() => storeId.value, (newStoreId) => {
         </CardHeader>
         <CardContent>
           <div v-if="dadosGraficoReceita.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
-            Sem dados de transações no período ({{ dadosGraficoReceita.length }} itens)
+            Sem dados de transações no período
           </div>
-          <div v-else class="mb-4 text-sm text-muted-foreground">
-            Debug: {{ dadosGraficoReceita.length }} dias com dados
+          <div v-else class="space-y-4">
+            <!-- Debug: mostrar dados como texto -->
+            <div class="text-sm text-muted-foreground mb-4">
+              <strong>Dados calculados:</strong>
+              <pre class="bg-muted p-2 rounded text-xs mt-1">{{ JSON.stringify(dadosGraficoReceita, null, 2) }}</pre>
+            </div>
+            <ResponsiveContainer width="100%" height="300">
+              <BarChart :data="dadosGraficoReceita" :margin="{ top: 20, right: 30, left: 20, bottom: 5 }">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="data" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="valor" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-          <ResponsiveContainer v-if="dadosGraficoReceita.length > 0" width="100%" height="300">
-            <BarChart :data="dadosGraficoReceita">
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--color-border))" />
-              <XAxis dataKey="data" stroke="rgba(var(--color-muted-foreground))" />
-              <YAxis stroke="rgba(var(--color-muted-foreground))" />
-              <Tooltip />
-              <Bar dataKey="valor" fill="#3b82f6" />
-            </BarChart>
-          </ResponsiveContainer>
         </CardContent>
       </Card>
 
@@ -479,22 +475,26 @@ watch(() => storeId.value, (newStoreId) => {
         </CardHeader>
         <CardContent>
           <div v-if="dadosGraficoCategorias.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
-            Sem dados de categorias no período ({{ dadosGraficoCategorias.length }} categorias)
+            Sem dados de categorias no período
           </div>
-          <div v-else class="mb-4 text-sm text-muted-foreground">
-            Debug: {{ dadosGraficoCategorias.length }} categorias encontradas
+          <div v-else class="space-y-4">
+            <!-- Debug: mostrar dados como texto -->
+            <div class="text-sm text-muted-foreground mb-4">
+              <strong>Dados calculados:</strong>
+              <pre class="bg-muted p-2 rounded text-xs mt-1">{{ JSON.stringify(dadosGraficoCategorias, null, 2) }}</pre>
+            </div>
+            <ResponsiveContainer width="100%" height="300">
+              <BarChart :data="dadosGraficoCategorias" :margin="{ top: 20, right: 30, left: 20, bottom: 5 }">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="receita" fill="#10b981" />
+                <Bar dataKey="despesa" fill="#ef4444" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-          <ResponsiveContainer v-if="dadosGraficoCategorias.length > 0" width="100%" height="300">
-            <BarChart :data="dadosGraficoCategorias">
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--color-border))" />
-              <XAxis dataKey="name" stroke="rgba(var(--color-muted-foreground))" />
-              <YAxis stroke="rgba(var(--color-muted-foreground))" />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="receita" fill="#10b981" />
-              <Bar dataKey="despesa" fill="#ef4444" />
-            </BarChart>
-          </ResponsiveContainer>
         </CardContent>
       </Card>
     </div>
