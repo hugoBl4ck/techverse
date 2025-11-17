@@ -205,7 +205,14 @@ const routes = [
         name: "DashboardFinanceiro",
         component: () =>
           import("@/views/financeiro/DashboardFinanceiroView.vue"),
-        meta: { title: "Dashboard Financeiro" },
+        meta: { title: "Dashboard Financeiro", allowDemo: true },
+      },
+      {
+        path: "financeiro/demo",
+        name: "DashboardFinanceiroDemo",
+        component: () =>
+          import("@/views/financeiro/DashboardFinanceiroView.vue"),
+        meta: { title: "Dashboard Financeiro (Demo)", requiresAuth: false },
       },
       {
         path: "financeiro/produtos",
@@ -243,6 +250,7 @@ router.beforeEach(async (to, from, next) => {
   await authReady;
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const allowDemo = to.matched.some((record) => record.meta.allowDemo);
 
   document.title = `TechVerse - ${
     to.meta.title || "Gestão"
@@ -251,6 +259,11 @@ router.beforeEach(async (to, from, next) => {
   // Rota raiz redireciona baseado em autenticação
   if (to.path === "/") {
     return next(isAuthenticated.value ? "/dashboard" : "/landing");
+  }
+
+  // Rotas de demo financeiro são sempre permitidas
+  if (to.path === "/financeiro/demo") {
+    return next();
   }
 
   if (requiresAuth && !isAuthenticated.value) {
