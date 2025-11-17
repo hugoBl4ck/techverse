@@ -356,10 +356,10 @@ watch(() => storeId.value, (newStoreId) => {
           <CardTitle class="text-sm font-medium text-muted-foreground">Margem Média</CardTitle>
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold text-secondary">
+          <div class="text-2xl font-bold text-foreground">
             {{ totaisFiltrados.margem }}%
           </div>
-          <p class="text-xs text-secondary mt-2">Do período</p>
+          <p class="text-xs text-muted-foreground mt-2">Do período</p>
         </CardContent>
       </Card>
 
@@ -522,7 +522,7 @@ watch(() => storeId.value, (newStoreId) => {
               </div>
             </div>
             <div class="text-right">
-              <p class="font-bold text-secondary">{{ produto.margem_lucro }}%</p>
+              <p class="font-bold text-foreground">{{ produto.margem_lucro }}%</p>
               <p class="text-xs text-muted-foreground">R$ {{ produto.preco_venda.toFixed(2) }}</p>
             </div>
           </div>
