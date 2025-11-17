@@ -124,7 +124,7 @@ export function useTransacoes(storeId) {
         categoria: despesaData.categoria || 'operacional',
         produtos: despesaData.produtos || [],
         status: despesaData.status || 'concluida',
-        data_transacao: Timestamp.now(),
+        data_transacao: vendaData.data_transacao ? Timestamp.fromDate(new Date(vendaData.data_transacao)) : Timestamp.now(),
         data_pagamento: despesaData.data_pagamento ? Timestamp.fromDate(new Date(despesaData.data_pagamento)) : Timestamp.now(),
         metodo_pagamento: despesaData.metodo_pagamento || 'dinheiro',
         createdAt: Timestamp.now()

@@ -285,6 +285,7 @@ async function handleSubmit() {
          cliente_id: cliente.id,
          ordem_servico_id: osId,
          metodo_pagamento: 'pix',
+         data_transacao: ordemServico.value.date, // Usa a data do serviço
          produtos: addedItems.value.map(item => ({
            produtoId: item.id,
            quantidade: item.quantity,
