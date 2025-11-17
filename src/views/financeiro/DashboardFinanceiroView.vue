@@ -7,11 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { db } from '@/firebase/config.js'
-import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts'
-import { TrendingUp, TrendingDown, DollarSign, Package, Zap, Truck } from 'lucide-vue-next'
 
 const { storeId } = useCurrentStore()
 const { produtos, loadProdutos, produtosPorMargem, valorEstoqueTotal, itensEmTransito, quantidadeEmTransito, valorEmTransito, isLoading: isLoadingProdutos } = useFinanceiro(storeId)
@@ -283,7 +278,6 @@ watch(() => storeId.value, (newStoreId) => {
           <option value="ano">Este ano</option>
         </select>
         <Button class="bg-primary hover:bg-primary/90">
-          <Zap class="w-4 h-4 mr-2" />
           Exportar
         </Button>
       </div>
@@ -294,9 +288,8 @@ watch(() => storeId.value, (newStoreId) => {
       <!-- Receita -->
       <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm hover:border-primary/30 transition-all">
         <CardHeader class="pb-3">
-          <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+          <CardTitle class="text-sm font-medium text-muted-foreground">
             Receita
-            <TrendingUp class="w-4 h-4 text-primary" />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -310,9 +303,8 @@ watch(() => storeId.value, (newStoreId) => {
       <!-- Despesa -->
       <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm hover:border-destructive/30 transition-all">
         <CardHeader class="pb-3">
-          <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+          <CardTitle class="text-sm font-medium text-muted-foreground">
             Despesa
-            <TrendingDown class="w-4 h-4 text-destructive" />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -329,9 +321,8 @@ watch(() => storeId.value, (newStoreId) => {
         totaisFiltrados.lucro >= 0 ? 'hover:border-green-500/30' : 'hover:border-destructive/30'
       ]">
         <CardHeader class="pb-3">
-          <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+          <CardTitle class="text-sm font-medium text-muted-foreground">
             Lucro
-            <DollarSign :class="['w-4 h-4', totaisFiltrados.lucro >= 0 ? 'text-green-500' : 'text-destructive']" />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -347,9 +338,8 @@ watch(() => storeId.value, (newStoreId) => {
       <!-- Estoque -->
       <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm hover:border-accent/30 transition-all">
         <CardHeader class="pb-3">
-          <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+          <CardTitle class="text-sm font-medium text-muted-foreground">
             Estoque
-            <Package class="w-4 h-4 text-accent" />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -376,9 +366,8 @@ watch(() => storeId.value, (newStoreId) => {
       <!-- Em Trânsito -->
       <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm hover:border-blue-500/30 transition-all">
         <CardHeader class="pb-3">
-          <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+          <CardTitle class="text-sm font-medium text-muted-foreground">
             Em Trânsito
-            <Truck class="w-4 h-4 text-blue-500" />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -449,21 +438,21 @@ watch(() => storeId.value, (newStoreId) => {
           <div v-if="dadosGraficoReceita.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
             Sem dados de transações no período
           </div>
-          <div v-else class="space-y-4">
-            <!-- Debug: mostrar dados como texto -->
-            <div class="text-sm text-muted-foreground mb-4">
-              <strong>Dados calculados:</strong>
-              <pre class="bg-muted p-2 rounded text-xs mt-1">{{ JSON.stringify(dadosGraficoReceita, null, 2) }}</pre>
+          <div v-else>
+            <!-- Gráfico simples como barras CSS -->
+            <div class="space-y-4">
+              <div v-for="item in dadosGraficoReceita" :key="item.data" class="flex items-center gap-4">
+                <div class="w-16 text-sm font-medium">{{ item.data }}</div>
+                <div class="flex-1 bg-muted rounded-full h-8 relative">
+                  <div
+                    class="bg-primary h-full rounded-full flex items-center justify-end pr-2 text-white text-xs font-medium"
+                    :style="{ width: Math.max((item.valor / Math.max(...dadosGraficoReceita.map(d => d.valor))) * 100, 5) + '%' }"
+                  >
+                    R$ {{ item.valor }}
+                  </div>
+                </div>
+              </div>
             </div>
-            <ResponsiveContainer width="100%" height="300">
-              <BarChart :data="dadosGraficoReceita" :margin="{ top: 20, right: 30, left: 20, bottom: 5 }">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="data" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="valor" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
@@ -477,23 +466,39 @@ watch(() => storeId.value, (newStoreId) => {
           <div v-if="dadosGraficoCategorias.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
             Sem dados de categorias no período
           </div>
-          <div v-else class="space-y-4">
-            <!-- Debug: mostrar dados como texto -->
-            <div class="text-sm text-muted-foreground mb-4">
-              <strong>Dados calculados:</strong>
-              <pre class="bg-muted p-2 rounded text-xs mt-1">{{ JSON.stringify(dadosGraficoCategorias, null, 2) }}</pre>
+          <div v-else>
+            <!-- Gráfico simples como barras duplas CSS -->
+            <div class="space-y-6">
+              <div v-for="item in dadosGraficoCategorias" :key="item.name" class="space-y-2">
+                <div class="font-medium text-sm">{{ item.name }}</div>
+                <div class="space-y-1">
+                  <!-- Barra de receita -->
+                  <div class="flex items-center gap-2">
+                    <div class="w-12 text-xs text-green-600">Receita</div>
+                    <div class="flex-1 bg-muted rounded-full h-6 relative">
+                      <div
+                        class="bg-green-500 h-full rounded-full flex items-center justify-end pr-2 text-white text-xs font-medium"
+                        :style="{ width: Math.max((item.receita / Math.max(...dadosGraficoCategorias.flatMap(d => [d.receita, d.despesa]).filter(v => v > 0))) * 100 || 0, 5) + '%' }"
+                      >
+                        R$ {{ item.receita }}
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Barra de despesa -->
+                  <div class="flex items-center gap-2">
+                    <div class="w-12 text-xs text-red-600">Despesa</div>
+                    <div class="flex-1 bg-muted rounded-full h-6 relative">
+                      <div
+                        class="bg-red-500 h-full rounded-full flex items-center justify-end pr-2 text-white text-xs font-medium"
+                        :style="{ width: Math.max((item.despesa / Math.max(...dadosGraficoCategorias.flatMap(d => [d.receita, d.despesa]).filter(v => v > 0))) * 100 || 0, 5) + '%' }"
+                      >
+                        R$ {{ item.despesa }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <ResponsiveContainer width="100%" height="300">
-              <BarChart :data="dadosGraficoCategorias" :margin="{ top: 20, right: 30, left: 20, bottom: 5 }">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="receita" fill="#10b981" />
-                <Bar dataKey="despesa" fill="#ef4444" />
-              </BarChart>
-            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
