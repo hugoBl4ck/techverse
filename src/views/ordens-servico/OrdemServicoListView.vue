@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pencil, ClipboardCopy, X, XCircle } from 'lucide-vue-next';
+import { Pencil, ClipboardCopy, X, XCircle, Ban } from 'lucide-vue-next';
 
 const { storeId } = useCurrentStore();
 const { registrarVenda } = useTransacoes(storeId);
@@ -259,6 +259,7 @@ const ordensCanceladas = computed(() => {
             <TableHeader>
               <TableRow>
                 <TableHead>Cliente</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead>Serviço</TableHead>
                 <TableHead class="text-right">Valor</TableHead>
@@ -268,10 +269,15 @@ const ordensCanceladas = computed(() => {
               <TableRow
                 v-for="os in ordensCanceladas"
                 :key="os.id"
-                class="bg-red-100 dark:bg-red-950 opacity-75"
               >
                 <TableCell>
                   <strong>{{ os.customerName }}</strong>
+                </TableCell>
+                <TableCell>
+                  <div class="flex items-center gap-2 text-red-600 dark:text-red-400">
+                    <Ban class="h-4 w-4" />
+                    <span class="text-sm font-medium">Cancelada</span>
+                  </div>
                 </TableCell>
                 <TableCell>
                   {{ new Date(os.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
