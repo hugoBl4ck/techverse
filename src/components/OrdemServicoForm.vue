@@ -120,7 +120,8 @@ const dateForInput = computed({
   set(value) {
     // Para input type="date", value é no formato YYYY-MM-DD
     if (value) {
-      const date = new Date(value);
+      const [year, month, day] = value.split('-').map(Number);
+      const date = new Date(year, month - 1, day); // Cria data às 00:00 no horário local
       if (!isNaN(date.getTime())) {
         ordemServico.value.date = date;
       } else {
