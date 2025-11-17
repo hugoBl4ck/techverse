@@ -95,7 +95,7 @@ watchEffect(() => {
 
 <template>
   <div>
-    <div class="flex justify-between items-center mb-4 fade-in">
+    <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">Clientes</h1>
       <RouterLink to="/clientes/novo">
         <Button>Novo Cliente</Button>
@@ -103,7 +103,7 @@ watchEffect(() => {
     </div>
 
     <!-- Empty State -->
-    <div v-if="!isLoading && clients.length === 0" class="text-center py-16 fade-in">
+    <div v-if="!isLoading && clients.length === 0" class="text-center py-16">
       <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4">
         <Users class="h-10 w-10 text-primary" />
       </div>
@@ -132,10 +132,10 @@ watchEffect(() => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow 
-          v-for="(client, index) in clients" 
+        <TableRow
+          v-for="client in clients"
           :key="client.id"
-          :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} hover:bg-muted/50 transition-colors`"
+          class="hover:bg-muted/50 transition-colors"
         >
           <TableCell class="font-medium">
             {{ client.nome }}

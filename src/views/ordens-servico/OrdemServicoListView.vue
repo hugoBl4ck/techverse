@@ -199,9 +199,9 @@ const ordensCanceladas = computed(() => {
             </TableHeader>
             <TableBody>
               <TableRow
-                v-for="(os, index) in ordensAtivas"
+                v-for="os in ordensAtivas"
                 :key="os.id"
-                :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} hover:bg-muted/50`"
+                class="hover:bg-muted/50"
               >
                 <TableCell>
                   <strong>{{ os.customerName }}</strong>
@@ -266,9 +266,9 @@ const ordensCanceladas = computed(() => {
             </TableHeader>
             <TableBody>
               <TableRow
-                v-for="(os, index) in ordensCanceladas"
+                v-for="os in ordensCanceladas"
                 :key="os.id"
-                :class="`fade-in fade-in-delay-${Math.min(index + 1, 5)} bg-red-50 dark:bg-red-950 opacity-60`"
+                class="bg-red-100 dark:bg-red-950 opacity-75"
               >
                 <TableCell>
                   <strong>{{ os.customerName }}</strong>
