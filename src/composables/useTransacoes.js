@@ -42,13 +42,25 @@ export function useTransacoes(storeId) {
         : transacoesRef
       
       const snapshot = await getDocs(q)
+      console.log('🔥 Firebase - Transações encontradas:', snapshot.docs.length)
 
-      transacoes.value = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        data_transacao: doc.data().data_transacao?.toDate ? doc.data().data_transacao.toDate() : new Date(doc.data().data_transacao),
-        data_pagamento: doc.data().data_pagamento?.toDate ? doc.data().data_pagamento.toDate() : null
-      }))
+      transacoes.value = snapshot.docs.map(doc => {
+        const data = doc.data()
+        console.log('📄 Transação:', doc.id, {
+          tipo: data.tipo,
+          categoria: data.categoria,
+          valor: data.valor,
+          data_transacao: data.data_transacao,
+          ordem_servico_id: data.ordem_servico_id
+        })
+        return {
+          id: doc.id,
+          ...data,
+          data_transacao: data.data_transacao?.toDate ? data.data_transacao.toDate() : new Date(data.data_transacao),
+          data_pagamento: data.data_pagamento?.toDate ? data.data_pagamento.toDate() : null
+        }
+      })
+      console.log('✅ Transações processadas:', transacoes.value.length)
     } catch (err) {
       error.value = err.message
       console.error('❌ Erro ao carregar transações:', err)

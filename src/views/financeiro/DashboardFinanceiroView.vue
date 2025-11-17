@@ -126,6 +126,7 @@ const totaisFiltrados = computed(() => {
 
 // Dados para gráficos
 const dadosGraficoReceita = computed(() => {
+  console.log('📊 Calculando dadosGraficoReceita - Transações filtradas:', transacoesFiltradas.value.length)
   const agrupado = {}
   transacoesFiltradas.value.forEach(t => {
     if (t.tipo === 'venda') {
@@ -134,22 +135,28 @@ const dadosGraficoReceita = computed(() => {
         month: '2-digit'
       })
       agrupado[data] = (agrupado[data] || 0) + t.valor
+      console.log('📈 Venda adicionada:', data, t.valor, 'Total:', agrupado[data])
     }
   })
 
+  console.log('📊 Agrupado por data:', agrupado)
+
   // Se não há dados, gera dados vazios mas estruturados
   if (Object.keys(agrupado).length === 0) {
+    console.log('⚠️ Nenhum dado de receita encontrado')
     return []
   }
 
   // Ordena por data para melhor visualização
   const dadosOrdenados = Object.entries(agrupado).map(([data, valor]) => ({ data, valor: parseFloat(valor.toFixed(2)) }))
-  return dadosOrdenados.sort((a, b) => {
+  const resultado = dadosOrdenados.sort((a, b) => {
     const [diaA, mesA] = a.data.split('/').map(Number)
     const [diaB, mesB] = b.data.split('/').map(Number)
     const anoAtual = new Date().getFullYear()
     return new Date(anoAtual, mesA - 1, diaA) - new Date(anoAtual, mesB - 1, diaB)
   })
+  console.log('✅ Dados do gráfico receita:', resultado)
+  return resultado
 })
 
 // Dados para tabela de serviços diários
@@ -217,28 +224,36 @@ const dadosServicosDiarios = computed(() => {
 })
 
 const dadosGraficoCategorias = computed(() => {
+  console.log('📊 Calculando dadosGraficoCategorias - Transações filtradas:', transacoesFiltradas.value.length)
   const agrupado = agruparPorCategoria(transacoesFiltradas.value)
-  return Object.entries(agrupado).map(([categoria, dados]) => ({
+  console.log('📊 Agrupado por categoria:', agrupado)
+  const resultado = Object.entries(agrupado).map(([categoria, dados]) => ({
     name: categoria,
     receita: parseFloat(dados.receita.toFixed(2)),
     despesa: parseFloat(dados.despesa.toFixed(2)),
     lucro: parseFloat(dados.total.toFixed(2))
   }))
+  console.log('✅ Dados do gráfico categorias:', resultado)
+  return resultado
 })
 
 const cores = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6']
 
 // Carrega dados ao montar
 onMounted(async () => {
+  console.log('🔍 DashboardFinanceiro - StoreId:', storeId.value)
   if (storeId.value) {
     try {
       await loadProdutos()
       await loadTransacoes()
       await loadServices()
       atualizarDatas()
+      console.log('✅ Dados carregados - Transações:', transacoes.value.length)
     } catch (err) {
       console.error('❌ Erro ao carregar dados financeiros:', err)
     }
+  } else {
+    console.warn('⚠️ StoreId não disponível no dashboard financeiro')
   }
 })
 
