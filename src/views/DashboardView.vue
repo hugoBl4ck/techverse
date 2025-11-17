@@ -191,7 +191,11 @@ const dailyRevenueData = computed(() => {
       name: date,
       value: parseFloat(value.toFixed(2)),
     }))
-    .sort((a, b) => new Date(a.name) - new Date(b.name));
+    .sort((a, b) => {
+      const [diaA, mesA, anoA] = a.name.split('/').map(Number);
+      const [diaB, mesB, anoB] = b.name.split('/').map(Number);
+      return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
+    });
   
   console.log('✅ dailyRevenueData final:', result);
   return result;
@@ -216,7 +220,11 @@ const monthlyLineData = computed(() => {
       name: date,
       value: parseFloat(value.toFixed(2)),
     }))
-    .sort((a, b) => new Date(a.name) - new Date(b.name));
+    .sort((a, b) => {
+      const [diaA, mesA, anoA] = a.name.split('/').map(Number);
+      const [diaB, mesB, anoB] = b.name.split('/').map(Number);
+      return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
+    });
   
   console.log('✅ monthlyLineData final:', result);
   return result;
