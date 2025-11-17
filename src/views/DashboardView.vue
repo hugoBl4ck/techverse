@@ -218,12 +218,12 @@ const periodRevenue = computed(() => {
             <div v-if="filteredServices.length > 0">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Valor</TableHead>
-                    <TableHead>Observações</TableHead>
-                    <TableHead>Configuração do Computador</TableHead>
+                  <TableRow class="border-b border-border/50 bg-muted/50 hover:bg-muted/50">
+                    <TableHead class="font-semibold text-foreground">Cliente</TableHead>
+                    <TableHead class="font-semibold text-foreground">Data</TableHead>
+                    <TableHead class="font-semibold text-foreground">Valor</TableHead>
+                    <TableHead class="font-semibold text-foreground">Observações</TableHead>
+                    <TableHead class="font-semibold text-foreground">Configuração do Computador</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

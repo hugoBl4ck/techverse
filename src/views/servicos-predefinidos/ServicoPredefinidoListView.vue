@@ -43,10 +43,10 @@ onMounted(async () => {
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Descrição</TableHead>
-              <TableHead>Preço</TableHead>
+            <TableRow class="border-b border-border/50 bg-muted/50 hover:bg-muted/50">
+              <TableHead class="font-semibold text-foreground">Nome</TableHead>
+              <TableHead class="font-semibold text-foreground">Descrição</TableHead>
+              <TableHead class="font-semibold text-foreground">Preço</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -189,12 +189,12 @@ const ordensCanceladas = computed(() => {
         <CardContent>
           <Table v-if="ordensAtivas.length > 0">
             <TableHeader>
-              <TableRow>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Data</TableHead>
-                <TableHead>Serviço</TableHead>
-                <TableHead class="text-right">Valor</TableHead>
-                <TableHead class="text-center">Ações</TableHead>
+              <TableRow class="border-b border-border/50 bg-muted/50 hover:bg-muted/50">
+                <TableHead class="font-semibold text-foreground">Cliente</TableHead>
+                <TableHead class="font-semibold text-foreground">Data</TableHead>
+                <TableHead class="font-semibold text-foreground">Serviço</TableHead>
+                <TableHead class="text-right font-semibold text-foreground">Valor</TableHead>
+                <TableHead class="text-center font-semibold text-foreground">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -257,12 +257,12 @@ const ordensCanceladas = computed(() => {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Data</TableHead>
-                <TableHead>Serviço</TableHead>
-                <TableHead class="text-right">Valor</TableHead>
+              <TableRow class="border-b border-border/50 bg-muted/50 hover:bg-muted/50">
+                <TableHead class="font-semibold text-foreground">Cliente</TableHead>
+                <TableHead class="font-semibold text-foreground">Status</TableHead>
+                <TableHead class="font-semibold text-foreground">Data</TableHead>
+                <TableHead class="font-semibold text-foreground">Serviço</TableHead>
+                <TableHead class="text-right font-semibold text-foreground">Valor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

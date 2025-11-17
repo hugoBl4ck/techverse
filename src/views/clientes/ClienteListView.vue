@@ -23,8 +23,6 @@ const isLoading = ref(true)
 
 async function getUltimmoServico(clientId, customerId) {
   try {
-    console.log('🔍 Buscando último serviço para cliente:', clientId, 'customerId:', customerId)
-
     // Busca todas as ordens de serviço (sem filtro para evitar problemas de índice)
     const q = query(collection(db, 'stores', storeId.value, 'ordens_servico'))
     const snapshot = await getDocs(q)
@@ -39,16 +37,11 @@ async function getUltimmoServico(clientId, customerId) {
         return dateB - dateA // Ordem descendente
       })
 
-    console.log('📄 Serviços encontrados para cliente', customerId, ':', servicosCliente.length)
-
     if (servicosCliente.length === 0) {
-      console.log('⚠️ Nenhum serviço encontrado para cliente:', customerId)
       return { servico: 'Nenhum serviço', data: '-' }
     }
 
     const ultimoServico = servicosCliente[0]
-    console.log('✅ Último serviço encontrado:', ultimoServico)
-
     const data = ultimoServico.date?.toDate ? ultimoServico.date.toDate() : new Date(ultimoServico.date)
 
     // Formatar data mantendo horário local
@@ -138,13 +131,13 @@ watchEffect(() => {
     <Table v-else>
       <TableCaption>Uma lista de seus clientes cadastrados com histórico de serviços.</TableCaption>
       <TableHeader>
-        <TableRow>
-          <TableHead>Nome</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Telefone</TableHead>
-          <TableHead>Último Serviço</TableHead>
-          <TableHead>Data do Serviço</TableHead>
-          <TableHead class="text-right">Ações</TableHead>
+        <TableRow class="border-b border-border/50 bg-muted/50 hover:bg-muted/50">
+          <TableHead class="font-semibold text-foreground">Nome</TableHead>
+          <TableHead class="font-semibold text-foreground">Email</TableHead>
+          <TableHead class="font-semibold text-foreground">Telefone</TableHead>
+          <TableHead class="font-semibold text-foreground">Último Serviço</TableHead>
+          <TableHead class="font-semibold text-foreground">Data do Serviço</TableHead>
+          <TableHead class="text-right font-semibold text-foreground">Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -162,7 +155,7 @@ watchEffect(() => {
             {{ client.ultimoServico || '-' }}
           </TableCell>
           <TableCell class="text-sm font-medium">
-            <span :class="client.dataServico !== '-' ? 'text-green-600 dark:text-green-400' : 'text-gray-400'">
+            <span :class="client.dataServico !== '-' ? 'text-foreground' : 'text-muted-foreground'">
               {{ client.dataServico || '-' }}
             </span>
           </TableCell>
