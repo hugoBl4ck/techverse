@@ -23,28 +23,36 @@ const isLoading = ref(true)
 
 async function getUltimmoServico(clientId, customerId) {
   try {
-    // Busca a última ordem de serviço do cliente
+    // Busca todas as ordens de serviço do cliente, ordenadas por data descendente
     const q = query(
       collection(db, 'stores', storeId.value, 'ordens_servico'),
       where('customerId', '==', customerId),
-      where('status', '!=', 'cancelada'),
-      orderBy('status'),
       orderBy('date', 'desc')
     )
-    
+
     const snapshot = await getDocs(q)
-    
+
     if (snapshot.empty) {
       return { servico: 'Nenhum serviço', data: '-' }
     }
-    
-    const ultimoServico = snapshot.docs[0].data()
-    const data = ultimoServico.date?.toDate ? ultimoServico.date.toDate() : new Date(ultimoServico.date)
-    
+
+    // Encontra a primeira ordem que não está cancelada
+    const ultimoServico = snapshot.docs.find(doc => {
+      const data = doc.data()
+      return data.status !== 'cancelada'
+    })
+
+    if (!ultimoServico) {
+      return { servico: 'Nenhum serviço ativo', data: '-' }
+    }
+
+    const servicoData = ultimoServico.data()
+    const data = servicoData.date?.toDate ? servicoData.date.toDate() : new Date(servicoData.date)
+
     return {
-      servico: Array.isArray(ultimoServico.observations) 
-        ? ultimoServico.observations.join(', ').substring(0, 50)
-        : (ultimoServico.observations || 'Serviço').substring(0, 50),
+      servico: Array.isArray(servicoData.observations)
+        ? servicoData.observations.join(', ').substring(0, 50)
+        : (servicoData.observations || 'Serviço').substring(0, 50),
       data: data.toLocaleDateString('pt-BR')
     }
   } catch (error) {

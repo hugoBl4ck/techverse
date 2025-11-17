@@ -152,38 +152,46 @@ const dadosGraficoReceita = computed(() => {
   })
 })
 
-// Dados para tabela diária detalhada
-const dadosTabelaDiaria = computed(() => {
-  const agrupado = {}
+// Dados para tabela de serviços diários
+const dadosServicosDiarios = computed(() => {
+  const servicosPorDia = {}
 
-  transacoesFiltradas.value.forEach(t => {
-    if (t.tipo === 'venda') {
-      const data = new Date(t.data_transacao).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit'
-      })
+  // Filtra apenas transações de serviços (não canceladas)
+  const servicosFiltrados = transacoesFiltradas.value.filter(t =>
+    t.tipo === 'venda' && t.categoria === 'servico'
+  )
 
-      if (!agrupado[data]) {
-        agrupado[data] = { itens: 0, servicos: 0, total: 0 }
+  servicosFiltrados.forEach(t => {
+    const data = new Date(t.data_transacao).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit'
+    })
+
+    if (!servicosPorDia[data]) {
+      servicosPorDia[data] = {
+        quantidade: 0,
+        valor: 0,
+        servicos: []
       }
+    }
 
-      if (t.categoria === 'servico') {
-        agrupado[data].servicos += t.valor
-      } else {
-        agrupado[data].itens += t.valor
-      }
+    servicosPorDia[data].quantidade += 1
+    servicosPorDia[data].valor += t.valor
 
-      agrupado[data].total += t.valor
+    // Adiciona descrição do serviço
+    const descricao = t.descricao?.replace('Ordem de Serviço #', '').split(' - ')[1] || 'Serviço'
+    if (!servicosPorDia[data].servicos.includes(descricao)) {
+      servicosPorDia[data].servicos.push(descricao)
     }
   })
 
-  // Ordena por data
-  const dadosOrdenados = Object.entries(agrupado)
-    .map(([data, valores]) => ({
+  // Converte para array ordenado
+  const dadosOrdenados = Object.entries(servicosPorDia)
+    .map(([data, info]) => ({
       data,
-      itens: parseFloat(valores.itens.toFixed(2)),
-      servicos: parseFloat(valores.servicos.toFixed(2)),
-      total: parseFloat(valores.total.toFixed(2))
+      quantidade: info.quantidade,
+      valor: parseFloat(info.valor.toFixed(2)),
+      servicos: info.servicos.join(', ')
     }))
     .sort((a, b) => {
       const [diaA, mesA] = a.data.split('/').map(Number)
@@ -194,15 +202,14 @@ const dadosTabelaDiaria = computed(() => {
 
   // Adiciona linha de total
   if (dadosOrdenados.length > 0) {
-    const totalItens = dadosOrdenados.reduce((sum, row) => sum + row.itens, 0)
-    const totalServicos = dadosOrdenados.reduce((sum, row) => sum + row.servicos, 0)
-    const totalGeral = dadosOrdenados.reduce((sum, row) => sum + row.total, 0)
+    const totalQuantidade = dadosOrdenados.reduce((sum, row) => sum + row.quantidade, 0)
+    const totalValor = dadosOrdenados.reduce((sum, row) => sum + row.valor, 0)
 
     dadosOrdenados.push({
       data: 'TOTAL',
-      itens: parseFloat(totalItens.toFixed(2)),
-      servicos: parseFloat(totalServicos.toFixed(2)),
-      total: parseFloat(totalGeral.toFixed(2))
+      quantidade: totalQuantidade,
+      valor: parseFloat(totalValor.toFixed(2)),
+      servicos: `${dadosOrdenados.length} dias`
     })
   }
 
@@ -383,11 +390,11 @@ watch(() => storeId.value, (newStoreId) => {
       </Card>
     </div>
 
-    <!-- Tabela de Receitas Diárias Detalhadas -->
+    <!-- Tabela de Serviços Diários -->
     <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle>Receitas Diárias Detalhadas</CardTitle>
-        <p class="text-sm text-muted-foreground">Vendas de itens e serviços por dia</p>
+        <CardTitle>Serviços Realizados por Dia</CardTitle>
+        <p class="text-sm text-muted-foreground">Relatório diário de serviços prestados</p>
       </CardHeader>
       <CardContent>
         <div class="overflow-x-auto">
@@ -395,35 +402,37 @@ watch(() => storeId.value, (newStoreId) => {
             <thead>
               <tr class="border-b border-border">
                 <th class="text-left py-3 px-4 font-semibold text-foreground">Data</th>
-                <th class="text-right py-3 px-4 font-semibold text-foreground">Vendas de Itens</th>
-                <th class="text-right py-3 px-4 font-semibold text-foreground">Serviços</th>
-                <th class="text-right py-3 px-4 font-semibold text-foreground">Total</th>
+                <th class="text-center py-3 px-4 font-semibold text-foreground">Qtd. Serviços</th>
+                <th class="text-left py-3 px-4 font-semibold text-foreground">Tipos de Serviço</th>
+                <th class="text-right py-3 px-4 font-semibold text-foreground">Valor Total</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                v-for="(row, index) in dadosTabelaDiaria"
+                v-for="row in dadosServicosDiarios"
                 :key="row.data"
                 :class="[
                   'border-b border-border/50 hover:bg-primary/5 transition-colors',
                   row.data === 'TOTAL' ? 'bg-primary/10 font-semibold' : ''
                 ]"
               >
-                <td class="py-3 px-4 text-foreground">{{ row.data }}</td>
-                <td class="py-3 px-4 text-right text-foreground">
-                  R$ {{ row.itens.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+                <td class="py-3 px-4 text-foreground font-medium">{{ row.data }}</td>
+                <td class="py-3 px-4 text-center text-foreground">
+                  <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold">
+                    {{ row.quantidade }}
+                  </span>
                 </td>
-                <td class="py-3 px-4 text-right text-foreground">
-                  R$ {{ row.servicos.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+                <td class="py-3 px-4 text-foreground text-sm max-w-xs truncate" :title="row.servicos">
+                  {{ row.servicos }}
                 </td>
                 <td class="py-3 px-4 text-right font-semibold text-primary">
-                  R$ {{ row.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+                  R$ {{ row.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
                 </td>
               </tr>
             </tbody>
           </table>
-          <div v-if="dadosTabelaDiaria.length === 0" class="text-center py-8 text-muted-foreground">
-            <p>Nenhuma transação encontrada no período selecionado</p>
+          <div v-if="dadosServicosDiarios.length === 0" class="text-center py-8 text-muted-foreground">
+            <p>Nenhum serviço encontrado no período selecionado</p>
           </div>
         </div>
       </CardContent>
