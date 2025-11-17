@@ -100,12 +100,12 @@ const dadosGraficoReceita = computed(() => {
       agrupado[data] = (agrupado[data] || 0) + t.valor
     }
   })
-  
+
   // Se não há dados, gera dados vazios mas estruturados
   if (Object.keys(agrupado).length === 0) {
     return []
   }
-  
+
   // Ordena por data para melhor visualização
   const dadosOrdenados = Object.entries(agrupado).map(([data, valor]) => ({ data, valor: parseFloat(valor.toFixed(2)) }))
   return dadosOrdenados.sort((a, b) => {
@@ -113,6 +113,62 @@ const dadosGraficoReceita = computed(() => {
     const [diaB, mesB] = b.data.split('/').map(Number)
     return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB)
   })
+})
+
+// Dados para tabela diária detalhada
+const dadosTabelaDiaria = computed(() => {
+  const agrupado = {}
+
+  transacoesFiltradas.value.forEach(t => {
+    if (t.tipo === 'venda') {
+      const data = new Date(t.data_transacao).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit'
+      })
+
+      if (!agrupado[data]) {
+        agrupado[data] = { itens: 0, servicos: 0, total: 0 }
+      }
+
+      if (t.categoria === 'servico') {
+        agrupado[data].servicos += t.valor
+      } else {
+        agrupado[data].itens += t.valor
+      }
+
+      agrupado[data].total += t.valor
+    }
+  })
+
+  // Ordena por data
+  const dadosOrdenados = Object.entries(agrupado)
+    .map(([data, valores]) => ({
+      data,
+      itens: parseFloat(valores.itens.toFixed(2)),
+      servicos: parseFloat(valores.servicos.toFixed(2)),
+      total: parseFloat(valores.total.toFixed(2))
+    }))
+    .sort((a, b) => {
+      const [diaA, mesA] = a.data.split('/').map(Number)
+      const [diaB, mesB] = b.data.split('/').map(Number)
+      return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB)
+    })
+
+  // Adiciona linha de total
+  if (dadosOrdenados.length > 0) {
+    const totalItens = dadosOrdenados.reduce((sum, row) => sum + row.itens, 0)
+    const totalServicos = dadosOrdenados.reduce((sum, row) => sum + row.servicos, 0)
+    const totalGeral = dadosOrdenados.reduce((sum, row) => sum + row.total, 0)
+
+    dadosOrdenados.push({
+      data: 'TOTAL',
+      itens: parseFloat(totalItens.toFixed(2)),
+      servicos: parseFloat(totalServicos.toFixed(2)),
+      total: parseFloat(totalGeral.toFixed(2))
+    })
+  }
+
+  return dadosOrdenados
 })
 
 const dadosGraficoCategorias = computed(() => {
@@ -286,6 +342,52 @@ watch(() => storeId.value, (newStoreId) => {
         </CardContent>
       </Card>
     </div>
+
+    <!-- Tabela de Receitas Diárias Detalhadas -->
+    <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
+      <CardHeader>
+        <CardTitle>Receitas Diárias Detalhadas</CardTitle>
+        <p class="text-sm text-muted-foreground">Vendas de itens e serviços por dia</p>
+      </CardHeader>
+      <CardContent>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left py-3 px-4 font-semibold text-foreground">Data</th>
+                <th class="text-right py-3 px-4 font-semibold text-foreground">Vendas de Itens</th>
+                <th class="text-right py-3 px-4 font-semibold text-foreground">Serviços</th>
+                <th class="text-right py-3 px-4 font-semibold text-foreground">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(row, index) in dadosTabelaDiaria"
+                :key="row.data"
+                :class="[
+                  'border-b border-border/50 hover:bg-primary/5 transition-colors',
+                  row.data === 'TOTAL' ? 'bg-primary/10 font-semibold' : ''
+                ]"
+              >
+                <td class="py-3 px-4 text-foreground">{{ row.data }}</td>
+                <td class="py-3 px-4 text-right text-foreground">
+                  R$ {{ row.itens.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+                </td>
+                <td class="py-3 px-4 text-right text-foreground">
+                  R$ {{ row.servicos.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+                </td>
+                <td class="py-3 px-4 text-right font-semibold text-primary">
+                  R$ {{ row.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-if="dadosTabelaDiaria.length === 0" class="text-center py-8 text-muted-foreground">
+            <p>Nenhuma transação encontrada no período selecionado</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
 
     <!-- Gráficos -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
