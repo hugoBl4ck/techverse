@@ -44,7 +44,6 @@ const servicesCount = computed(() => {
   const { startDate, endDate } = getPeriodDates();
   return transacoes.value.filter(t =>
     t.tipo === 'venda' &&
-    t.categoria === 'servico' &&
     new Date(t.data_transacao) >= startDate &&
     new Date(t.data_transacao) <= endDate
   ).length;
@@ -173,7 +172,6 @@ const periodRevenue = computed(() => {
   const { startDate, endDate } = getPeriodDates();
   const serviceTransactions = transacoes.value.filter(t =>
     t.tipo === 'venda' &&
-    t.categoria === 'servico' &&
     new Date(t.data_transacao) >= startDate &&
     new Date(t.data_transacao) <= endDate
   );
@@ -185,7 +183,6 @@ const dailyRevenueData = computed(() => {
   const { startDate, endDate } = getPeriodDates();
   const serviceTransactions = transacoes.value.filter(t =>
     t.tipo === 'venda' &&
-    t.categoria === 'servico' &&
     new Date(t.data_transacao) >= startDate &&
     new Date(t.data_transacao) <= endDate
   );
@@ -193,7 +190,10 @@ const dailyRevenueData = computed(() => {
   const servicesByDay = {};
 
   serviceTransactions.forEach((transaction) => {
-    const dateKey = new Date(transaction.data_transacao).toLocaleDateString("pt-BR");
+    const dateKey = new Date(transaction.data_transacao).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit'
+    });
     const amount = transaction.valor || 0;
     servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + amount;
   });
@@ -204,9 +204,9 @@ const dailyRevenueData = computed(() => {
       value: parseFloat(value.toFixed(2)),
     }))
     .sort((a, b) => {
-      const [diaA, mesA, anoA] = a.name.split('/').map(Number);
-      const [diaB, mesB, anoB] = b.name.split('/').map(Number);
-      return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
+      const [diaA, mesA] = a.name.split('/').map(Number);
+      const [diaB, mesB] = b.name.split('/').map(Number);
+      return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB);
     });
 
   return result;
@@ -217,7 +217,6 @@ const monthlyLineData = computed(() => {
   const { startDate, endDate } = getPeriodDates();
   const serviceTransactions = transacoes.value.filter(t =>
     t.tipo === 'venda' &&
-    t.categoria === 'servico' &&
     new Date(t.data_transacao) >= startDate &&
     new Date(t.data_transacao) <= endDate
   );
@@ -225,7 +224,10 @@ const monthlyLineData = computed(() => {
   const servicesByDay = {};
 
   serviceTransactions.forEach((transaction) => {
-    const dateKey = new Date(transaction.data_transacao).toLocaleDateString("pt-BR");
+    const dateKey = new Date(transaction.data_transacao).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit'
+    });
     const amount = transaction.valor || 0;
     servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + amount;
   });
@@ -236,9 +238,9 @@ const monthlyLineData = computed(() => {
       value: parseFloat(value.toFixed(2)),
     }))
     .sort((a, b) => {
-      const [diaA, mesA, anoA] = a.name.split('/').map(Number);
-      const [diaB, mesB, anoB] = b.name.split('/').map(Number);
-      return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
+      const [diaA, mesA] = a.name.split('/').map(Number);
+      const [diaB, mesB] = b.name.split('/').map(Number);
+      return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB);
     });
 
   return result;
