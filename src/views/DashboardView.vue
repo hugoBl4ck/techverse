@@ -3,10 +3,10 @@ import { ref, onMounted, computed, watch } from "vue";
 import { db } from "@/firebase/config.js";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useCurrentStore } from "@/composables/useCurrentStore";
-import { useTransacoes } from "@/composables/useTransacoes";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Users, User, Zap } from "lucide-vue-next";
 import {
   Table,
   TableBody,
@@ -15,37 +15,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 
 const { storeId } = useCurrentStore();
-const { transacoes, loadTransacoes, filtrarPorPeriodo, isLoading: isLoadingTransacoesFromHook } = useTransacoes(storeId);
 
 const allServices = ref([]);
+const clients = ref([]);
 const isLoading = ref(true);
-const isLoadingTransacoes = ref(true);
 const promotions = ref([]);
 const selectedPeriod = ref("current-month");
 
-// Loading combinado
-const isLoadingData = computed(() => isLoading.value || isLoadingTransacoesFromHook.value);
+// Número de serviços no período
+const servicesCount = computed(() => filteredServices.value.length);
 
-// Número de serviços no período (baseado em transações)
-const servicesCount = computed(() => {
+// Total de clientes
+const totalClients = computed(() => clients.value.length);
+
+// Clientes novos no período
+const newClientsInPeriod = computed(() => {
   const { startDate, endDate } = getPeriodDates();
-  return transacoes.value.filter(t =>
-    t.tipo === 'venda' &&
-    new Date(t.data_transacao) >= startDate &&
-    new Date(t.data_transacao) <= endDate
+  return clients.value.filter(client =>
+    client.createdAt &&
+    client.createdAt >= startDate &&
+    client.createdAt <= endDate
   ).length;
 });
 
@@ -104,6 +95,23 @@ const fetchPromotions = async () => {
   }));
 };
 
+const loadClients = async () => {
+  if (!storeId.value) return;
+
+  try {
+    const clientesCol = collection(db, 'stores', storeId.value, 'clientes');
+    const snapshot = await getDocs(clientesCol);
+    clients.value = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt)
+    }));
+  } catch (error) {
+    console.error('Erro ao carregar clientes:', error);
+    clients.value = [];
+  }
+};
+
 onMounted(() => {
   fetchPromotions();
 });
@@ -114,7 +122,7 @@ watch(
   (newStoreId) => {
     if (newStoreId) {
       loadServices();
-      loadTransacoes();
+      loadClients();
     }
   },
   { immediate: true }
@@ -169,82 +177,12 @@ const filteredServices = computed(() => {
 
 // Faturamento do período selecionado
 const periodRevenue = computed(() => {
-  const { startDate, endDate } = getPeriodDates();
-  const serviceTransactions = transacoes.value.filter(t =>
-    t.tipo === 'venda' &&
-    new Date(t.data_transacao) >= startDate &&
-    new Date(t.data_transacao) <= endDate
+  return filteredServices.value.reduce(
+    (total, service) => total + (service.totalAmount || 0),
+    0
   );
-  return serviceTransactions.reduce((total, t) => total + (t.valor || 0), 0);
 });
 
-// Dados para o gráfico de barras (valores diários)
-const dailyRevenueData = computed(() => {
-  const { startDate, endDate } = getPeriodDates();
-  const serviceTransactions = transacoes.value.filter(t =>
-    t.tipo === 'venda' &&
-    new Date(t.data_transacao) >= startDate &&
-    new Date(t.data_transacao) <= endDate
-  );
-
-  const servicesByDay = {};
-
-  serviceTransactions.forEach((transaction) => {
-    const dateKey = new Date(transaction.data_transacao).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit'
-    });
-    const amount = transaction.valor || 0;
-    servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + amount;
-  });
-
-  const result = Object.entries(servicesByDay)
-    .map(([date, value]) => ({
-      name: date,
-      value: parseFloat(value.toFixed(2)),
-    }))
-    .sort((a, b) => {
-      const [diaA, mesA] = a.name.split('/').map(Number);
-      const [diaB, mesB] = b.name.split('/').map(Number);
-      return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB);
-    });
-
-  return result;
-});
-
-// Dados para o gráfico de linha (todos os dias do período)
-const monthlyLineData = computed(() => {
-  const { startDate, endDate } = getPeriodDates();
-  const serviceTransactions = transacoes.value.filter(t =>
-    t.tipo === 'venda' &&
-    new Date(t.data_transacao) >= startDate &&
-    new Date(t.data_transacao) <= endDate
-  );
-
-  const servicesByDay = {};
-
-  serviceTransactions.forEach((transaction) => {
-    const dateKey = new Date(transaction.data_transacao).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit'
-    });
-    const amount = transaction.valor || 0;
-    servicesByDay[dateKey] = (servicesByDay[dateKey] || 0) + amount;
-  });
-
-  const result = Object.entries(servicesByDay)
-    .map(([date, value]) => ({
-      name: date,
-      value: parseFloat(value.toFixed(2)),
-    }))
-    .sort((a, b) => {
-      const [diaA, mesA] = a.name.split('/').map(Number);
-      const [diaB, mesB] = b.name.split('/').map(Number);
-      return new Date(2024, mesA - 1, diaA) - new Date(2024, mesB - 1, diaB);
-    });
-
-  return result;
-});
 </script>
 
 <template>
@@ -256,7 +194,7 @@ const monthlyLineData = computed(() => {
       </router-link>
     </div>
 
-    <div v-if="isLoadingData" class="text-center py-8">
+    <div v-if="isLoading" class="text-center py-8">
       <p>Carregando dados...</p>
     </div>
 
@@ -361,70 +299,55 @@ const monthlyLineData = computed(() => {
           </CardContent>
         </Card>
       </div>
+
+      <!-- Métricas Adicionais -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
+        <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
+          <CardHeader class="pb-3">
+            <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+              Total de Clientes
+              <Users class="w-4 h-4 text-primary" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold text-foreground">
+              {{ totalClients }}
+            </div>
+            <p class="text-xs text-primary mt-2">Clientes cadastrados</p>
+          </CardContent>
+        </Card>
+
+        <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
+          <CardHeader class="pb-3">
+            <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+              Clientes Novos
+              <User class="w-4 h-4 text-accent" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold text-foreground">
+              {{ newClientsInPeriod }}
+            </div>
+            <p class="text-xs text-accent mt-2">No período selecionado</p>
+          </CardContent>
+        </Card>
+
+        <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
+          <CardHeader class="pb-3">
+            <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+              Serviços Realizados
+              <Zap class="w-4 h-4 text-secondary" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold text-foreground">
+              {{ servicesCount }}
+            </div>
+            <p class="text-xs text-secondary mt-2">No período selecionado</p>
+          </CardContent>
+        </Card>
+      </div>
     </div>
 
-    <!-- Gráfico de barras - Faturamento por dia -->
-    <div class="mt-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Faturamento Diário</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div v-if="dailyRevenueData.length > 0" class="w-full">
-            <ResponsiveContainer width="100%" height="300">
-              <BarChart :data="dailyRevenueData">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip
-                  :formatter="(value) => [`R$ ${Number(value).toFixed(2)}`, 'Valor']"
-                />
-                <Bar dataKey="value" fill="#8b5cf6" :radius="[8, 8, 0, 0]" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div v-else class="text-center py-8">
-            <p class="text-muted-foreground">
-              Nenhum faturamento registrado neste período.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <!-- Gráfico de linha - Faturamento acumulado -->
-    <div class="mt-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Evolução do Faturamento</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div v-if="monthlyLineData.length > 0" class="w-full">
-            <ResponsiveContainer width="100%" height="300">
-              <LineChart :data="monthlyLineData">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip
-                  :formatter="(value) => [`R$ ${Number(value).toFixed(2)}`, 'Valor']"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#8b5cf6"
-                  strokeWidth="2"
-                  :dot="{ fill: '#8b5cf6', r: 4 }"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-          <div v-else class="text-center py-8">
-            <p class="text-muted-foreground">
-              Nenhum faturamento registrado neste período.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
   </div>
 </template>

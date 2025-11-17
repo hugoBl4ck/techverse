@@ -78,7 +78,7 @@ async function handleSubmit() {
       await updateDoc(docRef, clienteData);
       toast.success('Cliente atualizado com sucesso!', { id: loadingToast });
     } else {
-      await addDoc(clientesCol, clienteData);
+      await addDoc(clientesCol, { ...clienteData, createdAt: new Date() });
       toast.success('Cliente cadastrado com sucesso!', { id: loadingToast });
     }
     router.push('/clientes');
