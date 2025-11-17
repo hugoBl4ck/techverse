@@ -304,7 +304,7 @@ const periodRevenue = computed(() => {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
         <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
           <CardHeader class="pb-3">
-            <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+            <CardTitle class="text-sm font-medium text-foreground flex items-center justify-between">
               Total de Clientes
               <Users class="w-4 h-4 text-primary" />
             </CardTitle>
@@ -313,13 +313,13 @@ const periodRevenue = computed(() => {
             <div class="text-2xl font-bold text-foreground">
               {{ totalClients }}
             </div>
-            <p class="text-xs text-primary mt-2">Clientes cadastrados</p>
+            <p class="text-xs text-muted-foreground mt-2">Clientes cadastrados</p>
           </CardContent>
         </Card>
 
         <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
           <CardHeader class="pb-3">
-            <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+            <CardTitle class="text-sm font-medium text-foreground flex items-center justify-between">
               Clientes Novos
               <User class="w-4 h-4 text-accent" />
             </CardTitle>
@@ -328,13 +328,13 @@ const periodRevenue = computed(() => {
             <div class="text-2xl font-bold text-foreground">
               {{ newClientsInPeriod }}
             </div>
-            <p class="text-xs text-accent mt-2">No período selecionado</p>
+            <p class="text-xs text-muted-foreground mt-2">No período selecionado</p>
           </CardContent>
         </Card>
 
         <Card class="border-border/50 bg-gradient-to-br from-background to-background/50 backdrop-blur-sm">
           <CardHeader class="pb-3">
-            <CardTitle class="text-sm font-medium text-muted-foreground flex items-center justify-between">
+            <CardTitle class="text-sm font-medium text-foreground flex items-center justify-between">
               Serviços Realizados
               <Zap class="w-4 h-4 text-secondary" />
             </CardTitle>
@@ -343,7 +343,7 @@ const periodRevenue = computed(() => {
             <div class="text-2xl font-bold text-foreground">
               {{ servicesCount }}
             </div>
-            <p class="text-xs text-secondary mt-2">No período selecionado</p>
+            <p class="text-xs text-muted-foreground mt-2">No período selecionado</p>
           </CardContent>
         </Card>
       </div>
