@@ -90,19 +90,27 @@ const loadServices = async () => {
 
 // Transações filtradas (excluindo serviços cancelados)
 const transacoesFiltradas = computed(() => {
-  if (!dataInicio.value || !dataFim.value) return transacoes.value
+  console.log('🔍 Filtrando transações - Período:', periodo.value, 'Total transações:', transacoes.value.length)
+  if (!dataInicio.value || !dataFim.value) {
+    console.log('⚠️ Datas não definidas')
+    return transacoes.value
+  }
 
   let filtradas = filtrarPorPeriodo(dataInicio.value, dataFim.value)
+  console.log('📅 Após filtro período:', filtradas.length)
 
   // Exclui transações de serviços cancelados
   filtradas = filtradas.filter(t =>
     !t.ordem_servico_id || !cancelledServiceIds.value.has(t.ordem_servico_id)
   )
+  console.log('🚫 Após excluir cancelados:', filtradas.length)
 
   if (filtroCategoria.value !== 'todas') {
     filtradas = filtradas.filter(t => t.categoria === filtroCategoria.value)
+    console.log('🏷️ Após filtro categoria:', filtradas.length)
   }
 
+  console.log('✅ Transações filtradas finais:', filtradas.length)
   return filtradas
 })
 
@@ -126,7 +134,6 @@ const totaisFiltrados = computed(() => {
 
 // Dados para gráficos
 const dadosGraficoReceita = computed(() => {
-  console.log('📊 Calculando dadosGraficoReceita - Transações filtradas:', transacoesFiltradas.value.length)
   const agrupado = {}
   transacoesFiltradas.value.forEach(t => {
     if (t.tipo === 'venda') {
@@ -135,28 +142,22 @@ const dadosGraficoReceita = computed(() => {
         month: '2-digit'
       })
       agrupado[data] = (agrupado[data] || 0) + t.valor
-      console.log('📈 Venda adicionada:', data, t.valor, 'Total:', agrupado[data])
     }
   })
 
-  console.log('📊 Agrupado por data:', agrupado)
-
   // Se não há dados, gera dados vazios mas estruturados
   if (Object.keys(agrupado).length === 0) {
-    console.log('⚠️ Nenhum dado de receita encontrado')
     return []
   }
 
   // Ordena por data para melhor visualização
   const dadosOrdenados = Object.entries(agrupado).map(([data, valor]) => ({ data, valor: parseFloat(valor.toFixed(2)) }))
-  const resultado = dadosOrdenados.sort((a, b) => {
+  return dadosOrdenados.sort((a, b) => {
     const [diaA, mesA] = a.data.split('/').map(Number)
     const [diaB, mesB] = b.data.split('/').map(Number)
     const anoAtual = new Date().getFullYear()
     return new Date(anoAtual, mesA - 1, diaA) - new Date(anoAtual, mesB - 1, diaB)
   })
-  console.log('✅ Dados do gráfico receita:', resultado)
-  return resultado
 })
 
 // Dados para tabela de serviços diários
@@ -224,36 +225,28 @@ const dadosServicosDiarios = computed(() => {
 })
 
 const dadosGraficoCategorias = computed(() => {
-  console.log('📊 Calculando dadosGraficoCategorias - Transações filtradas:', transacoesFiltradas.value.length)
   const agrupado = agruparPorCategoria(transacoesFiltradas.value)
-  console.log('📊 Agrupado por categoria:', agrupado)
-  const resultado = Object.entries(agrupado).map(([categoria, dados]) => ({
+  return Object.entries(agrupado).map(([categoria, dados]) => ({
     name: categoria,
     receita: parseFloat(dados.receita.toFixed(2)),
     despesa: parseFloat(dados.despesa.toFixed(2)),
     lucro: parseFloat(dados.total.toFixed(2))
   }))
-  console.log('✅ Dados do gráfico categorias:', resultado)
-  return resultado
 })
 
 const cores = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6']
 
 // Carrega dados ao montar
 onMounted(async () => {
-  console.log('🔍 DashboardFinanceiro - StoreId:', storeId.value)
   if (storeId.value) {
     try {
       await loadProdutos()
       await loadTransacoes()
       await loadServices()
       atualizarDatas()
-      console.log('✅ Dados carregados - Transações:', transacoes.value.length)
     } catch (err) {
       console.error('❌ Erro ao carregar dados financeiros:', err)
     }
-  } else {
-    console.warn('⚠️ StoreId não disponível no dashboard financeiro')
   }
 })
 
@@ -462,9 +455,12 @@ watch(() => storeId.value, (newStoreId) => {
         </CardHeader>
         <CardContent>
           <div v-if="dadosGraficoReceita.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
-            Sem dados de transações no período
+            Sem dados de transações no período ({{ dadosGraficoReceita.length }} itens)
           </div>
-          <ResponsiveContainer v-else width="100%" height="300">
+          <div v-else class="mb-4 text-sm text-muted-foreground">
+            Debug: {{ dadosGraficoReceita.length }} dias com dados
+          </div>
+          <ResponsiveContainer v-if="dadosGraficoReceita.length > 0" width="100%" height="300">
             <BarChart :data="dadosGraficoReceita">
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--color-border))" />
               <XAxis dataKey="data" stroke="rgba(var(--color-muted-foreground))" />
@@ -483,9 +479,12 @@ watch(() => storeId.value, (newStoreId) => {
         </CardHeader>
         <CardContent>
           <div v-if="dadosGraficoCategorias.length === 0" class="h-80 flex items-center justify-center text-muted-foreground">
-            Sem dados de categorias no período
+            Sem dados de categorias no período ({{ dadosGraficoCategorias.length }} categorias)
           </div>
-          <ResponsiveContainer v-else width="100%" height="300">
+          <div v-else class="mb-4 text-sm text-muted-foreground">
+            Debug: {{ dadosGraficoCategorias.length }} categorias encontradas
+          </div>
+          <ResponsiveContainer v-if="dadosGraficoCategorias.length > 0" width="100%" height="300">
             <BarChart :data="dadosGraficoCategorias">
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--color-border))" />
               <XAxis dataKey="name" stroke="rgba(var(--color-muted-foreground))" />
