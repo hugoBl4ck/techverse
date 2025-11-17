@@ -370,19 +370,11 @@ const monthlyLineData = computed(() => {
           <CardTitle>Faturamento Diário</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="dailyRevenueData.length > 0" class="w-full" style="height: auto; min-height: 300px;">
+          <div v-if="dailyRevenueData.length > 0" class="w-full">
             <ResponsiveContainer width="100%" height="300">
-              <BarChart
-                :data="dailyRevenueData"
-                :margin="{ top: 20, right: 30, left: 0, bottom: 60 }"
-              >
+              <BarChart :data="dailyRevenueData">
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  angle="-45"
-                  textAnchor="end"
-                  height="60"
-                />
+                <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip
                   :formatter="(value) => [`R$ ${Number(value).toFixed(2)}`, 'Valor']"
@@ -407,19 +399,11 @@ const monthlyLineData = computed(() => {
           <CardTitle>Evolução do Faturamento</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="monthlyLineData.length > 0" class="w-full" style="height: auto; min-height: 300px;">
+          <div v-if="monthlyLineData.length > 0" class="w-full">
             <ResponsiveContainer width="100%" height="300">
-              <LineChart
-                :data="monthlyLineData"
-                :margin="{ top: 20, right: 30, left: 0, bottom: 60 }"
-              >
+              <LineChart :data="monthlyLineData">
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  angle="-45"
-                  textAnchor="end"
-                  height="60"
-                />
+                <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip
                   :formatter="(value) => [`R$ ${Number(value).toFixed(2)}`, 'Valor']"

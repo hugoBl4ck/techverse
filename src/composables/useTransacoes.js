@@ -37,20 +37,17 @@ export function useTransacoes(storeId) {
       if (filtros.categoria) constraints.push(where('categoria', '==', filtros.categoria))
       if (filtros.status) constraints.push(where('status', '==', filtros.status))
 
-      // Sempre ordena por data
-      constraints.push(orderBy('data_transacao', 'desc'))
-
       const q = filtros.tipo || filtros.categoria || filtros.status
         ? query(transacoesRef, ...constraints)
-        : query(transacoesRef, orderBy('data_transacao', 'desc'))
+        : transacoesRef
       
       const snapshot = await getDocs(q)
 
       transacoes.value = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        data_transacao: doc.data().data_transacao?.toDate?.() || new Date(doc.data().data_transacao),
-        data_pagamento: doc.data().data_pagamento?.toDate?.() || null
+        data_transacao: doc.data().data_transacao?.toDate ? doc.data().data_transacao.toDate() : new Date(doc.data().data_transacao),
+        data_pagamento: doc.data().data_pagamento?.toDate ? doc.data().data_pagamento.toDate() : null
       }))
     } catch (err) {
       error.value = err.message
