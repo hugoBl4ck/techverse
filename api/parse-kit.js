@@ -8,6 +8,7 @@ Analise o texto abaixo e retorne um objeto JSON que contenha:
 2.  Um array "componentes". Cada objeto no array deve ter:
     - "nome": O nome do item (ex: "Intel Core i5 4ª Geração").
     - "tipo": A categoria do item (use UMA das seguintes: 'cpu', 'placa-mae', 'ram', 'gpu', 'armazenamento', 'fonte', 'gabinete', 'outro').
+    - "descricao": Uma descrição resumida das informações úteis do item, baseada no texto fornecido. Foque em especificações técnicas relevantes, compatibilidade e benefícios, sem incluir toda a descrição original. Mantenha conciso e informativo.
 
 NÃO inclua emojis. Retorne APENAS o JSON.`;
 
