@@ -219,7 +219,7 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
       </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-12">
+    <main class="ml-80 max-w-4xl px-4 py-12">
       <!-- Hero Section -->
       <section class="text-center mb-12">
         <h1 class="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">

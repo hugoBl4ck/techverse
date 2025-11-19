@@ -1,9 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import { Button } from "@/components/ui/button"
-import { Zap, X, Cpu, HardDrive, Monitor, Activity } from 'lucide-vue-next'
+import { Zap, Cpu, HardDrive, Monitor, Activity } from 'lucide-vue-next'
 
-const showSidebar = ref(false)
 const activeSection = ref('memory')
 
 const optimizationSections = [
@@ -35,37 +33,14 @@ const optimizationSections = [
 </script>
 
 <template>
-  <div>
-    <!-- Floating Action Button for Optimization Info -->
-    <Button
-      @click="showSidebar = true"
-      class="fixed bottom-6 right-6 z-40 rounded-full w-14 h-14 bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/50 text-white border-0 shadow-xl"
-      title="Dicas de Otimização de Performance"
-    >
-      <Zap class="w-6 h-6" />
-    </Button>
-
-    <!-- Sidebar Overlay -->
-    <div
-      v-if="showSidebar"
-      class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-      @click="showSidebar = false"
-    ></div>
-
-    <!-- Sidebar Panel -->
-    <div
-      class="fixed top-0 right-0 z-50 h-full w-96 bg-background border-l border-border/40 shadow-2xl transform transition-transform duration-300 overflow-y-auto"
-      :class="showSidebar ? 'translate-x-0' : 'translate-x-full'"
-    >
-      <!-- Sidebar Header -->
-      <div class="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/40 p-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-foreground">Dicas de Otimização</h3>
-          <Button @click="showSidebar = false" variant="ghost" size="icon" class="hover:bg-primary/20">
-            <X class="w-5 h-5" />
-          </Button>
-        </div>
+  <div class="fixed left-0 top-0 h-full w-80 bg-background border-r border-border/40 shadow-xl overflow-y-auto z-30">
+    <!-- Sidebar Header -->
+    <div class="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/40 p-4">
+      <div class="flex items-center gap-3">
+        <Zap class="w-6 h-6 text-primary" />
+        <h3 class="text-lg font-semibold text-foreground">Dicas de Otimização</h3>
       </div>
+    </div>
 
       <!-- Navigation Menu -->
       <div class="border-b border-border/40 p-4">
@@ -210,6 +185,5 @@ const optimizationSections = [
           </div>
         </div>
       </div>
-    </div>
   </div>
 </template>
