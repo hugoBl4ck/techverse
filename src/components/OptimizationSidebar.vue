@@ -1,9 +1,37 @@
 <script setup>
 import { ref } from 'vue'
 import { Button } from "@/components/ui/button"
-import { Settings, X } from 'lucide-vue-next'
+import { Zap, X, Cpu, HardDrive, Monitor, Activity } from 'lucide-vue-next'
 
 const showSidebar = ref(false)
+const activeSection = ref('memory')
+
+const optimizationSections = [
+  {
+    id: 'memory',
+    title: 'Memória RAM',
+    icon: HardDrive,
+    description: 'Otimização de memória e gerenciamento'
+  },
+  {
+    id: 'cpu',
+    title: 'Processador',
+    icon: Cpu,
+    description: 'Ajustes de CPU e performance'
+  },
+  {
+    id: 'gpu',
+    title: 'Placa de Vídeo',
+    icon: Monitor,
+    description: 'Configurações de GPU e drivers'
+  },
+  {
+    id: 'system',
+    title: 'Sistema',
+    icon: Activity,
+    description: 'Otimização geral do Windows'
+  }
+]
 </script>
 
 <template>
@@ -12,9 +40,9 @@ const showSidebar = ref(false)
     <Button
       @click="showSidebar = true"
       class="fixed bottom-6 right-6 z-40 rounded-full w-14 h-14 bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/50 text-white border-0 shadow-xl"
-      title="Dicas de Otimização - Get-MMAgent"
+      title="Dicas de Otimização de Performance"
     >
-      <Settings class="w-6 h-6" />
+      <Zap class="w-6 h-6" />
     </Button>
 
     <!-- Sidebar Overlay -->
@@ -32,16 +60,36 @@ const showSidebar = ref(false)
       <!-- Sidebar Header -->
       <div class="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/40 p-4">
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-foreground">Otimização de Memória</h3>
+          <h3 class="text-lg font-semibold text-foreground">Dicas de Otimização</h3>
           <Button @click="showSidebar = false" variant="ghost" size="icon" class="hover:bg-primary/20">
             <X class="w-5 h-5" />
           </Button>
         </div>
       </div>
 
+      <!-- Navigation Menu -->
+      <div class="border-b border-border/40 p-4">
+        <div class="space-y-2">
+          <div
+            v-for="section in optimizationSections"
+            :key="section.id"
+            @click="activeSection = section.id"
+            class="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-primary/10"
+            :class="activeSection === section.id ? 'bg-primary/20 border border-primary/30' : ''"
+          >
+            <component :is="section.icon" class="w-5 h-5 text-primary" />
+            <div>
+              <p class="font-medium text-sm">{{ section.title }}</p>
+              <p class="text-xs text-muted-foreground">{{ section.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Sidebar Content -->
       <div class="p-4 space-y-6">
-        <div>
+        <!-- Memory Section -->
+        <div v-if="activeSection === 'memory'">
           <h4 class="text-sm font-semibold text-foreground mb-3">Get-MMAgent do PowerShell</h4>
           <div class="space-y-4 text-sm text-muted-foreground">
             <div>
@@ -89,6 +137,75 @@ const showSidebar = ref(false)
                 <li><code class="bg-muted px-2 py-1 rounded text-xs block">Disable-MMAgent -ApplicationLaunchPrefetching</code></li>
                 <li><code class="bg-muted px-2 py-1 rounded text-xs block">Set-MMAgent -MaxOperationAPIFiles 512</code></li>
               </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- CPU Section -->
+        <div v-if="activeSection === 'cpu'">
+          <h4 class="text-sm font-semibold text-foreground mb-3">Otimização de Processador</h4>
+          <div class="space-y-4 text-sm text-muted-foreground">
+            <div>
+              <p class="font-medium text-foreground mb-1">Precision Boost Overdrive (PBO)</p>
+              <p>Para processadores AMD Ryzen, ative o PBO na BIOS para melhor performance dinâmica.</p>
+            </div>
+
+            <div>
+              <p class="font-medium text-foreground mb-1">Verificar frequência:</p>
+              <p>Use HWiNFO64 para verificar se a CPU está rodando em sua frequência base/turbo correta.</p>
+            </div>
+
+            <div>
+              <p class="font-medium text-foreground mb-1">Temperaturas ideais:</p>
+              <ul class="space-y-1">
+                <li><strong>Carga máxima:</strong> Até 85°C</li>
+                <li><strong>Uso diário:</strong> Até 75°C</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- GPU Section -->
+        <div v-if="activeSection === 'gpu'">
+          <h4 class="text-sm font-semibold text-foreground mb-3">Otimização de Placa de Vídeo</h4>
+          <div class="space-y-4 text-sm text-muted-foreground">
+            <div>
+              <p class="font-medium text-foreground mb-1">Resize BAR (ReBAR)</p>
+              <p>Ative o ReBAR na BIOS para acesso completo à memória de vídeo da GPU.</p>
+            </div>
+
+            <div>
+              <p class="font-medium text-foreground mb-1">Drivers atualizados:</p>
+              <p>Mantenha sempre os drivers mais recentes da NVIDIA ou AMD.</p>
+            </div>
+
+            <div>
+              <p class="font-medium text-foreground mb-1">Temperaturas ideais:</p>
+              <ul class="space-y-1">
+                <li><strong>Jogos:</strong> Até 85°C</li>
+                <li><strong>Uso intenso:</strong> Até 90°C</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Section -->
+        <div v-if="activeSection === 'system'">
+          <h4 class="text-sm font-semibold text-foreground mb-3">Otimização Geral do Sistema</h4>
+          <div class="space-y-4 text-sm text-muted-foreground">
+            <div>
+              <p class="font-medium text-foreground mb-1">Secure Boot</p>
+              <p>Certifique-se que Secure Boot está ativado na BIOS para compatibilidade com jogos modernos.</p>
+            </div>
+
+            <div>
+              <p class="font-medium text-foreground mb-1">Serviços desnecessários:</p>
+              <p>Desative serviços do Windows que não usa para liberar recursos.</p>
+            </div>
+
+            <div>
+              <p class="font-medium text-foreground mb-1">Limpeza de disco:</p>
+              <p>Use a ferramenta de limpeza de disco integrada do Windows regularmente.</p>
             </div>
           </div>
         </div>
