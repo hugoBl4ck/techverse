@@ -667,5 +667,4 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
       </footer>
     </div>
   </div>
-</div>
 </template>
