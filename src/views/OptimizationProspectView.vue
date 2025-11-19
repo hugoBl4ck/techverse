@@ -11,10 +11,7 @@ import { auth, db } from '@/firebase/config.js'
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { toast } from 'vue-sonner'
-import Sidebar from "@/components/sidebar/Sidebar.vue"
-import SidebarContent from "@/components/sidebar/SidebarContent.vue"
-import SidebarGroup from "@/components/sidebar/SidebarGroup.vue"
-import SidebarHeader from "@/components/sidebar/SidebarHeader.vue"
+import OptimizationSidebar from '@/components/OptimizationSidebar.vue'
 
 // Import HWiNFO images
 import hwinfoStart from '@/assets/images/hwinfo-tela-inicial.png'
@@ -204,86 +201,25 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
 </script>
 
 <template>
-  <div class="min-h-screen bg-background flex">
-    <!-- Sidebar -->
-    <Sidebar class="hidden lg:flex">
-      <SidebarContent>
-        <SidebarGroup title="Otimizações Avançadas">
-          <div class="px-3 py-2">
-            <h4 class="text-sm font-semibold text-foreground mb-3">Otimização de Memória com Get-MMAgent</h4>
-            <div class="space-y-4 text-xs text-muted-foreground">
-              <div>
-                <p class="font-medium text-foreground mb-1">Para que serve?</p>
-                <p>Exibe configurações do Agente de Gerenciamento de Memória do Windows para diagnosticar e otimizar o uso de RAM.</p>
-              </div>
-
-              <div>
-                <p class="font-medium text-foreground mb-1">Como usar:</p>
-                <ol class="list-decimal list-inside space-y-1">
-                  <li>Abra PowerShell como Administrador</li>
-                  <li>Execute: <code class="bg-muted px-1 py-0.5 rounded text-xs">Get-MMAgent</code></li>
-                </ol>
-              </div>
-
-              <div>
-                <p class="font-medium text-foreground mb-1">Configurações principais:</p>
-                <ul class="space-y-1">
-                  <li><strong>MemoryCompression:</strong> Compressão de memória</li>
-                  <li><strong>PageCombining:</strong> Combinação de páginas</li>
-                  <li><strong>ApplicationLaunchPrefetching:</strong> Pré-carregamento</li>
-                </ul>
-              </div>
-
-              <div>
-                <p class="font-medium text-foreground mb-1">Análise da sua saída:</p>
-                <div class="bg-muted/50 p-2 rounded text-xs">
-                  <p class="mb-1"><strong>PageCombining: False</strong> ⚠️ Problema!</p>
-                  <p>Essa função combina páginas idênticas de memória, economizando RAM. Deve estar ativa.</p>
-                </div>
-              </div>
-
-              <div>
-                <p class="font-medium text-foreground mb-1">Correção recomendada:</p>
-                <div class="bg-primary/10 border border-primary/20 p-2 rounded">
-                  <p class="text-primary font-medium mb-1">Ativar PageCombining</p>
-                  <code class="bg-background px-1 py-0.5 rounded text-xs block">Enable-MMAgent -PageCombining</code>
-                  <p class="text-xs mt-1">Execute como Administrador, reinicie o sistema.</p>
-                </div>
-              </div>
-
-              <div>
-                <p class="font-medium text-foreground mb-1">Outros comandos úteis:</p>
-                <ul class="space-y-1 text-xs">
-                  <li><code class="bg-muted px-1 py-0.5 rounded">Disable-MMAgent -ApplicationLaunchPrefetching</code></li>
-                  <li><code class="bg-muted px-1 py-0.5 rounded">Set-MMAgent -MaxOperationAPIFiles 512</code></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
-
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
-      <!-- Header -->
-      <header class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div class="flex items-center cursor-pointer" @click="router.push('/landing')">
-            <TechVerseLogoSvg />
-          </div>
-          <div class="flex items-center gap-3">
-            <Button @click="router.push('/login')" variant="outline" class="font-body border border-primary/30 text-primary hover:bg-primary/5">
-              Login
-            </Button>
-            <Button @click="router.push('/app/clientes')" class="font-body bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/50 text-white border-0">
-              Acessar App
-            </Button>
-          </div>
+  <div class="min-h-screen bg-background">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center cursor-pointer" @click="router.push('/landing')">
+          <TechVerseLogoSvg />
         </div>
-      </header>
+        <div class="flex items-center gap-3">
+          <Button @click="router.push('/login')" variant="outline" class="font-body border border-primary/30 text-primary hover:bg-primary/5">
+            Login
+          </Button>
+          <Button @click="router.push('/app/clientes')" class="font-body bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/50 text-white border-0">
+            Acessar App
+          </Button>
+        </div>
+      </div>
+    </header>
 
-      <main class="max-w-4xl mx-auto px-4 py-12 flex-1">
+    <main class="max-w-4xl mx-auto px-4 py-12">
       <!-- Hero Section -->
       <section class="text-center mb-12">
         <h1 class="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -655,16 +591,17 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
           </CardContent>
         </Card>
       </section>
-      </main>
+    </main>
 
-      <!-- Footer -->
-      <footer class="border-t border-border/30 bg-gradient-to-b from-background/50 to-background backdrop-blur-sm py-8 px-4 mt-12">
-        <div class="max-w-7xl mx-auto text-center">
-          <p class="text-sm text-muted-foreground">
-            © {{ new Date().getFullYear() }} TechVerse. Desenvolvido com ❤️ por HugoBl4ck.
-          </p>
-        </div>
-      </footer>
-    </div>
+    <!-- Footer -->
+    <footer class="border-t border-border/30 bg-gradient-to-b from-background/50 to-background backdrop-blur-sm py-8 px-4 mt-12">
+      <div class="max-w-7xl mx-auto text-center">
+        <p class="text-sm text-muted-foreground">
+          © {{ new Date().getFullYear() }} TechVerse. Desenvolvido com ❤️ por HugoBl4ck.
+        </p>
+      </div>
+    </footer>
+
+    <OptimizationSidebar />
   </div>
 </template>
