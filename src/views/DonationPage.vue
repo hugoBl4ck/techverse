@@ -243,6 +243,7 @@ const pixKeyType = ref('');
 const qrCodeUrl = ref('');
 const selectedAmount = ref(50);
 const customAmount = ref(0);
+const storedConfig = ref(null);
 const isLoading = ref(true);
 
 const presetAmounts = [10, 25, 50, 100, 250];
@@ -270,20 +271,33 @@ onMounted(async () => {
   await loadPixConfig();
 });
 
+import { watch } from 'vue';
+
+watch(finalAmount, async () => {
+  if (storedConfig.value) {
+    await generateQRCode();
+  }
+});
+
+async function generateQRCode() {
+  if (!storedConfig.value) return;
+  
+  const { chave, nomeRecebimento, cidade } = storedConfig.value;
+  const name = nomeRecebimento || 'TechVerse';
+  const city = cidade || 'Sao Paulo';
+  
+  qrCodeUrl.value = await generatePixQRCode(chave, finalAmount.value, name, city);
+}
+
 async function loadPixConfig() {
   isLoading.value = true;
   try {
     const config = await getPixConfig();
     if (config && config.chave) {
+      storedConfig.value = config;
       pixKey.value = config.chave;
       pixKeyType.value = detectPixKeyType(config.chave);
-      // Use configured name and city if available
-      const name = config.nomeRecebimento || 'TechVerse';
-      const city = config.cidade || 'Sao Paulo';
-      
-      // Note: generatePixQRCode might need to be updated to accept city if not already
-      // For now passing name as 3rd arg as per existing signature
-      qrCodeUrl.value = await generatePixQRCode(config.chave, finalAmount.value, name, city);
+      await generateQRCode();
     }
   } catch (error) {
     console.error('Erro ao carregar configuração PIX:', error);

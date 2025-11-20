@@ -139,6 +139,20 @@ const resetQuiz = () => {
             <img src="/techLOGO.svg" alt="TechVerse Logo" class="w-8 h-8" />
             <span class="font-display font-bold text-xl">TechVerse</span>
           </div>
+          
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center gap-6">
+            <router-link to="/otimizacao" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Otimização
+            </router-link>
+            <router-link to="/promocoes" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Promoções
+            </router-link>
+            <router-link to="/noticias" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Notícias
+            </router-link>
+          </div>
+
           <div class="flex items-center gap-4">
             <router-link 
               to="/donate" 
