@@ -133,7 +133,7 @@ const resetQuiz = () => {
     
     <!-- Navbar Fixa (Estilo Floating) -->
     <div class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <nav class="w-full max-w-5xl bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 px-4 py-3 flex items-center justify-between transition-all duration-300 hover:shadow-xl">
+      <nav class="w-full max-w-5xl bg-white/50 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 px-4 py-3 flex items-center justify-between transition-all duration-300 hover:shadow-xl hover:bg-white/80">
         
         <!-- Logo -->
         <div class="flex items-center gap-2">
