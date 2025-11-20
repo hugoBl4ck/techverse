@@ -220,6 +220,7 @@ export function useFirestore() {
         chave: config.chave,
         nomeRecebimento: config.nomeRecebimento || '',
         cidade: config.cidade || '',
+        cep: config.cep || '',
         atualizadoEm: new Date()
       }
 
