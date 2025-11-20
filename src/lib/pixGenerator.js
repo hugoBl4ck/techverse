@@ -4,14 +4,14 @@
  */
 
 // Função para gerar QR Code usando API externa
-export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo') {
+export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo', merchantAccount = 'BR.COM.PAGSEGURO', reference = '') {
   try {
     // Aqui você pode usar uma API de QR Code
     // Opção 1: qrcode.react (mais comum)
     // Opção 2: API externa como QR Server
 
-    const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
-      generatePixPayload(pixKey, amount, name, city)
+    const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300\u0026data=${encodeURIComponent(
+      generatePixPayload(pixKey, amount, name, city, merchantAccount, reference)
     )}`;
 
     return qrCodeApiUrl;
@@ -25,70 +25,58 @@ export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse', 
  * Gera o payload para PIX estático
  * Formato: BR code com validação
  */
-export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo') {
+export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo', merchantAccount = 'BR.COM.PAGSEGURO', reference = '') {
   // Sanitize name and city according to BR Code spec
-  // Remove diacritics, trim, and limit city to 15 characters, uppercase
   const sanitize = (str) => {
     if (!str) return '';
-    // Normalize Unicode, remove diacritics
     const normalized = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     return normalized;
   };
   const safeName = sanitize(name).trim();
   const safeCity = sanitize(city).trim().toUpperCase().substring(0, 15);
 
+  // Ensure PIX key has country prefix (+55 for Brazil)
+  const cleanKey = pixKey.replace(/^\+?55/, ''); // remove any existing +55
+  const prefixedKey = `+55${cleanKey}`;
+
+  // Generate a UUID for transaction ID (similar to bank example)
+  const generateUuid = () => {
+    // Simple UUID v4 generator
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
+
   // Dados básicos do BR Code
   const brCode = {
     '00': '01', // ID formato
-    '01': '12', // Versão
+    '01': prefixedKey, // Chave PIX com +55
     '26': {
       '00': '0014br.gov.bcb.pix', // URL PIX
       '01': '0014br.gov.bcb.brcode', // Identificador
-      '02': pixKey // Chave PIX
+      '02': prefixedKey // Repetindo a chave aqui (conforme spec)
     },
+    // Merchant account (campo 76) – livre, usado pelo banco
+    '76': merchantAccount,
     '52': '0400', // Categoria comercial
     '53': '986', // Código da moeda (Real)
-    '54': amount || '', // Valor (opcional para PIX estático)
+    '54': amount || '', // Valor (opcional)
     '55': '0', // Descrição
-    '58': '05', // Código do País
+    '58': '05', // Código do País (BR)
     '59': safeName, // Nome do recebedor
-    '60': safeCity, // Cidade
+    '60': safeCity, // Cidade (máx 15 chars, ASCII)
     '62': {
-      '05': generateTransactionId() // ID da transação
+      '05': generateUuid(), // Transaction ID (UUID)
+      // Campo 09 opcional para referência do pagamento
+      ...(reference ? { '09': reference } : {})
     }
   };
 
   return encodeBrCode(brCode);
-
-  try {
-    // Dados básicos do BR Code
-    const brCode = {
-      '00': '01', // ID formato
-      '01': '12', // Versão
-      '26': {
-        '00': '0014br.gov.bcb.pix', // URL PIX
-        '01': '0014br.gov.bcb.brcode', // Identificador
-        '02': pixKey // Chave PIX
-      },
-      '52': '0400', // Categoria comercial
-      '53': '986', // Código da moeda (Real)
-      '54': amount || '', // Valor (opcional para PIX estático)
-      '55': '0', // Descrição
-      '58': '05', // Código do País
-      '59': name, // Nome do recebedor
-      '60': city, // Cidade
-      '62': {
-        '05': generateTransactionId() // ID da transação
-      }
-    };
-
-    return encodeBrCode(brCode);
-  } catch (error) {
-    console.error('Erro ao gerar payload PIX:', error);
-    // Retorna um payload simplificado se houver erro
-    return pixKey;
-  }
 }
+
 
 /**
  * Codifica o BR Code para formato PIX
@@ -240,8 +228,8 @@ export function formatPixAmount(value) {
  * Cria um link PIX copiável
  * Retorna um string formatada para copiar para o app bancário
  */
-export function generatePixCopyPaste(pixKey, amount = 0, description = '') {
-  const payload = generatePixPayload(pixKey, amount, 'TechVerse', 'Sao Paulo');
+export function generatePixCopyPaste(pixKey, amount = 0, description = '', merchantAccount = 'BR.COM.PAGSEGURO', reference = '') {
+  const payload = generatePixPayload(pixKey, amount, 'TechVerse', 'Sao Paulo', merchantAccount, reference);
   return {
     payload,
     qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(payload)}`,
