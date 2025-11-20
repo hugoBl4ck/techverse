@@ -33,12 +33,13 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     return normalized;
   };
   const safeName = sanitize(name).trim().substring(0, 25); // Max 25 characters for BR Code
-  // Process city: sanitize, trim, uppercase, then ensure exactly 15 characters
+  // Process city: sanitize, trim, uppercase
   let safeCity = sanitize(city).trim().toUpperCase();
+
+  // If longer than 15, truncate. If shorter, pad with spaces.
   if (safeCity.length > 15) {
     safeCity = safeCity.substring(0, 15);
   } else {
-    // Pad with spaces to reach 15 characters
     safeCity = safeCity.padEnd(15, ' ');
   }
 
