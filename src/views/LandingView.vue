@@ -131,9 +131,29 @@ const resetQuiz = () => {
   <div class="relative bg-background overflow-hidden">
     <HeroBackground />
     
-    <!-- Header Fixo -->
-    <header
-      class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm"
+    <!-- Navbar Fixa -->
+    <nav class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
+          <div class="flex items-center gap-2">
+            <img src="/techLOGO.svg" alt="TechVerse Logo" class="w-8 h-8" />
+            <span class="font-display font-bold text-xl">TechVerse</span>
+          </div>
+          <Button 
+            @click="navigateToLogin" 
+            variant="default" 
+            size="sm" 
+            class="rounded-full px-6 font-body bg-primary hover:bg-primary/90 text-white"
+          >
+            Login
+          </Button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+      class="relative border-b border-border/40 shadow-sm"
     >
         <!-- Animated circles behind hero -->
         <div class="absolute inset-0 overflow-hidden">
@@ -248,7 +268,7 @@ const resetQuiz = () => {
             </div>
           </div>
         </div>
-      </header>
+      </section>
 
       <!-- Features Section com Cards Interativos -->
       <section class="py-24 px-4 sm:px-6 lg:px-8 relative">
