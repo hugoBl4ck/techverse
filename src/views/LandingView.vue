@@ -1,6 +1,9 @@
 <script setup>
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import Tooltip from "@/components/ui/Tooltip.vue";
+import HeroBackground from "@/components/landing/HeroBackground.vue";
+import FAQSection from "@/components/landing/FAQSection.vue";
 import {
   Users,
   Wand2,
@@ -12,24 +15,12 @@ import {
   LogIn,
   Cpu,
   User,
-  HelpCircle,
+  AlertTriangle,
+  CheckCircle2,
+  Gauge
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { ref, computed } from "vue";
-
-// Componente simples de tooltip
-const Tooltip = {
-  props: ['text'],
-  template: `
-    <div class="relative inline-block group">
-      <HelpCircle class="w-4 h-4 text-muted-foreground hover:text-primary cursor-help inline ml-1" />
-      <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-background border border-border rounded-lg shadow-lg text-sm text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 z-50 max-w-xs">
-        {{ text }}
-      </div>
-    </div>
-  `,
-  components: { HelpCircle }
-};
 
 const router = useRouter();
 const hoveredFeature = ref(null);
@@ -39,9 +30,6 @@ const currentTestimonial = ref(0);
 const quizStep = ref(0);
 const quizAnswers = ref([]);
 const selectedAnswer = ref(null);
-
-// Registrar componente
-const components = { Tooltip };
 
 const clientesOtimizados = computed(() => {
   const hoje = new Date();
@@ -141,99 +129,12 @@ const resetQuiz = () => {
 
 <template>
   <div class="relative bg-background overflow-hidden">
-    <!-- Animated Background Elements -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      <!-- Gradient Orbs -->
-      <div
-        class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary/30 to-accent/20 rounded-full blur-3xl animate-pulse"
-      ></div>
-      <div
-        class="absolute top-1/2 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/25 to-primary/15 rounded-full blur-3xl animate-pulse"
-        style="animation-delay: 2s"
-      ></div>
-      <div
-        class="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-tl from-accent/20 to-secondary/10 rounded-full blur-3xl animate-pulse"
-        style="animation-delay: 4s"
-      ></div>
-
-      <!-- Grid Pattern -->
-      <div
-        class="absolute inset-0 opacity-5"
-        style="
-          background-image: linear-gradient(
-              0deg,
-              transparent 24%,
-              rgba(var(--color-primary)) 25%,
-              rgba(var(--color-primary)) 26%,
-              transparent 27%,
-              transparent 74%,
-              rgba(var(--color-primary)) 75%,
-              rgba(var(--color-primary)) 76%,
-              transparent 77%,
-              transparent
-            ),
-            linear-gradient(
-              90deg,
-              transparent 24%,
-              rgba(var(--color-primary)) 25%,
-              rgba(var(--color-primary)) 26%,
-              transparent 27%,
-              transparent 74%,
-              rgba(var(--color-primary)) 75%,
-              rgba(var(--color-primary)) 76%,
-              transparent 77%,
-              transparent
-            );
-          background-size: 50px 50px;
-          background-position: 0 0, 25px 25px;
-        "
-      ></div>
-    </div>
-
+    <HeroBackground />
+    
     <!-- Header Fixo -->
     <header
       class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm"
     >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative z-10"
-      >
-        <div
-          class="flex items-center gap-2 cursor-pointer"
-          @click="router.push('/landing')"
-        >
-          <img src="/techLOGO.svg" alt="TechVerse Logo" class="w-8 h-8" />
-          <span
-            class="font-display text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary"
-          >
-            TechVerse
-          </span>
-        </div>
-        <div class="flex items-center gap-3">
-          <Button
-            @click="navigateToLogin"
-            variant="outline"
-            class="font-body border border-primary/30 text-primary hover:bg-primary/5 transition-all"
-          >
-            <LogIn class="w-4 h-4 mr-2" />
-            Login
-          </Button>
-          <Button
-            @click="navigateToApp"
-            class="font-body bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/50 text-white border-0 transition-all"
-          >
-            Acessar App
-            <ArrowRight class="w-4 h-4 ml-2" />
-          </Button>
-        </div>
-      </div>
-    </header>
-
-    <main class="relative z-10">
-      <!-- Hero Section com Efeito Moderno -->
-      <section
-        class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 relative overflow-hidden"
-        style="background-color: rgba(157, 92, 247, 0.02); background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 2000 1500%22%3E%3Cdefs%3E%3Crect stroke=%22%239D5CF7%22 stroke-width=%22.5%22 width=%221%22 height=%221%22 id=%22s%22/%3E%3Cpattern id=%22a%22 width=%223%22 height=%223%22 patternUnits=%22userSpaceOnUse%22 patternTransform=%22scale(14.7) translate(-931.97 -698.98)%22%3E%3Cuse fill=%22%239D6CF8%22 href=%22%23s%22 y=%222%22/%3E%3Cuse fill=%22%239D6CF8%22 href=%22%23s%22 x=%221%22 y=%222%22/%3E%3Cuse fill=%22%23A07CF8%22 href=%22%23s%22 x=%222%22 y=%222%22/%3E%3Cuse fill=%22%23A07CF8%22 href=%22%23s%22/%3E%3Cuse fill=%22%23A38CF8%22 href=%22%23s%22 x=%222%22/%3E%3Cuse fill=%22%23A38CF8%22 href=%22%23s%22 x=%221%22 y=%221%22/%3E%3C/pattern%3E%3Cpattern id=%22b%22 width=%227%22 height=%2211%22 patternUnits=%22userSpaceOnUse%22 patternTransform=%22scale(14.7) translate(-931.97 -698.98)%22%3E%3Cg fill=%22%23AB9CF8%22%3E%3Cuse href=%22%23s%22/%3E%3Cuse href=%22%23s%22 y=%225%22 /%3E%3Cuse href=%22%23s%22 x=%221%22 y=%2710%22/%3E%3Cuse href=%22%23s%22 x=%272%22 y=%271%22/%3E%3Cuse href=%22%23s%22 x=%272%22 y=%274%22/%3E%3Cuse href=%22%23s%22 x=%273%22 y=%278%22/%3E%3Cuse href=%22%23s%22 x=%274%22 y=%273%22/%3E%3Cuse href=%22%23s%22 x=%274%22 y=%277%22/%3E%3Cuse href=%22%23s%22 x=%275%22 y=%272%22/%3E%3Cuse href=%22%23s%22 x=%275%22 y=%276%22/%3E%3Cuse href=%22%23s%22 x=%276%22 y=%279%22/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id=%22h%22 width=%225%22 height=%2713%22 patternUnits=%22userSpaceOnUse%22 patternTransform=%22scale(14.7) translate(-931.97 -698.98)%22%3E%3Cg fill=%22%23B3ACF8%22%3E%3Cuse href=%22%23s%22 y=%275%22/%3E%3Cuse href=%22%23s%22 y=%278%22/%3E%3Cuse href=%22%23s%22 x=%271%22 y=%271%22/%3E%3Cuse href=%22%23s%22 x=%271%22 y=%279%22/%3E%3Cuse href=%22%23s%22 x=%271%22 y=%2712%22/%3E%3Cuse href=%22%23s%22 x=%272%22/%3E%3Cuse href=%22%23s%22 x=%272%22 y=%274%22/%3E%3Cuse href=%22%23s%22 x=%273%22 y=%272%22/%3E%3Cuse href=%22%23s%22 x=%273%22 y=%276%22/%3E%3Cuse href=%22%23s%22 x=%273%22 y=%2711%22/%3E%3Cuse href=%22%23s%22 x=%274%22 y=%273%22/%3E%3Cuse href=%22%23s%22 x=%274%22 y=%277%22/%3E%3Cuse href=%22%23s%22 x=%274%22 y=%2710%22/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id=%22c%22 width=%2717%22 height=%2713%22 patternUnits=%22userSpaceOnUse%22 patternTransform=%22scale(14.7) translate(-931.97 -698.98)%22%3E%3Cg fill=%22%23BBBCF8%22%3E%3Cuse href=%22%23s%22 y=%2711%22/%3E%3Cuse href=%22%23s%22 x=%272%22 y=%279%22/%3E%3Cuse href=%22%23s%22 x=%275%22 y=%2712%22/%3E%3Cuse href=%22%23s%22 x=%279%22 y=%274%22/%3E%3Cuse href=%22%23s%22 x=%2712%22 y=%271%22/%3E%3Cuse href=%22%23s%22 x=%2716%22 y=%276%22/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id=%22d%22 width=%2719%22 height=%2717%22 patternUnits=%22userSpaceOnUse%22 patternTransform=%22scale(14.7) translate(-931.97 -698.98)%22%3E%3Cg fill=%22%23C3CCF8%22%3E%3Cuse href=%22%23s%22 y=%279%22/%3E%3Cuse href=%22%23s%22 x=%2716%22 y=%275%22/%3E%3Cuse href=%22%23s%22 x=%2714%22 y=%272%22/%3E%3Cuse href=%22%23s%22 x=%2711%22 y=%2711%22/%3E%3Cuse href=%22%23s%22 x=%276%22 y=%2714%22/%3E%3C/g%3E%3Cg fill=%22%23CBDCF8%22%3E%3Cuse href=%22%23s%22 x=%273%22 y=%2713%22/%3E%3Cuse href=%22%23s%22 x=%279%22 y=%277%22/%3E%3Cuse href=%22%23s%22 x=%2713%22 y=%2710%22/%3E%3Cuse href=%22%23s%22 x=%2715%22 y=%274%22/%3E%3Cuse href=%22%23s%22 x=%2718%22 y=%271%22/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id=%22e%22 width=%2247%22 height=%2753%22 patternUnits=%22userSpaceOnUse%22 patternTransform=%22scale(14.7) translate(-931.97 -698.98)%22%3E%3Cg fill=%22%23D3ACF8%22%3E%3Cuse href=%22%23s%22 x=%272%22 y=%275%22/%3E%3Cuse href=%22%23s%22 x=%2716%22 y=%2738%22/%3E%3Cuse href=%22%23s%22 x=%2746%22 y=%2742%22/%3E%3Cuse href=%22%23s%22 x=%2729%22 y=%2720%22/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id=%22f%22 width=%2759%22 height=%2771%22 patternUnits=%22userSpaceOnUse%22 patternTransform=%22scale(14.7) translate(-931.97 -698.98)%22%3E%3Cg fill=%22%23DB7CF8%22%3E%3Cuse href=%22%23s%22 x=%2733%22 y=%2713%22/%3E%3Cuse href=%22%23s%22 x=%2727%22 y=%2754%22/%3E%3Cuse href=%22%23s%22 x=%2755%22 y=%2755%22/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id=%22g%22 width=%22139%22 height=%2797%22 patternUnits=%22userSpaceOnUse%22 patternTransform=%22scale(14.7) translate(-931.97 -698.98)%22%3E%3Cg fill=%22%23D95858%22%3E%3Cuse href=%22%23s%22 x=%2711%22 y=%278%22/%3E%3Cuse href=%22%23s%22 x=%2751%22 y=%2713%22/%3E%3Cuse href=%22%23s%22 x=%2717%22 y=%2773%22/%3E%3Cuse href=%22%23s%22 x=%2799%22 y=%2757%22/%3E%3C/g%3E%3C/pattern%3E%3C/defs%3E%3Crect fill=%22url(%23a)%22 width=%22100%25%22 height=%22100%25%22/%3E%3Crect fill=%22url(%23b)%22 width=%22100%25%22 height=%22100%25%22/%3E%3Crect fill=%22url(%23h)%22 width=%22100%25%22 height=%22100%25%22/%3E%3Crect fill=%22url(%23c)%22 width=%22100%25%22 height=%22100%25%22/%3E%3Crect fill=%22url(%23d)%22 width=%22100%25%22 height=%22100%25%22/%3E%3Crect fill=%22url(%23e)%22 width=%22100%25%22 height=%22100%25%22/%3E%3Crect fill=%22url(%23f)%22 width=%22100%25%22 height=%22100%25%22/%3E%3Crect fill=%22url(%23g)%22 width=%22100%25%22 height=%22100%25%22/%3E%3C/svg%3E'); background-attachment: fixed; background-size: cover;"
-      >
         <!-- Animated circles behind hero -->
         <div class="absolute inset-0 overflow-hidden">
           <div
@@ -563,30 +464,64 @@ const resetQuiz = () => {
                 >?
               </h3>
 
-              <div class="text-lg text-muted-foreground text-center font-body mb-8 leading-relaxed max-w-3xl mx-auto">
-                <h4 class="font-display text-2xl font-bold text-foreground mb-4">Problemas Comuns que Afetam Todos</h4>
-                <p class="mb-6">
-                  Imagine isso: você está no meio de uma partida intensa, o coração acelerado, e de repente... travamento. A tela congela, o mouse para de responder, e aquela frustração toma conta. Ou pior: trabalhando em um projeto urgente, o software demora uma eternidade para processar, e você sente que seu equipamento está te sabotando.
-                </p>
+              <div class="text-lg text-muted-foreground text-center font-body mb-12 leading-relaxed max-w-3xl mx-auto">
+                <h4 class="font-display text-2xl font-bold text-foreground mb-8">Otimização Profissional vs. Comum</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                  <!-- Problemas -->
+                  <div class="space-y-6">
+                    <div class="flex gap-4 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+                      <div class="shrink-0">
+                        <AlertTriangle class="w-6 h-6 text-red-500" />
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-foreground mb-1">O Problema</h5>
+                        <p class="text-sm text-muted-foreground">
+                          Frequências de RAM limitadas, XMP desativado e gargalos térmicos que sabotam seu desempenho.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div class="flex gap-4 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+                      <div class="shrink-0">
+                        <Gauge class="w-6 h-6 text-red-500" />
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-foreground mb-1">A Realidade</h5>
+                        <p class="text-sm text-muted-foreground">
+                          Hardware caro rodando a 60% da capacidade por falta de configuração técnica adequada.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
-                <h4 class="font-display text-2xl font-bold text-foreground mb-4">Histórias Reais de Clientes</h4>
-                <p class="mb-4">
-                  João, um gamer apaixonado, vivia isso todos os dias. "Eu tinha percebido que o meu pc estava travando sem explicação", ele conta. "Quando fui ver, a frequência estava limitada, minha placa de vídeo usava apenas 256MB em vez de 8GB. Isso fez total diferença na minha gameplay."
-                </p>
-                <p class="mb-4">
-                  Maria, profissional que investiu em memórias de 3600MHz, descobriu que rodava a apenas 2400MHz. "Pensei que era só comprar e instalar", diz ela. "Agora sim estou usando os 3600MHz."
-                </p>
-                <p class="mb-6">
-                  Carlos, streamer que precisa de estabilidade máxima, enfrentava quedas de FPS inexplicáveis. "Com a otimização, meu stream ficou suave e os viewers notaram a diferença", ele diz.
-                </p>
+                  <!-- Soluções -->
+                  <div class="space-y-6">
+                    <div class="flex gap-4 p-4 rounded-xl bg-green-500/5 border border-green-500/20">
+                      <div class="shrink-0">
+                        <CheckCircle2 class="w-6 h-6 text-green-500" />
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-foreground mb-1">Nossa Solução</h5>
+                        <p class="text-sm text-muted-foreground">
+                          Análise via IA + Especialista para ativar Resize BAR<Tooltip text="Tecnologia que permite acesso direto à memória da GPU" />, PBO e curvas de fan customizadas.
+                        </p>
+                      </div>
+                    </div>
 
-                <h4 class="font-display text-2xl font-bold text-foreground mb-4">Nossa Solução Especializada</h4>
-                <p class="mb-4">
-                  Esses são problemas comuns: frequências incorretas, Resize BAR<Tooltip text="Tecnologia que permite acesso direto à memória da GPU, melhorando performance em jogos." /> desativado, XMP<Tooltip text="Extreme Memory Profile: perfil que permite memórias RAM rodarem na velocidade máxima suportada." /> não configurado. Eles fazem seu PC rodar abaixo do potencial, desperdiçando o investimento que você fez.
-                </p>
-                <p>
-                  Nossa análise combina expertise humana e inteligência artificial para identificar e corrigir cada configuração, extraindo o máximo do seu hardware e devolvendo aquela sensação de poder e controle.
-                </p>
+                    <div class="flex gap-4 p-4 rounded-xl bg-green-500/5 border border-green-500/20">
+                      <div class="shrink-0">
+                        <Zap class="w-6 h-6 text-green-500" />
+                      </div>
+                      <div>
+                        <h5 class="font-semibold text-foreground mb-1">O Resultado</h5>
+                        <p class="text-sm text-muted-foreground">
+                          Máxima estabilidade e performance desbloqueada. Seu hardware valendo cada centavo investido.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- Quiz Interativo -->
@@ -923,7 +858,11 @@ const resetQuiz = () => {
           </Button>
         </div>
       </section>
-    </main>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection />
+  </main>
 
     <!-- Footer -->
     <footer
