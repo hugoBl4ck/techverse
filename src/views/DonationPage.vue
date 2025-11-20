@@ -283,16 +283,17 @@ import { watch } from 'vue';
 async function generateQRCode() {
   if (!storedConfig.value) return;
   
-  const { chave, nomeRecebimento, cidade } = storedConfig.value;
+  const { chave, nomeRecebimento, cidade, cep } = storedConfig.value;
   // Definir nome e cidade do beneficiário
   const name = (nomeRecebimento && nomeRecebimento.trim()) ? nomeRecebimento.trim() : 'TechVerse';
   const city = (cidade && cidade.trim()) ? cidade.trim() : '';
+  const zipCode = (cep && cep.trim()) ? cep.trim() : '';
   if (!city) {
     toast.warning('Cidade não configurada. Defina a cidade no painel admin para gerar QR Code válido.');
   }
   
   // Gerar QR Code estático (valor 0 = livre)
-  const generatedUrl = await generatePixQRCode(chave, 0, name, city);
+  const generatedUrl = await generatePixQRCode(chave, 0, name, city, 'BR.COM.PAGSEGURO', '', zipCode);
   if (generatedUrl) {
     qrCodeUrl.value = generatedUrl;
     toast.success('QR Code gerado com sucesso');

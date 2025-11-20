@@ -54,6 +54,14 @@
                 placeholder="Cidade do banco" 
               />
             </div>
+            <div class="grid gap-2">
+              <Label for="pix-cep">CEP (Opcional)</Label>
+              <Input 
+                id="pix-cep" 
+                v-model="pixConfig.cep" 
+                placeholder="00000-000" 
+              />
+            </div>
             <div class="flex items-end">
               <Button 
                 @click="handleSavePixConfig" 
@@ -338,7 +346,10 @@ const isSavingPix = ref(false);
 const pixConfig = ref({
   chave: '',
   nomeRecebimento: '',
-  cidade: ''
+  chave: '',
+  nomeRecebimento: '',
+  cidade: '',
+  cep: ''
 });
 let refreshInterval;
 
@@ -637,7 +648,10 @@ const loadPixConfig = async () => {
       pixConfig.value = {
         chave: config.chave || '',
         nomeRecebimento: config.nomeRecebimento || '',
-        cidade: config.cidade || ''
+        chave: config.chave || '',
+        nomeRecebimento: config.nomeRecebimento || '',
+        cidade: config.cidade || '',
+        cep: config.cep || ''
       };
     }
   } catch (error) {

@@ -4,14 +4,14 @@
  */
 
 // Função para gerar QR Code usando API externa
-export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo', merchantAccount = 'BR.COM.PAGSEGURO', reference = '') {
+export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo', merchantAccount = 'BR.COM.PAGSEGURO', reference = '', zipCode = '') {
   try {
     // Aqui você pode usar uma API de QR Code
     // Opção 1: qrcode.react (mais comum)
     // Opção 2: API externa como QR Server
 
     const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300\u0026data=${encodeURIComponent(
-      generatePixPayload(pixKey, amount, name, city, merchantAccount, reference)
+      generatePixPayload(pixKey, amount, name, city, merchantAccount, reference, zipCode)
     )}`;
 
     return qrCodeApiUrl;
@@ -25,7 +25,7 @@ export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse', 
  * Gera o payload para PIX estático
  * Formato: BR code com validação
  */
-export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo', merchantAccount = 'BR.COM.PAGSEGURO', reference = '') {
+export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo', merchantAccount = 'BR.COM.PAGSEGURO', reference = '', zipCode = '') {
   // Sanitize name and city according to BR Code spec
   const sanitize = (str) => {
     if (!str) return '';
@@ -36,12 +36,14 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
   // Process city: sanitize, trim, uppercase
   let safeCity = sanitize(city).trim().toUpperCase();
 
-  // If longer than 15, truncate. If shorter, pad with spaces.
+  // Truncate to 15 chars (Standard says max 15, not exact 15)
   if (safeCity.length > 15) {
     safeCity = safeCity.substring(0, 15);
-  } else {
-    safeCity = safeCity.padEnd(15, ' ');
   }
+  // REMOVED: Padding logic. Nubank and standard allow variable length.
+
+  // Process Zip Code (CEP)
+  const safeZip = zipCode ? zipCode.replace(/\D/g, '') : '';
 
   // Format PIX key based on type
   let prefixedKey = pixKey;
@@ -75,7 +77,7 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     {
       tag: '26',
       nested: [
-        { tag: '00', value: 'br.gov.bcb.pix' },
+        { tag: '00', value: 'BR.GOV.BCB.PIX' }, // Uppercase for compatibility
         { tag: '01', value: prefixedKey }
       ]
     },
@@ -85,6 +87,7 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     { tag: '58', value: 'BR' },    // Country Code  
     { tag: '59', value: safeName }, // Merchant Name
     { tag: '60', value: safeCity }, // Merchant City
+    ...(safeZip ? [{ tag: '61', value: safeZip }] : []), // Postal Code (Field 61)
     {
       tag: '62',
       nested: [
@@ -281,8 +284,8 @@ export function formatPixAmount(value) {
  * Cria um link PIX copiável
  * Retorna um string formatada para copiar para o app bancário
  */
-export function generatePixCopyPaste(pixKey, amount = 0, description = '', merchantAccount = 'BR.COM.PAGSEGURO', reference = '') {
-  const payload = generatePixPayload(pixKey, amount, 'TechVerse', 'Sao Paulo', merchantAccount, reference);
+export function generatePixCopyPaste(pixKey, amount = 0, description = '', merchantAccount = 'BR.COM.PAGSEGURO', reference = '', zipCode = '') {
+  const payload = generatePixPayload(pixKey, amount, 'TechVerse', 'Sao Paulo', merchantAccount, reference, zipCode);
   return {
     payload,
     qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(payload)}`,
