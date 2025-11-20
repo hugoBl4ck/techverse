@@ -33,7 +33,13 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     return normalized;
   };
   const safeName = sanitize(name).trim().substring(0, 25); // Max 25 characters for BR Code
-  const safeCity = sanitize(city).trim().toUpperCase().substring(0, 15); // Max 15 characters
+  let safeCity = sanitize(city).trim().toUpperCase();
+  // Ensure city is exactly 15 characters (pad with spaces if needed)
+  if (safeCity.length > 15) {
+    safeCity = safeCity.substring(0, 15);
+  } else if (safeCity.length < 15) {
+    safeCity = safeCity.padEnd(15, ' ');
+  }
 
   // Ensure PIX key has country prefix (+55 for Brazil)
   const cleanKey = pixKey.replace(/^\+?55/, ''); // remove any existing +55
