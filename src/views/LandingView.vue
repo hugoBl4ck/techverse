@@ -139,7 +139,14 @@ const resetQuiz = () => {
             <img src="/techLOGO.svg" alt="TechVerse Logo" class="w-8 h-8" />
             <span class="font-display font-bold text-xl">TechVerse</span>
           </div>
-          <Button 
+          <div class="flex items-center gap-4">
+            <router-link 
+              to="/donate" 
+              class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Doar
+            </router-link>
+            <Button 
             @click="navigateToLogin" 
             variant="default" 
             size="sm" 
@@ -147,6 +154,7 @@ const resetQuiz = () => {
           >
             Login
           </Button>
+          </div>
         </div>
       </div>
     </nav>
