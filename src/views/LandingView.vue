@@ -248,7 +248,7 @@ const resetQuiz = () => {
             </div>
           </div>
         </div>
-      </section>
+      </header>
 
       <!-- Features Section com Cards Interativos -->
       <section class="py-24 px-4 sm:px-6 lg:px-8 relative">
@@ -858,11 +858,9 @@ const resetQuiz = () => {
           </Button>
         </div>
       </section>
-    </section>
-
     <!-- FAQ Section -->
     <FAQSection />
-  </main>
+
 
     <!-- Footer -->
     <footer
