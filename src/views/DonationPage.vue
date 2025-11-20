@@ -293,12 +293,16 @@ async function generateQRCode() {
   }
   
   // Gerar QR Code estático (valor 0 = livre)
-  const generatedUrl = await generatePixQRCode(chave, 0, name, city, 'BR.COM.PAGSEGURO', '', zipCode);
+  // Payload FIXO solicitado pelo usuário
+  const fixedPayload = '00020126580014BR.GOV.BCB.PIX01368e04405b-3956-4186-a784-837378857da85204000053039865802BR592563.056.156 HUGO LEONARDO 6009SAO PAULO61080540900062250521Pj01eVi1wQwxkGRdxje1n63048055';
+  
+  const generatedUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(fixedPayload)}`;
+  
   if (generatedUrl) {
     qrCodeUrl.value = generatedUrl;
     toast.success('QR Code gerado com sucesso');
   } else {
-    toast.error('Falha ao gerar QR Code. Verifique a configuração PIX.');
+    toast.error('Falha ao gerar QR Code.');
   }
 }
 
