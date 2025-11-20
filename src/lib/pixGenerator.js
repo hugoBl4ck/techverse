@@ -4,14 +4,14 @@
  */
 
 // Função para gerar QR Code usando API externa
-export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse') {
+export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo') {
   try {
     // Aqui você pode usar uma API de QR Code
     // Opção 1: qrcode.react (mais comum)
     // Opção 2: API externa como QR Server
-    
+
     const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
-      generatePixPayload(pixKey, amount, name)
+      generatePixPayload(pixKey, amount, name, city)
     )}`;
 
     return qrCodeApiUrl;
@@ -105,11 +105,11 @@ function encodeField(tag, value) {
  */
 function calculateCRC16(str) {
   let crc = 0xffff;
-  
+
   for (let i = 0; i < str.length; i++) {
     const byte = str.charCodeAt(i);
     crc ^= byte << 8;
-    
+
     for (let j = 0; j < 8; j++) {
       crc = crc << 1;
       if (crc & 0x10000) {
@@ -117,7 +117,7 @@ function calculateCRC16(str) {
       }
     }
   }
-  
+
   return ('0000' + crc.toString(16).toUpperCase()).slice(-4);
 }
 
@@ -222,7 +222,7 @@ export function generatePixCopyPaste(pixKey, amount = 0, description = '') {
  */
 export function openBankAppWithPix(pixKey) {
   const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pixKey)}`;
-  
+
   // Tenta abrir o app bancário (implementação simplificada)
   if (navigator.userAgent.includes('Android')) {
     // Deep link para Android

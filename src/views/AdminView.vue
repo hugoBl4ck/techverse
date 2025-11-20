@@ -22,6 +22,52 @@
         </CardContent>
       </Card>
 
+      <!-- Card de Configuração PIX -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Configuração de Doação (PIX)</CardTitle>
+          <p class="text-sm text-muted-foreground">Configure sua chave PIX para receber doações diretamente</p>
+        </CardHeader>
+        <CardContent>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="grid gap-2">
+              <Label for="pix-key">Chave PIX *</Label>
+              <Input 
+                id="pix-key" 
+                v-model="pixConfig.chave" 
+                placeholder="CPF, Email, Telefone ou Chave Aleatória" 
+              />
+            </div>
+            <div class="grid gap-2">
+              <Label for="pix-name">Nome do Beneficiário *</Label>
+              <Input 
+                id="pix-name" 
+                v-model="pixConfig.nomeRecebimento" 
+                placeholder="Nome completo (como no banco)" 
+              />
+            </div>
+            <div class="grid gap-2">
+              <Label for="pix-city">Cidade *</Label>
+              <Input 
+                id="pix-city" 
+                v-model="pixConfig.cidade" 
+                placeholder="Cidade do banco" 
+              />
+            </div>
+            <div class="flex items-end">
+              <Button 
+                @click="handleSavePixConfig" 
+                :disabled="isSavingPix || !pixConfig.chave || !pixConfig.nomeRecebimento || !pixConfig.cidade"
+                class="w-full"
+              >
+                <Gift class="w-4 h-4 mr-2" />
+                {{ isSavingPix ? 'Salvando...' : 'Salvar Configuração' }}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <!-- Card de Promoções AliExpress -->
       <Card>
         <CardHeader>
@@ -259,7 +305,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ExternalLink, Plus, RotateCcw, Pencil, Trash2, Gift } from 'lucide-vue-next';
+import { ExternalLink, Plus, RotateCcw, Pencil, Trash2, Gift, Save } from 'lucide-vue-next';
+import { useFirestore } from '@/composables/useFirestore';
+import { toast } from 'vue-sonner';
+
+const { getPixConfig, savePixConfig } = useFirestore();
 
 const userCount = ref(0);
 const activeUsersCount = ref(0);
@@ -283,6 +333,13 @@ const aliexpressOriginalLink = ref('');
 const fotosText = ref('');
 const isSavingPromotion = ref(false);
 const isExtracting = ref(false);
+
+const isSavingPix = ref(false);
+const pixConfig = ref({
+  chave: '',
+  nomeRecebimento: '',
+  cidade: ''
+});
 let refreshInterval;
 
 // --- Estatísticas ---
@@ -572,12 +629,44 @@ const isUserOnline = (timestamp) => {
   }
 };
 
+// --- PIX Config ---
+const loadPixConfig = async () => {
+  try {
+    const config = await getPixConfig();
+    if (config) {
+      pixConfig.value = {
+        chave: config.chave || '',
+        nomeRecebimento: config.nomeRecebimento || '',
+        cidade: config.cidade || ''
+      };
+    }
+  } catch (error) {
+    console.error("Erro ao carregar config PIX:", error);
+  }
+};
+
+const handleSavePixConfig = async () => {
+  if (!pixConfig.value.chave || !pixConfig.value.nomeRecebimento || !pixConfig.value.cidade) return;
+  
+  isSavingPix.value = true;
+  try {
+    await savePixConfig(pixConfig.value);
+    toast.success('Configuração PIX salva com sucesso!');
+  } catch (error) {
+    console.error("Erro ao salvar config PIX:", error);
+    toast.error('Erro ao salvar configuração.');
+  } finally {
+    isSavingPix.value = false;
+  }
+};
+
 onMounted(() => {
   fetchUserCount();
   fetchActiveUsers();
   fetchUsers();
   fetchStores();
   fetchPromotions();
+  loadPixConfig();
   
   // Atualiza usuários ativos a cada 30 segundos
   refreshInterval = setInterval(() => {

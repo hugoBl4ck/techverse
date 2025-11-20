@@ -39,8 +39,13 @@
                 >
                   <img :src="qrCodeUrl" alt="QR Code PIX" class="w-full h-full" />
                 </div>
-                <div v-else class="w-64 h-64 bg-slate-200 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+                <div v-else-if="isLoading" class="w-64 h-64 bg-slate-200 dark:bg-slate-700 rounded-lg flex items-center justify-center">
                   <Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+                <div v-else class="w-64 h-64 bg-slate-200 dark:bg-slate-700 rounded-lg flex flex-col items-center justify-center text-center p-4">
+                  <Info class="h-8 w-8 text-muted-foreground mb-2" />
+                  <p class="text-sm text-muted-foreground">Configuração PIX pendente.</p>
+                  <p class="text-xs text-muted-foreground mt-1">Contate o administrador.</p>
                 </div>
               </div>
 
@@ -238,6 +243,7 @@ const pixKeyType = ref('');
 const qrCodeUrl = ref('');
 const selectedAmount = ref(50);
 const customAmount = ref(0);
+const isLoading = ref(true);
 
 const presetAmounts = [10, 25, 50, 100, 250];
 
@@ -265,16 +271,25 @@ onMounted(async () => {
 });
 
 async function loadPixConfig() {
+  isLoading.value = true;
   try {
     const config = await getPixConfig();
     if (config && config.chave) {
       pixKey.value = config.chave;
       pixKeyType.value = detectPixKeyType(config.chave);
-      qrCodeUrl.value = await generatePixQRCode(config.chave, finalAmount.value, config.nomeRecebimento);
+      // Use configured name and city if available
+      const name = config.nomeRecebimento || 'TechVerse';
+      const city = config.cidade || 'Sao Paulo';
+      
+      // Note: generatePixQRCode might need to be updated to accept city if not already
+      // For now passing name as 3rd arg as per existing signature
+      qrCodeUrl.value = await generatePixQRCode(config.chave, finalAmount.value, name, city);
     }
   } catch (error) {
     console.error('Erro ao carregar configuração PIX:', error);
     toast.error('Erro ao carregar PIX');
+  } finally {
+    isLoading.value = false;
   }
 }
 
