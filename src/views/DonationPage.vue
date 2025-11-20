@@ -28,7 +28,7 @@
                 <Smartphone class="h-5 w-5" />
                 Doação Rápida
               </CardTitle>
-              <CardDescription>Escaneie com seu celular</CardDescription>
+              <CardDescription>Escaneie o QR Code e digite o valor no seu app</CardDescription>
             </CardHeader>
             <CardContent class="space-y-6">
               <!-- QR Code -->
@@ -273,11 +273,12 @@ onMounted(async () => {
 
 import { watch } from 'vue';
 
-watch(finalAmount, async () => {
-  if (storedConfig.value) {
-    await generateQRCode();
-  }
-});
+// Watch removed as QR code is now static
+// watch(finalAmount, async () => {
+//   if (storedConfig.value) {
+//     await generateQRCode();
+//   }
+// });
 
 async function generateQRCode() {
   if (!storedConfig.value) return;
@@ -290,8 +291,8 @@ async function generateQRCode() {
     toast.warning('Cidade não configurada. Defina a cidade no painel admin para gerar QR Code válido.');
   }
   
-  // Gerar QR Code e notificar via toast
-  const generatedUrl = await generatePixQRCode(chave, finalAmount.value, name, city);
+  // Gerar QR Code estático (valor 0 = livre)
+  const generatedUrl = await generatePixQRCode(chave, 0, name, city);
   if (generatedUrl) {
     qrCodeUrl.value = generatedUrl;
     toast.success('QR Code gerado com sucesso');

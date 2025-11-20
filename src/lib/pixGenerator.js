@@ -43,9 +43,21 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     safeCity = safeCity.padEnd(15, ' ');
   }
 
-  // Ensure PIX key has country prefix (+55 for Brazil)
-  const cleanKey = pixKey.replace(/^\+?55/, ''); // remove any existing +55
-  const prefixedKey = `+55${cleanKey}`;
+  // Format PIX key based on type
+  let prefixedKey = pixKey;
+
+  // Simple detection logic
+  const isEmail = pixKey.includes('@');
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pixKey);
+  const isCPF = /^\d{11}$/.test(pixKey);
+  const isCNPJ = /^\d{14}$/.test(pixKey);
+  const isPhone = /^\+?55\d{10,11}$/.test(pixKey) || /^\d{10,11}$/.test(pixKey);
+
+  if (isPhone && !isUUID && !isCPF && !isCNPJ) {
+    // Only add +55 if it looks like a phone number and hasn't got it yet
+    const cleanKey = pixKey.replace(/^\+?55/, '');
+    prefixedKey = `+55${cleanKey}`;
+  }
 
   // Generate a UUID for transaction ID (similar to bank example)
   const generateUuid = () => {
