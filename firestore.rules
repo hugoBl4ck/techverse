@@ -33,26 +33,27 @@ service cloud.firestore {
       }
     }
 
-    // Promoções - todos autenticados podem ler, apenas superadmin pode escrever/deletar
+    // Promoções - público pode ler, apenas superadmin pode escrever/deletar
     match /promos/{document=**} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow write, delete: if isSuperAdmin();
     }
 
-    // Notícias - todos autenticados podem ler, apenas superadmin pode escrever/deletar
+    // Notícias - público pode ler, apenas superadmin pode escrever/deletar
     match /noticias/{document=**} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow write, delete: if isSuperAdmin();
     }
 
-    // Configurações (PIX, etc) - apenas superadmin
+    // Configurações (PIX, etc) - público pode ler (necessário para doação), apenas superadmin pode escrever
     match /config/{document=**} {
-      allow read, write: if isSuperAdmin();
+      allow read: if true;
+      allow write: if isSuperAdmin();
     }
 
-    // Doações - todos podem criar, apenas superadmin pode ler/atualizar
+    // Doações - público pode criar, apenas superadmin pode ler/atualizar
     match /doacoes/{document=**} {
-      allow create: if request.auth != null;
+      allow create: if true;
       allow read, write: if isSuperAdmin();
     }
     

@@ -131,51 +131,72 @@ const resetQuiz = () => {
   <div class="relative bg-background overflow-hidden">
     <HeroBackground />
     
-    <!-- Navbar Fixa -->
-    <nav class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 items-center justify-between">
-          <div class="flex items-center gap-2">
-            <img src="/techLOGO.svg" alt="TechVerse Logo" class="w-8 h-8" />
-            <span class="font-display font-bold text-xl">TechVerse</span>
-          </div>
-          
-          <!-- Desktop Navigation -->
-          <div class="hidden md:flex items-center gap-6">
-            <router-link to="/otimizacao" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Otimização
-            </router-link>
-            <router-link to="/promocoes" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Promoções
-            </router-link>
-            <router-link to="/noticias" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Notícias
-            </router-link>
-          </div>
-
-          <div class="flex items-center gap-4">
-            <router-link 
-              to="/donate" 
-              class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Doar
-            </router-link>
-            <Button 
-            @click="navigateToLogin" 
-            variant="default" 
-            size="sm" 
-            class="rounded-full px-6 font-body bg-primary hover:bg-primary/90 text-white"
-          >
-            Login
-          </Button>
-          </div>
+    <!-- Navbar Fixa (Estilo Floating) -->
+    <div class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+      <nav class="w-full max-w-5xl bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 px-4 py-3 flex items-center justify-between transition-all duration-300 hover:shadow-xl">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-2">
+          <img src="/techLOGO.svg" alt="TechVerse Logo" class="w-8 h-8" />
+          <span class="font-display font-bold text-xl text-slate-900">TechVerse</span>
         </div>
-      </div>
-    </nav>
+        
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center gap-1 bg-slate-100/50 p-1 rounded-full border border-slate-200/50">
+          <router-link 
+            to="/otimizacao" 
+            class="px-4 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-full transition-all"
+          >
+            Otimização
+          </router-link>
+          <router-link 
+            to="/promocoes" 
+            class="px-4 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-full transition-all"
+          >
+            Promoções
+          </router-link>
+          <router-link 
+            to="/noticias" 
+            class="px-4 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-full transition-all"
+          >
+            Notícias
+          </router-link>
+          <router-link 
+            to="/donate" 
+            class="px-4 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-full transition-all"
+          >
+            Doar
+          </router-link>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-3">
+          <Button 
+            @click="navigateToLogin" 
+            variant="ghost" 
+            size="sm" 
+            class="font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
+          >
+            Entrar
+          </Button>
+          
+          <router-link to="/dashboard">
+            <div class="relative group cursor-pointer">
+              <div class="absolute -inset-0.5 bg-gradient-to-r from-orange-400 via-red-500 to-purple-600 rounded-lg blur opacity-60 group-hover:opacity-100 transition duration-200"></div>
+              <button class="relative px-6 py-2 bg-black rounded-lg leading-none flex items-center divide-x divide-gray-600">
+                <span class="flex items-center space-x-2">
+                  <span class="text-white font-semibold text-sm">Teste agora</span>
+                </span>
+              </button>
+            </div>
+          </router-link>
+        </div>
+      </nav>
+    </div>
 
     <!-- Hero Section -->
     <section
-      class="relative border-b border-border/40 shadow-sm"
+      class="relative border-b border-border/40 shadow-sm pt-32"
     >
         <!-- Animated circles behind hero -->
         <div class="absolute inset-0 overflow-hidden">
