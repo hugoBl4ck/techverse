@@ -52,14 +52,14 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
   // Dados básicos do BR Code
   const brCode = {
     '00': '01', // ID formato
-    '01': prefixedKey, // Chave PIX com +55
+
     '26': {
       '00': '0014br.gov.bcb.pix', // URL PIX
       '01': '0014br.gov.bcb.brcode', // Identificador
       '02': prefixedKey // Repetindo a chave aqui (conforme spec)
     },
     // Merchant account (campo 76) – livre, usado pelo banco
-    '76': merchantAccount,
+    '76': merchantAccount
     '52': '0400', // Categoria comercial
     '53': '986', // Código da moeda (Real)
     '54': amount || '', // Valor (opcional)
