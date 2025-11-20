@@ -32,8 +32,8 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     const normalized = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     return normalized;
   };
-  const safeName = sanitize(name).trim();
-  const safeCity = sanitize(city).trim().toUpperCase().substring(0, 15);
+  const safeName = sanitize(name).trim().substring(0, 25); // Max 25 characters for BR Code
+  const safeCity = sanitize(city).trim().toUpperCase().substring(0, 15); // Max 15 characters
 
   // Ensure PIX key has country prefix (+55 for Brazil)
   const cleanKey = pixKey.replace(/^\+?55/, ''); // remove any existing +55
@@ -49,28 +49,25 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     });
   };
 
-  // Dados básicos do BR Code
+  // Dados básicos do BR Code (formato PagBank)
   const brCode = {
-    '00': '01', // ID formato
-    '01': prefixedKey, // Chave PIX com +55
+    '00': '01', // Payload Format Indicator
     '26': {
-      '00': '0014br.gov.bcb.pix', // URL PIX
-      '01': '0014br.gov.bcb.brcode', // Identificador
-      '02': prefixedKey // Repetindo a chave aqui (conforme spec)
+      '00': 'br.gov.bcb.pix', // GUI
+      '01': prefixedKey // Chave PIX (vai aqui, não como campo 01 top-level)
     },
-    // Merchant account (campo 76) – livre, usado pelo banco
-    '76': merchantAccount,
-    '52': '0400', // Categoria comercial
-    '53': '986', // Código da moeda (Real)
-    '54': amount || '', // Valor (opcional)
-    '55': '0', // Descrição
-    '58': '05', // Código do País (BR)
-    '59': safeName, // Nome do recebedor
-    '60': safeCity, // Cidade (máx 15 chars, ASCII)
+    '27': {
+      '00': merchantAccount, // Merchant account (ex: BR.COM.PAGSEGURO)
+      '01': generateUuid() // Transaction reference
+    },
+    '52': '0400', // Merchant Category Code
+    '53': '986', // Transaction Currency (BRL)
+    ...(amount ? { '54': amount.toFixed(2) } : {}), // Transaction Amount (only if set)
+    '58': 'BR', // Country Code
+    '59': safeName, // Merchant Name (max 25 chars)
+    '60': safeCity, // Merchant City (max 15 chars)
     '62': {
-      '05': generateUuid(), // Transaction ID (UUID)
-      // Campo 09 opcional para referência do pagamento
-      ...(reference ? { '09': reference } : {})
+      '05': generateUuid() // Additional Data - Transaction ID
     }
   };
 
