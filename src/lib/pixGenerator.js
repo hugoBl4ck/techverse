@@ -49,31 +49,68 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     });
   };
 
-  // Dados básicos do BR Code (formato PagBank)
-  const brCode = {
-    '00': '01', // Payload Format Indicator
-    '26': {
-      '00': 'br.gov.bcb.pix', // GUI
-      '01': prefixedKey // Chave PIX (vai aqui, não como campo 01 top-level)
+  // Dados básicos do BR Code (formato PagBank) - ordem explícita garantida
+  const payloadData = [
+    { tag: '00', value: '01' },  // Payload Format Indicator
+    {
+      tag: '26',
+      nested: [
+        { tag: '00', value: 'br.gov.bcb.pix' },
+        { tag: '01', value: prefixedKey }
+      ]
     },
-    '27': {
-      '00': merchantAccount, // Merchant account (ex: BR.COM.PAGSEGURO)
-      '01': generateUuid() // Transaction reference
+    {
+      tag: '27',
+      nested: [
+        { tag: '00', value: merchantAccount },
+        { tag: '01', value: generateUuid() }
+      ]
     },
-    '52': '0400', // Merchant Category Code
-    '53': '986', // Transaction Currency (BRL)
-    ...(amount ? { '54': amount.toFixed(2) } : {}), // Transaction Amount (only if set)
-    '58': 'BR', // Country Code
-    '59': safeName, // Merchant Name (max 25 chars)
-    '60': safeCity, // Merchant City (max 15 chars)
-    '62': {
-      '05': generateUuid() // Additional Data - Transaction ID
+    { tag: '52', value: '0400' },  // Merchant Category Code
+    { tag: '53', value: '986' },   // Transaction Currency
+    ...(amount ? [{ tag: '54', value: amount.toFixed(2) }] : []),
+    { tag: '58', value: 'BR' },    // Country Code  
+    { tag: '59', value: safeName }, // Merchant Name
+    { tag: '60', value: safeCity }, // Merchant City
+    {
+      tag: '62',
+      nested: [
+        { tag: '05', value: generateUuid() }
+      ]
     }
-  };
+  ];
 
-  return encodeBrCode(brCode);
+  return encodeBrCodeFromArray(payloadData);
 }
 
+
+/**
+ * Codifica o BR Code para formato PIX a partir de um array (garante ordem)
+ */
+function encodeBrCodeFromArray(payloadData) {
+  let encoded = '';
+
+  for (const item of payloadData) {
+    if (item.nested) {
+      // Campo com subcampos
+      let nestedEncoded = '';
+      for (const nestedItem of item.nested) {
+        nestedEncoded += encodeField(nestedItem.tag, nestedItem.value);
+      }
+      encoded += encodeField(item.tag, nestedEncoded);
+    } else if (item.value) {
+      // Campo simples
+      encoded += encodeField(item.tag, item.value);
+    }
+  }
+
+  // Adiciona CRC (checksum)
+  encoded += '6304';
+  const crc = calculateCRC16(encoded + '0000');
+  encoded += crc;
+
+  return encoded;
+}
 
 /**
  * Codifica o BR Code para formato PIX
