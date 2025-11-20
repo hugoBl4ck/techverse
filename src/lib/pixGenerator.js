@@ -57,7 +57,7 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     });
   };
 
-  // Dados básicos do BR Code (formato PagBank) - ordem explícita garantida
+  // Dados básicos do BR Code (formato Nubank/Padrão)
   const payloadData = [
     { tag: '00', value: '01' },  // Payload Format Indicator
     {
@@ -67,14 +67,7 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
         { tag: '01', value: prefixedKey }
       ]
     },
-    {
-      tag: '27',
-      nested: [
-        { tag: '00', value: merchantAccount },
-        { tag: '01', value: generateUuid() }
-      ]
-    },
-    { tag: '52', value: '0400' },  // Merchant Category Code
+    { tag: '52', value: '0000' },  // Merchant Category Code (0000 General)
     { tag: '53', value: '986' },   // Transaction Currency
     ...(amount ? [{ tag: '54', value: amount.toFixed(2) }] : []),
     { tag: '58', value: 'BR' },    // Country Code  
@@ -83,7 +76,7 @@ export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city 
     {
       tag: '62',
       nested: [
-        { tag: '05', value: generateUuid() }
+        { tag: '05', value: generateTransactionId() } // Using shorter ID like Nubank example
       ]
     }
   ];
@@ -189,7 +182,13 @@ function calculateCRC16(str) {
  * Gera um ID único para a transação
  */
 function generateTransactionId() {
-  return Math.random().toString(36).substr(2, 9).toUpperCase();
+  // Nubank uses ~21 chars alphanumeric. We'll generate a random string of similar length.
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 21; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
 }
 
 /**
