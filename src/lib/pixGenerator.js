@@ -26,6 +26,40 @@ export async function generatePixQRCode(pixKey, amount = 0, name = 'TechVerse', 
  * Formato: BR code com validação
  */
 export function generatePixPayload(pixKey, amount = 0, name = 'TechVerse', city = 'Sao Paulo') {
+  // Sanitize name and city according to BR Code spec
+  // Remove diacritics, trim, and limit city to 15 characters, uppercase
+  const sanitize = (str) => {
+    if (!str) return '';
+    // Normalize Unicode, remove diacritics
+    const normalized = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return normalized;
+  };
+  const safeName = sanitize(name).trim();
+  const safeCity = sanitize(city).trim().toUpperCase().substring(0, 15);
+
+  // Dados básicos do BR Code
+  const brCode = {
+    '00': '01', // ID formato
+    '01': '12', // Versão
+    '26': {
+      '00': '0014br.gov.bcb.pix', // URL PIX
+      '01': '0014br.gov.bcb.brcode', // Identificador
+      '02': pixKey // Chave PIX
+    },
+    '52': '0400', // Categoria comercial
+    '53': '986', // Código da moeda (Real)
+    '54': amount || '', // Valor (opcional para PIX estático)
+    '55': '0', // Descrição
+    '58': '05', // Código do País
+    '59': safeName, // Nome do recebedor
+    '60': safeCity, // Cidade
+    '62': {
+      '05': generateTransactionId() // ID da transação
+    }
+  };
+
+  return encodeBrCode(brCode);
+
   try {
     // Dados básicos do BR Code
     const brCode = {

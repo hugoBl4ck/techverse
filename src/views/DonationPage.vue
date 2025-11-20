@@ -283,10 +283,21 @@ async function generateQRCode() {
   if (!storedConfig.value) return;
   
   const { chave, nomeRecebimento, cidade } = storedConfig.value;
-  const name = nomeRecebimento || 'TechVerse';
-  const city = cidade || 'Sao Paulo';
+  // Definir nome e cidade do beneficiário
+  const name = (nomeRecebimento && nomeRecebimento.trim()) ? nomeRecebimento.trim() : 'TechVerse';
+  const city = (cidade && cidade.trim()) ? cidade.trim() : '';
+  if (!city) {
+    toast.warning('Cidade não configurada. Defina a cidade no painel admin para gerar QR Code válido.');
+  }
   
-  qrCodeUrl.value = await generatePixQRCode(chave, finalAmount.value, name, city);
+  // Gerar QR Code e notificar via toast
+  const generatedUrl = await generatePixQRCode(chave, finalAmount.value, name, city);
+  if (generatedUrl) {
+    qrCodeUrl.value = generatedUrl;
+    toast.success('QR Code gerado com sucesso');
+  } else {
+    toast.error('Falha ao gerar QR Code. Verifique a configuração PIX.');
+  }
 }
 
 async function loadPixConfig() {
