@@ -137,6 +137,8 @@ const contactSpecialist = () => {
   const phone = "5511999999999" // Substitua pelo número real
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
 }
+
+
 </script>
 
 <template>
@@ -212,7 +214,7 @@ const contactSpecialist = () => {
       <!-- Background with Topography and Gradient Overlay -->
       <div class="absolute inset-0 z-0">
         <!-- New Soft Tech BG -->
-        <div class="absolute inset-0 bg-cover bg-center opacity-40 blur-sm" style="background-image: url('/soft-tech-bg.png');"></div>
+        <div class="absolute inset-0 bg-cover bg-center opacity-40 blur-sm" style="background-image: url('/soft-tech-bg.png?v=2');"></div>
         
         <!-- Overlays for better text contrast -->
         <div class="absolute inset-0 bg-[url('/topography-gradient.svg')] opacity-20 bg-repeat mix-blend-overlay"></div>
