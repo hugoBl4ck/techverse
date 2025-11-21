@@ -274,9 +274,9 @@ const resetQuiz = () => {
             <div class="relative z-10 animate-float">
               <div class="absolute -inset-4 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full blur-3xl opacity-40 animate-pulse"></div>
               <img 
-                src="/nano-banana.png" 
-                alt="TechVerse Nano Technology" 
-                class="relative w-full max-w-[600px] mx-auto drop-shadow-2xl transform hover:scale-105 transition-transform duration-700"
+                src="/gamer-girl-hero.png" 
+                alt="Gamer Girl Tech Setup" 
+                class="relative w-full max-w-[600px] mx-auto drop-shadow-2xl transform hover:scale-105 transition-transform duration-700 rounded-2xl"
               />
               
               <!-- Floating Cards/Elements -->
