@@ -241,6 +241,8 @@
                   <th class="text-left py-2 px-2">Loja</th>
                   <th class="text-center py-2 px-2">Clientes Criados</th>
                   <th class="text-center py-2 px-2">Serviços Criados</th>
+                  <th class="text-left py-2 px-2">IP</th>
+                  <th class="text-left py-2 px-2">Localização</th>
                   <th class="text-left py-2 px-2">Último Acesso</th>
                   <th class="text-center py-2 px-2">Status</th>
                 </tr>
@@ -252,6 +254,8 @@
                   <td class="py-2 px-2">{{ user.storeName || '-' }}</td>
                   <td class="py-2 px-2 text-center">{{ user.stats?.clientsCreated || 0 }}</td>
                   <td class="py-2 px-2 text-center">{{ user.stats?.servicesCreated || 0 }}</td>
+                  <td class="py-2 px-2 text-xs text-muted-foreground">{{ user.lastIp || '-' }}</td>
+                  <td class="py-2 px-2 text-xs text-muted-foreground">{{ user.lastLocation || '-' }}</td>
                   <td class="py-2 px-2 text-sm text-muted-foreground">
                     {{ formatLastActive(user.lastActive) }}
                   </td>
