@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { db } from '@/firebase/config.js';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, increment } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import { useCurrentStore } from '@/composables/useCurrentStore';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
 const router = useRouter();
-const { storeId } = useCurrentStore();
+const { storeId, currentUser } = useCurrentStore();
 
 const nome = ref('');
 const descricao = ref('');
@@ -36,6 +36,15 @@ async function handleSubmit() {
       descricao: descricao.value,
       preco: Number(preco.value) || 0,
     });
+
+    // Incrementa contador de serviços criados no perfil do usuário
+    if (currentUser.value) {
+      const userRef = doc(db, 'users', currentUser.value.uid);
+      await updateDoc(userRef, {
+        'stats.servicesCreated': increment(1)
+      }).catch(err => console.error('Erro ao atualizar estatísticas:', err));
+    }
+
     alert('Serviço cadastrado com sucesso!');
     router.push('/catalogo-servicos');
   } catch (error) {

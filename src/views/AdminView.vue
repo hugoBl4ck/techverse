@@ -239,6 +239,8 @@
                   <th class="text-left py-2 px-2">Email</th>
                   <th class="text-left py-2 px-2">Nome</th>
                   <th class="text-left py-2 px-2">Loja</th>
+                  <th class="text-center py-2 px-2">Clientes Criados</th>
+                  <th class="text-center py-2 px-2">Serviços Criados</th>
                   <th class="text-left py-2 px-2">Último Acesso</th>
                   <th class="text-center py-2 px-2">Status</th>
                 </tr>
@@ -248,6 +250,8 @@
                   <td class="py-2 px-2">{{ user.email }}</td>
                   <td class="py-2 px-2">{{ user.nome || '-' }}</td>
                   <td class="py-2 px-2">{{ user.storeName || '-' }}</td>
+                  <td class="py-2 px-2 text-center">{{ user.stats?.clientsCreated || 0 }}</td>
+                  <td class="py-2 px-2 text-center">{{ user.stats?.servicesCreated || 0 }}</td>
                   <td class="py-2 px-2 text-sm text-muted-foreground">
                     {{ formatLastActive(user.lastActive) }}
                   </td>

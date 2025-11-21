@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { db } from '@/firebase/config.js';
-import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import { useCurrentStore } from '@/composables/useCurrentStore';
 import { toast } from 'vue-sonner';
@@ -23,7 +23,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const { storeId } = useCurrentStore();
+const { storeId, currentUser } = useCurrentStore();
 
 const nome = ref('');
 const telefone = ref('');
@@ -79,6 +79,15 @@ async function handleSubmit() {
       toast.success('Cliente atualizado com sucesso!', { id: loadingToast });
     } else {
       await addDoc(clientesCol, { ...clienteData, createdAt: new Date() });
+      
+      // Incrementa contador de clientes criados no perfil do usuário
+      if (currentUser.value) {
+        const userRef = doc(db, 'users', currentUser.value.uid);
+        await updateDoc(userRef, {
+          'stats.clientsCreated': increment(1)
+        }).catch(err => console.error('Erro ao atualizar estatísticas:', err));
+      }
+      
       toast.success('Cliente cadastrado com sucesso!', { id: loadingToast });
     }
     router.push('/clientes');
