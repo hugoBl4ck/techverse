@@ -221,6 +221,7 @@ import { useRouter } from 'vue-router'
 import { GripVertical, Menu, X, Bell, AlertCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useUserActivity } from '@/composables/useUserActivity'
+import { useCurrentStore } from '@/composables/useCurrentStore'
 import { watch } from 'vue'
 
 const router = useRouter()
