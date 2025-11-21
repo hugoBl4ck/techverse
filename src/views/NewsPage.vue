@@ -1,257 +1,203 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-    <!-- Hero Section -->
-    <div class="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-      <div class="absolute inset-0 opacity-5">
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500"></div>
-      </div>
-      
-      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div class="text-center relative">
-          <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/30 rounded-full border border-blue-200 dark:border-blue-800 mb-4">
-            <Newspaper class="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span class="text-sm font-medium text-blue-700 dark:text-blue-300">Central de Notícias</span>
+  <div class="min-h-screen bg-background text-foreground">
+    <!-- Hero Section with Gradient -->
+    <div class="relative bg-primary/5 border-b border-border/40 pb-16 pt-12">
+      <div class="container mx-auto px-4 max-w-6xl">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+          <div>
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+              Blog & Notícias
+            </h1>
+            <p class="text-lg text-muted-foreground max-w-2xl">
+              Dicas de gestão, tutoriais e novidades do universo TechVerse para impulsionar sua assistência.
+            </p>
           </div>
           
-          <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-4">
-            Notícias <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">TechVerse</span>
-          </h1>
-          
-          <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Fique atualizado sobre as novidades da TechVerse e tendências do mundo tech
-          </p>
-
-          <!-- Admin Button -->
-          <div v-if="isAdmin" class="absolute top-0 right-0 flex gap-2">
-            <Button @click="forceCreateNews" variant="outline" class="bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white border-white/20">
-              <RotateCcw class="w-4 h-4 mr-2" />
-              Restaurar Padrão
-            </Button>
-            <Button @click="openNewNews" class="bg-blue-600 hover:bg-blue-700 text-white">
+          <!-- Admin Actions -->
+          <div v-if="isAdmin" class="flex gap-3">
+            <Button @click="openNewNews" class="shadow-lg hover:shadow-xl transition-all">
               <Plus class="w-4 h-4 mr-2" />
               Nova Notícia
             </Button>
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="bg-card border border-border/50 rounded-xl shadow-sm p-2 flex flex-col md:flex-row gap-2">
+          <div class="relative flex-1">
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input 
+              v-model="searchQuery"
+              type="text" 
+              placeholder="Buscar artigos..." 
+              class="w-full pl-9 pr-4 py-2 bg-transparent border-none focus:ring-0 text-sm"
+            />
+          </div>
+          <div class="h-px md:h-auto md:w-px bg-border/50 mx-2"></div>
+          <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 px-2 md:px-0">
+            <button 
+              v-for="cat in categories" 
+              :key="cat.id"
+              @click="selectedCategory = selectedCategory === cat.id ? '' : cat.id"
+              class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors"
+              :class="selectedCategory === cat.id ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'"
+            >
+              {{ cat.label }}
+            </button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <!-- Search and Filters -->
-      <div class="mb-8 flex flex-col sm:flex-row gap-4">
-        <!-- Search Bar -->
-        <div class="flex-1">
-          <div class="relative">
-            <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Buscar notícias..."
-              class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-
-        <!-- Category Filter -->
-        <div class="flex items-center gap-2">
-          <Filter class="w-5 h-5 text-slate-500" />
-          <select
-            v-model="selectedCategory"
-            class="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Todas as categorias</option>
-            <option value="techverse">TechVerse</option>
-            <option value="tech">Tech</option>
-            <option value="tutorial">Tutorial</option>
-            <option value="release">Release</option>
-          </select>
-        </div>
-      </div>
-
+    <div class="container mx-auto px-4 max-w-6xl py-12">
+      
       <!-- Loading State -->
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div v-for="i in 4" :key="i" class="space-y-4">
-          <Skeleton class="h-48 w-full rounded-lg" />
-          <Skeleton class="h-4 w-3/4" />
-          <Skeleton class="h-4 w-1/2" />
+      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div v-for="i in 6" :key="i" class="space-y-4">
+          <div class="aspect-video bg-muted/40 rounded-xl animate-pulse"></div>
+          <div class="h-4 bg-muted/40 rounded w-3/4 animate-pulse"></div>
+          <div class="h-4 bg-muted/40 rounded w-1/2 animate-pulse"></div>
         </div>
       </div>
 
-      <!-- Results Info -->
-      <div v-else class="mb-6 flex items-center justify-between">
-        <div>
-          <p class="text-sm text-slate-600 dark:text-slate-400">
-            <span class="font-semibold text-slate-900 dark:text-white">{{ filteredNews.length }}</span> notícia{{ filteredNews.length !== 1 ? 's' : '' }} encontrada{{ filteredNews.length !== 1 ? 's' : '' }}
-          </p>
+      <!-- Empty State -->
+      <div v-else-if="filteredNews.length === 0" class="text-center py-20">
+        <div class="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Newspaper class="w-8 h-8 text-muted-foreground" />
         </div>
-        <div class="flex items-center gap-2">
-          <button
-            @click="sortBy = 'recent'"
-            :class="[
-              'px-3 py-1.5 text-sm rounded-lg transition-colors',
-              sortBy === 'recent'
-                ? 'bg-blue-600 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
-            ]"
-          >
-            Recentes
-          </button>
-          <button
-            @click="sortBy = 'popular'"
-            :class="[
-              'px-3 py-1.5 text-sm rounded-lg transition-colors',
-              sortBy === 'popular'
-                ? 'bg-blue-600 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
-            ]"
-          >
-            Populares
-          </button>
-        </div>
+        <h3 class="text-xl font-semibold mb-2">Nenhum artigo encontrado</h3>
+        <p class="text-muted-foreground mb-6">Tente buscar por outros termos ou categorias.</p>
+        <Button variant="outline" @click="resetFilters">Limpar Filtros</Button>
       </div>
 
       <!-- News Grid -->
-      <div v-if="!loading && filteredNews.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        <article
-          v-for="news in filteredNews"
-          :key="news.id"
-          class="group rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg dark:hover:shadow-blue-500/10 transition-all duration-300"
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <article 
+          v-for="item in filteredNews" 
+          :key="item.id"
+          class="group flex flex-col bg-card border border-border/50 rounded-xl overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300"
         >
-          <!-- Thumbnail -->
-          <div v-if="news.imagem" class="relative h-48 overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800">
-            <img
-              :src="news.imagem"
-              :alt="news.titulo"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          <!-- Image -->
+          <router-link :to="'/noticias/' + item.id" class="relative aspect-video overflow-hidden bg-muted">
+            <img 
+              v-if="item.imagem" 
+              :src="item.imagem" 
+              :alt="item.titulo"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-            
-            <!-- Admin Actions -->
-            <div v-if="isAdmin" class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button @click.stop="editNews(news)" class="p-2 bg-white/90 rounded-full hover:bg-white text-blue-600 transition-colors shadow-sm">
-                <Edit class="w-4 h-4" />
-              </button>
-              <button @click.stop="handleDeleteNews(news.id)" class="p-2 bg-white/90 rounded-full hover:bg-white text-red-600 transition-colors shadow-sm">
-                <Trash2 class="w-4 h-4" />
-              </button>
+            <div v-else class="w-full h-full flex items-center justify-center bg-primary/5 text-primary/20">
+              <Newspaper class="w-12 h-12" />
             </div>
-          </div>
-
-          <div v-else class="relative h-48 bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-500/5 dark:to-purple-500/5 flex items-center justify-center border-b border-slate-200 dark:border-slate-700">
-            <Newspaper class="w-12 h-12 text-slate-400" />
-          </div>
-
-          <!-- Content -->
-          <div class="p-6 flex flex-col flex-grow">
+            
             <!-- Category Badge -->
-            <div class="mb-3 flex items-center gap-2">
-              <Badge :variant="getCategoryVariant(news.categoria)">
-                {{ formatarCategoria(news.categoria) }}
-              </Badge>
-              <span class="text-xs text-slate-500 dark:text-slate-400">
-                {{ formatarData(news.dataPub) }}
+            <div class="absolute top-3 left-3">
+              <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-background/90 backdrop-blur text-foreground shadow-sm">
+                {{ formatarCategoria(item.categoria) }}
               </span>
             </div>
 
-            <!-- Title -->
-            <router-link :to="'/noticias/' + news.id">
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                {{ news.titulo }}
+            <!-- Admin Controls -->
+            <div v-if="isAdmin" class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button @click.prevent="editNews(item)" class="p-1.5 bg-background/90 backdrop-blur rounded-md hover:text-primary transition-colors shadow-sm">
+                <Edit class="w-4 h-4" />
+              </button>
+              <button @click.prevent="handleDeleteNews(item.id)" class="p-1.5 bg-background/90 backdrop-blur rounded-md hover:text-destructive transition-colors shadow-sm">
+                <Trash2 class="w-4 h-4" />
+              </button>
+            </div>
+          </router-link>
+
+          <!-- Content -->
+          <div class="flex-1 p-5 flex flex-col">
+            <div class="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+              <Calendar class="w-3.5 h-3.5" />
+              <span>{{ formatarData(item.dataPub) }}</span>
+              <span class="mx-1">•</span>
+              <Eye class="w-3.5 h-3.5" />
+              <span>{{ item.views || 0 }} views</span>
+            </div>
+
+            <router-link :to="'/noticias/' + item.id" class="block mb-3">
+              <h3 class="text-xl font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                {{ item.titulo }}
               </h3>
             </router-link>
 
-            <!-- Excerpt -->
-            <p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-4 flex-grow">
-              {{ news.conteudo }}
+            <p class="text-muted-foreground text-sm line-clamp-3 mb-4 flex-1">
+              {{ getExcerpt(item.conteudo) }}
             </p>
 
-            <!-- Metadata -->
-            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700 mt-auto">
-              <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                <Eye class="w-4 h-4" />
-                <span>{{ news.views || 0 }} visualizações</span>
-              </div>
+            <div class="pt-4 border-t border-border/40 flex items-center justify-between mt-auto">
               <router-link 
-                :to="'/noticias/' + news.id"
-                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors text-sm font-medium"
+                :to="'/noticias/' + item.id"
+                class="text-sm font-medium text-primary hover:underline inline-flex items-center"
               >
-                Ler mais
-                <ArrowRight class="w-4 h-4" />
+                Ler artigo
+                <ArrowRight class="w-4 h-4 ml-1" />
               </router-link>
             </div>
           </div>
         </article>
       </div>
-
-      <!-- Empty State -->
-      <div v-else-if="!loading" class="py-16 text-center">
-        <Newspaper class="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-        <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-          Nenhuma notícia encontrada
-        </h3>
-        <p class="text-slate-600 dark:text-slate-400 mb-6">
-          Tente ajustar seus filtros ou volte mais tarde
-        </p>
-        <button
-          @click="resetFilters"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-        >
-          <RotateCcw class="w-4 h-4" />
-          Limpar filtros
-        </button>
-      </div>
     </div>
+
     <!-- Editor Modal -->
     <Dialog :open="showEditor" @update:open="showEditor = $event">
-      <DialogContent class="sm:max-w-[700px]">
+      <DialogContent class="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{{ isEditing ? 'Editar Notícia' : 'Nova Notícia' }}</DialogTitle>
         </DialogHeader>
         
-        <div class="grid gap-4 py-4">
+        <div class="grid gap-6 py-4">
           <div class="grid gap-2">
             <Label htmlFor="titulo">Título</Label>
-            <Input id="titulo" v-model="editingNews.titulo" placeholder="Digite o título da notícia" />
+            <Input id="titulo" v-model="editingNews.titulo" placeholder="Título chamativo..." class="text-lg font-medium" />
           </div>
           
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="grid gap-2">
               <Label htmlFor="categoria">Categoria</Label>
               <select
                 id="categoria"
                 v-model="editingNews.categoria"
-                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="techverse">TechVerse</option>
-                <option value="tech">Tech</option>
-                <option value="tutorial">Tutorial</option>
-                <option value="release">Release</option>
+                <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.label }}</option>
               </select>
             </div>
             
             <div class="grid gap-2">
-              <Label htmlFor="imagem">URL da Imagem</Label>
-              <div class="flex gap-2">
-                <Input id="imagem" v-model="editingNews.imagem" placeholder="https://..." />
-                <div v-if="editingNews.imagem" class="w-10 h-10 rounded overflow-hidden bg-slate-100 shrink-0">
-                  <img :src="editingNews.imagem" class="w-full h-full object-cover" />
-                </div>
-              </div>
+              <Label htmlFor="imagem">URL da Imagem (Capa)</Label>
+              <Input id="imagem" v-model="editingNews.imagem" placeholder="https://..." />
             </div>
+          </div>
+
+          <div v-if="editingNews.imagem" class="relative aspect-video rounded-lg overflow-hidden bg-muted border border-border">
+            <img :src="editingNews.imagem" class="w-full h-full object-cover" />
           </div>
           
           <div class="grid gap-2">
-            <Label htmlFor="conteudo">Conteúdo (Markdown suportado)</Label>
-            <Textarea id="conteudo" v-model="editingNews.conteudo" class="h-64 font-mono text-sm" placeholder="Escreva o conteúdo da notícia..." />
+            <div class="flex justify-between items-center">
+              <Label htmlFor="conteudo">Conteúdo (Markdown)</Label>
+              <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank" class="text-xs text-primary hover:underline">
+                Guia Markdown
+              </a>
+            </div>
+            <Textarea 
+              id="conteudo" 
+              v-model="editingNews.conteudo" 
+              class="min-h-[300px] font-mono text-sm leading-relaxed" 
+              placeholder="# Título da Seção&#10;&#10;Escreva seu conteúdo aqui..." 
+            />
           </div>
         </div>
         
         <DialogFooter>
           <Button variant="outline" @click="showEditor = false">Cancelar</Button>
-          <Button @click="handleSaveNews">
+          <Button @click="handleSaveNews" :disabled="isSaving">
             <Save class="w-4 h-4 mr-2" />
-            Salvar
+            {{ isSaving ? 'Salvando...' : 'Salvar Publicação' }}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -261,9 +207,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Newspaper, Search, Filter, Eye, ArrowRight, RotateCcw, Plus, Edit, Trash2, X, Save, Image as ImageIcon } from 'lucide-vue-next'
-import Badge from '@/components/ui/badge/Badge.vue'
-import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
+import { Newspaper, Search, Filter, Eye, ArrowRight, Plus, Edit, Trash2, Save, Calendar } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useFirestore } from '@/composables/useFirestore'
 import { useCurrentStore } from '@/composables/useCurrentStore'
@@ -271,17 +215,26 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { toast } from 'vue-sonner'
 
 const { getPublishedNews, saveNews, deleteNews } = useFirestore()
 const { currentUser, authReady } = useCurrentStore()
 
+// Constants
+const categories = [
+  { id: 'techverse', label: 'TechVerse' },
+  { id: 'tutorial', label: 'Tutoriais' },
+  { id: 'tech', label: 'Tecnologia' },
+  { id: 'release', label: 'Novidades' },
+  { id: 'business', label: 'Negócios' }
+]
+
 // State
 const loading = ref(true)
+const isSaving = ref(false)
 const news = ref([])
 const searchQuery = ref('')
 const selectedCategory = ref('')
-const sortBy = ref('recent')
 
 // Admin State
 const isEditing = ref(false)
@@ -296,14 +249,12 @@ const editingNews = ref({
 
 // Computed
 const isAdmin = computed(() => {
-  // Simple check for now, ideally should be role-based
   return currentUser.value && currentUser.value.email
 })
 
 const filteredNews = computed(() => {
   let filtered = news.value
 
-  // Filter by search query
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(item =>
@@ -312,17 +263,16 @@ const filteredNews = computed(() => {
     )
   }
 
-  // Filter by category
   if (selectedCategory.value) {
     filtered = filtered.filter(item => item.categoria === selectedCategory.value)
   }
 
-  // Sort
-  if (sortBy.value === 'recent') {
-    filtered.sort((a, b) => new Date(b.dataPub) - new Date(a.dataPub))
-  } else if (sortBy.value === 'popular') {
-    filtered.sort((a, b) => (b.views || 0) - (a.views || 0))
-  }
+  // Sort by date desc
+  filtered.sort((a, b) => {
+    const dateA = a.dataPub?.toDate ? a.dataPub.toDate() : new Date(a.dataPub || 0)
+    const dateB = b.dataPub?.toDate ? b.dataPub.toDate() : new Date(b.dataPub || 0)
+    return dateB - dateA
+  })
 
   return filtered
 })
@@ -332,36 +282,27 @@ const formatarData = (timestamp) => {
   if (!timestamp) return ''
   const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
   return new Intl.DateTimeFormat('pt-BR', {
-    year: 'numeric',
+    day: 'numeric',
     month: 'short',
-    day: 'numeric'
+    year: 'numeric'
   }).format(date)
 }
 
-const formatarCategoria = (categoria) => {
-  const map = {
-    techverse: '🔧 TechVerse',
-    tech: '💻 Tech',
-    tutorial: '📚 Tutorial',
-    release: '🚀 Release'
-  }
-  return map[categoria] || categoria
+const formatarCategoria = (catId) => {
+  const cat = categories.find(c => c.id === catId)
+  return cat ? cat.label : catId
 }
 
-const getCategoryVariant = (categoria) => {
-  const variants = {
-    techverse: 'default',
-    tech: 'secondary',
-    tutorial: 'outline',
-    release: 'default'
-  }
-  return variants[categoria] || 'outline'
+const getExcerpt = (content) => {
+  if (!content) return ''
+  // Remove markdown chars roughly
+  const plain = content.replace(/[#*`_]/g, '')
+  return plain.substring(0, 150) + (plain.length > 150 ? '...' : '')
 }
 
 const resetFilters = () => {
   searchQuery.value = ''
   selectedCategory.value = ''
-  sortBy.value = 'recent'
 }
 
 // Admin Methods
@@ -388,30 +329,46 @@ const handleDeleteNews = async (id) => {
     try {
       await deleteNews(id)
       news.value = news.value.filter(n => n.id !== id)
+      toast.success('Notícia excluída com sucesso')
     } catch (error) {
       console.error('Erro ao excluir notícia:', error)
-      alert('Erro ao excluir notícia')
+      toast.error('Erro ao excluir notícia')
     }
   }
 }
 
 const handleSaveNews = async () => {
+  if (!editingNews.value.titulo || !editingNews.value.conteudo) {
+    toast.error('Preencha título e conteúdo')
+    return
+  }
+
+  isSaving.value = true
   try {
     const savedId = await saveNews(editingNews.value)
     
+    const newItem = { 
+      ...editingNews.value, 
+      id: savedId, 
+      dataPub: editingNews.value.dataPub || new Date() 
+    }
+
     if (isEditing.value) {
       const index = news.value.findIndex(n => n.id === savedId)
       if (index !== -1) {
-        news.value[index] = { ...editingNews.value, id: savedId, dataPub: editingNews.value.dataPub || new Date() }
+        news.value[index] = newItem
       }
     } else {
-      news.value.unshift({ ...editingNews.value, id: savedId, dataPub: new Date() })
+      news.value.unshift(newItem)
     }
     
     showEditor.value = false
+    toast.success('Notícia salva com sucesso!')
   } catch (error) {
     console.error('Erro ao salvar notícia:', error)
-    alert('Erro ao salvar notícia')
+    toast.error('Erro ao salvar notícia')
+  } finally {
+    isSaving.value = false
   }
 }
 
@@ -424,7 +381,7 @@ const createDefaultNews = async () => {
   const defaultNews = {
     titulo: "5 Formas de Perder Clientes por Má Gestão",
     categoria: "tutorial",
-    imagem: "/images/news/lost-clients.png",
+    imagem: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80",
     conteudo: `## 📌 Introdução
 
 A gestão de clientes é o coração de qualquer negócio de serviços. Uma má gestão não apenas prejudica seu faturamento, mas também prejudica sua reputação no mercado.
@@ -590,59 +547,29 @@ R: Seus dados são sempre seus. Sem retenção.
     // Refresh list
     const data = await getPublishedNews()
     news.value = data || []
+    toast.success('Notícia padrão criada com sucesso!')
   } catch (error) {
     console.error('Erro ao criar notícia padrão:', error)
   }
 }
 
 // Lifecycle
-// Lifecycle
 onMounted(async () => {
   try {
     loading.value = true
-    
-    // Wait for auth to be ready to ensure currentUser is populated
     await authReady
-    
     const data = await getPublishedNews()
     news.value = data || []
     
-    // Check and create default news
-    // Only if user is logged in (required for write permission)
+    // Check and create default news if user is logged in
     if (currentUser.value) {
-      console.log('Usuário logado, verificando notícia padrão...')
       await createDefaultNews()
-    } else {
-      console.log('Usuário não logado, pulando criação automática de notícia.')
     }
   } catch (error) {
     console.error('Erro ao carregar notícias:', error)
+    toast.error('Erro ao carregar notícias')
   } finally {
     loading.value = false
   }
 })
-
-// Debug function to force creation
-const forceCreateNews = async () => {
-  if (confirm('Deseja recriar a notícia padrão?')) {
-    await createDefaultNews()
-    alert('Tentativa de criação finalizada. Recarregue a página.')
-  }
-}
 </script>
-
-<style scoped>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>

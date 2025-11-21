@@ -201,10 +201,7 @@
 
 
 
-    <!-- Debug Footer -->
-    <div class="fixed bottom-0 right-0 p-2 bg-background/80 backdrop-blur text-xs text-muted-foreground z-50 pointer-events-none">
-      v1.2 | {{ currentUser ? 'Logado' : 'Visitante' }}
-    </div>
+
 
   </div>
 </template>

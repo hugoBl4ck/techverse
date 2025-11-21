@@ -233,6 +233,25 @@ const routes = [
           import("@/views/financeiro/RegistroTransacoesView.vue"),
         meta: { title: "Registro de Transações" },
       },
+      // Fórum Routes
+      {
+        path: "forum",
+        name: "ForumHome",
+        component: () => import("@/views/forum/ForumHomeView.vue"),
+        meta: { title: "Fórum TechVerse" },
+      },
+      {
+        path: "forum/novo",
+        name: "ForumNewTopic",
+        component: () => import("@/views/forum/ForumNewTopicView.vue"),
+        meta: { title: "Novo Tópico" },
+      },
+      {
+        path: "forum/topico/:id",
+        name: "ForumTopic",
+        component: () => import("@/views/forum/ForumTopicView.vue"),
+        meta: { title: "Tópico do Fórum" },
+      },
     ],
   },
   {

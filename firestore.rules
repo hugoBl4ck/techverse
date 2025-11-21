@@ -56,6 +56,19 @@ service cloud.firestore {
       allow create: if true;
       allow read, write: if isSuperAdmin();
     }
+
+    // Fórum - público pode ler, usuários autenticados podem escrever
+    match /forum_topics/{topicId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null; // Permitir atualizar viewCount e replyCount
+      
+      match /messages/{messageId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+        allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+      }
+    }
     
     // Regra global: negar tudo por padrão
     match /{document=**} {
