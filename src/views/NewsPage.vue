@@ -600,9 +600,12 @@ onMounted(async () => {
     news.value = data || []
     
     // Check and create default news
-    // Note: We run this without strict admin check to ensure it gets created on first run
-    // The function itself checks if the news already exists
-    await createDefaultNews()
+    // Only if user is logged in (required for write permission)
+    if (currentUser.value) {
+      await createDefaultNews()
+    } else {
+      console.log('Usuário não logado, pulando criação automática de notícia.')
+    }
   } catch (error) {
     console.error('Erro ao carregar notícias:', error)
   } finally {

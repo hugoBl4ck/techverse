@@ -161,12 +161,16 @@
       </div>
     </main>
 
-    <!-- Footer -->
     <footer class="relative z-10 border-t border-border/30 bg-gradient-to-b from-background/50 to-background backdrop-blur-sm py-6 px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl mx-auto text-center">
         <p class="text-sm text-muted-foreground font-body">
-          © {{ new Date().getFullYear() }} <span class="text-foreground font-semibold">TechVerse</span>. Desenvolvido com ❤️ por <span class="text-primary font-semibold">HugoBl4ck</span>.
+          © {{ new Date().getFullYear() }} <span class="text-foreground font-semibold">TechVerse</span>. 
+          <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full ml-2">v1.2</span>
         </p>
+        <!-- Debug Info -->
+        <div v-if="currentUser" class="mt-2 text-xs text-muted-foreground/50 font-mono">
+          Debug: {{ currentUser.email }} | Avatar: {{ currentUser.photoURL ? 'Sim' : 'Não' }} | Loja: {{ currentUser.storeName }}
+        </div>
       </div>
     </footer>
   </div>
