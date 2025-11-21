@@ -52,6 +52,7 @@
             <a href="https://wa.me/5577998267548?text=gostaria%20de%20saber%20mais%20sobre%20o%20TECHVERSE" target="_blank" rel="noopener noreferrer" class="btn-social-mini" data-tooltip="Whatsapp">
               <i class="fa-brands fa-whatsapp"></i>
             </a>
+          </div>
             <!-- User Menu -->
             <div v-if="currentUser" class="flex items-center gap-3 pl-4 border-l border-border/20">
               <div class="flex flex-col items-end hidden sm:flex">
