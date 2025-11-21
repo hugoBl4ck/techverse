@@ -1,12 +1,14 @@
 import { ref, computed, watch } from 'vue';
 import { auth, db } from '@/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 
 const currentUser = ref(null);
+const userProfile = ref(null); // New ref for Firestore user data
 const storeIdValue = ref(null);
 const isLoading = ref(true);
 let authReadyResolver = null;
+let userUnsubscribe = null; // Unsubscribe function for snapshot listener
 
 const authReady = new Promise(resolve => {
   authReadyResolver = resolve;
@@ -14,34 +16,35 @@ const authReady = new Promise(resolve => {
 
 let initialized = false;
 
-async function fetchStoreId(user) {
+// Listen to Firestore user document changes
+function subscribeToUserProfile(user) {
+  if (userUnsubscribe) {
+    userUnsubscribe();
+    userUnsubscribe = null;
+  }
+
   if (!user) {
+    userProfile.value = null;
     storeIdValue.value = null;
-    return null;
+    return;
   }
 
   try {
-    // Busca o documento do usuário em /users/{uid} para obter seu storeId
     const userDocRef = doc(db, 'users', user.uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-      const storeId = userData.storeId;
-      if (storeId) {
-        storeIdValue.value = storeId;
-        return storeId;
+    userUnsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        userProfile.value = data;
+        storeIdValue.value = data.storeId || null;
+      } else {
+        userProfile.value = null;
+        storeIdValue.value = null;
       }
-    }
-
-    // Se não encontrar um storeId mapeado, log do erro
-    console.warn(`Usuário ${user.uid} não tem um storeId associado no documento /users/${user.uid}`);
-    storeIdValue.value = null;
-    return null;
+    }, (error) => {
+      console.error("Error listening to user profile:", error);
+    });
   } catch (error) {
-    console.error('Erro ao buscar storeId:', error);
-    storeIdValue.value = null;
-    return null;
+    console.error("Error setting up user listener:", error);
   }
 }
 
@@ -86,7 +89,8 @@ function initializeAuthListener() {
 
   onAuthStateChanged(auth, async (user) => {
     currentUser.value = user;
-    await fetchStoreId(user);
+    subscribeToUserProfile(user); // Start listening to Firestore updates
+
     isLoading.value = false;
 
     if (user) {
@@ -111,9 +115,23 @@ export function useCurrentStore() {
     return !!currentUser.value;
   });
 
+  // Computed property that merges Auth user with Firestore profile
+  const userWithProfile = computed(() => {
+    if (!currentUser.value) return null;
+    return {
+      ...currentUser.value,
+      ...userProfile.value, // Merge Firestore data (avatarUrl, storeName, etc)
+      // Ensure we don't overwrite critical Auth fields if needed, but Firestore usually takes precedence for custom fields
+      displayName: userProfile.value?.nome || currentUser.value.displayName,
+      photoURL: userProfile.value?.avatarUrl || currentUser.value.photoURL,
+      email: currentUser.value.email // Email usually comes from Auth
+    };
+  });
+
   return {
     storeId,
-    currentUser,
+    currentUser: userWithProfile, // Return the merged object
+    rawAuthUser: currentUser, // Expose raw auth user just in case
     isAuthenticated,
     isLoading,
     authReady, // Expose the promise

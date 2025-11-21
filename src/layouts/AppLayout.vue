@@ -52,11 +52,28 @@
             <a href="https://wa.me/5577998267548?text=gostaria%20de%20saber%20mais%20sobre%20o%20TECHVERSE" target="_blank" rel="noopener noreferrer" class="btn-social-mini" data-tooltip="Whatsapp">
               <i class="fa-brands fa-whatsapp"></i>
             </a>
-            <button @click="logout" class="btn-social-mini" data-tooltip="Sair">
-              <i class="fa-solid fa-right-from-bracket"></i>
-            </button>
-          </div>
-          <ThemeToggle @theme-changed="handleThemeChange" />
+            <!-- User Menu -->
+            <div v-if="currentUser" class="flex items-center gap-3 pl-4 border-l border-border/20">
+              <div class="flex flex-col items-end hidden sm:flex">
+                <span class="text-sm font-medium text-foreground">{{ currentUser.displayName || currentUser.email }}</span>
+                <span v-if="currentUser.storeName" class="text-xs text-muted-foreground">{{ currentUser.storeName }}</span>
+              </div>
+              <div class="h-9 w-9 rounded-full bg-primary/10 overflow-hidden border border-border/50">
+                <img 
+                  v-if="currentUser.photoURL" 
+                  :src="currentUser.photoURL" 
+                  :alt="currentUser.displayName" 
+                  class="h-full w-full object-cover"
+                />
+                <div v-else class="h-full w-full flex items-center justify-center text-primary font-bold text-sm">
+                  {{ (currentUser.displayName || currentUser.email || 'U').charAt(0).toUpperCase() }}
+                </div>
+              </div>
+              <button @click="logout" class="btn-social-mini ml-1" data-tooltip="Sair">
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </div>
+            <ThemeToggle @theme-changed="handleThemeChange" />
         </div>
       </div>
 

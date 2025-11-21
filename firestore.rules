@@ -39,10 +39,10 @@ service cloud.firestore {
       allow write, delete: if isSuperAdmin();
     }
 
-    // Notícias - público pode ler, apenas superadmin pode escrever/deletar
+    // Notícias - público pode ler, usuários autenticados podem escrever (para setup inicial)
     match /noticias/{document=**} {
       allow read: if true;
-      allow write, delete: if isSuperAdmin();
+      allow write, delete: if request.auth != null;
     }
 
     // Configurações (PIX, etc) - público pode ler (necessário para doação), apenas superadmin pode escrever
