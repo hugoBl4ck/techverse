@@ -18,7 +18,9 @@ import {
   AlertTriangle,
   CheckCircle2,
   Gauge,
-  Coffee
+  Coffee,
+  MessageCircle,
+  CheckCircle
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { ref, computed } from "vue";
@@ -126,6 +128,15 @@ const resetQuiz = () => {
   quizAnswers.value = [];
   selectedAnswer.value = null;
 };
+
+const contactSpecialist = () => {
+  const message = quizAnswers.value.includes('frequent') || quizAnswers.value.includes('sometimes')
+    ? "Olá! Fiz o quiz no site e meu PC está precisando de uma Otimização Completa. Gostaria de saber mais!"
+    : "Olá! Fiz o quiz no site e gostaria de agendar uma Manutenção Preventiva para meu PC."
+  
+  const phone = "5511999999999" // Substitua pelo número real
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
+}
 </script>
 
 <template>
@@ -625,10 +636,27 @@ const resetQuiz = () => {
                       </div>
                     </div>
                   </div>
-                  <div v-else class="text-center">
-                    <p class="text-muted-foreground mb-4">Baseado nas suas respostas, recomendamos:</p>
-                    <p class="font-semibold text-accent mb-4">{{ quizAnswers.includes('frequent') || quizAnswers.includes('sometimes') ? 'Uma análise completa de otimização!' : 'Uma verificação preventiva para garantir performance máxima.' }}</p>
-                    <Button @click="resetQuiz" variant="outline" size="sm">Refazer Quiz</Button>
+                  <div v-else class="text-center animate-fade-in">
+                    <div class="mb-6">
+                      <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle class="w-8 h-8 text-accent" />
+                      </div>
+                      <h5 class="text-lg font-bold text-foreground mb-2">Análise Concluída!</h5>
+                      <p class="text-muted-foreground mb-4">Baseado nas suas respostas, recomendamos:</p>
+                      <p class="text-xl font-semibold text-accent mb-6">
+                        {{ quizAnswers.includes('frequent') || quizAnswers.includes('sometimes') ? 'Otimização Completa de Hardware & Software' : 'Manutenção Preventiva & Tuning' }}
+                      </p>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                      <Button class="w-full bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg hover:shadow-green-500/20 transition-all" @click="contactSpecialist">
+                        <MessageCircle class="w-4 h-4 mr-2" />
+                        Falar com Especialista
+                      </Button>
+                      <Button @click="resetQuiz" variant="ghost" size="sm" class="text-muted-foreground hover:text-foreground">
+                        Refazer Quiz
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               </div>
