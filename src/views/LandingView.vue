@@ -218,8 +218,8 @@ const contactSpecialist = () => {
         
         <!-- Overlays for better text contrast -->
         <div class="absolute inset-0 bg-[url('/topography-gradient.svg')] opacity-20 bg-repeat mix-blend-overlay"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-background/95 via-background/80 to-background"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/50"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-background/20 via-background/60 to-background"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-background/80 via-background/20 to-transparent"></div>
       </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
