@@ -200,8 +200,12 @@ const resetQuiz = () => {
     <section class="relative border-b border-border/40 shadow-sm pt-32 pb-20 overflow-hidden">
       <!-- Background with Topography and Gradient Overlay -->
       <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0 bg-[url('/topography-gradient.svg')] opacity-30 bg-repeat"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-background/90 via-background/50 to-background"></div>
+        <!-- New Soft Tech BG -->
+        <div class="absolute inset-0 bg-[url('/soft-tech-bg.png')] bg-cover bg-center opacity-40 blur-sm"></div>
+        
+        <!-- Overlays for better text contrast -->
+        <div class="absolute inset-0 bg-[url('/topography-gradient.svg')] opacity-20 bg-repeat mix-blend-overlay"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-background/95 via-background/80 to-background"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/50"></div>
       </div>
 
