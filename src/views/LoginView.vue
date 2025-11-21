@@ -187,6 +187,9 @@ import {
 } from 'firebase/auth'
 import { auth, db } from '@/firebase/config'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
+import { useCurrentStore } from '@/composables/useCurrentStore'
+
+const { currentUser } = useCurrentStore()
 
 const router = useRouter()
 const email = ref('')
