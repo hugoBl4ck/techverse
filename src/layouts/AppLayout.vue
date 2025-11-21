@@ -214,12 +214,19 @@ import { useRouter } from 'vue-router'
 import { GripVertical, Menu, X, Bell, AlertCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useUserActivity } from '@/composables/useUserActivity'
+import { watch } from 'vue'
 
 const router = useRouter()
 const auth = getAuth()
 
 // Rastrear atividade do usuário
 useUserActivity()
+
+const { currentUser } = useCurrentStore()
+
+watch(currentUser, (newVal) => {
+  console.log('AppLayout: currentUser changed:', newVal)
+}, { immediate: true, deep: true })
 
 const logout = async () => {
   await signOut(auth)

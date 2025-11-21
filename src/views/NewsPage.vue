@@ -22,7 +22,11 @@
           </p>
 
           <!-- Admin Button -->
-          <div v-if="isAdmin" class="absolute top-0 right-0">
+          <div v-if="isAdmin" class="absolute top-0 right-0 flex gap-2">
+            <Button @click="forceCreateNews" variant="outline" class="bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white border-white/20">
+              <RotateCcw class="w-4 h-4 mr-2" />
+              Restaurar Padrão
+            </Button>
             <Button @click="openNewNews" class="bg-blue-600 hover:bg-blue-700 text-white">
               <Plus class="w-4 h-4 mr-2" />
               Nova Notícia
@@ -605,6 +609,14 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+// Debug function to force creation
+const forceCreateNews = async () => {
+  if (confirm('Deseja recriar a notícia padrão?')) {
+    await createDefaultNews()
+    alert('Tentativa de criação finalizada. Recarregue a página.')
+  }
+}
 </script>
 
 <style scoped>
