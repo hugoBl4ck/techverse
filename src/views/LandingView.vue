@@ -197,123 +197,118 @@ const resetQuiz = () => {
     </div>
 
     <!-- Hero Section -->
-    <section
-      class="relative border-b border-border/40 shadow-sm pt-32"
-    >
-        <!-- Animated circles behind hero -->
-        <div class="absolute inset-0 overflow-hidden">
-          <div
-            class="absolute top-20 left-1/4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-blob"
-          ></div>
-          <div
-            class="absolute top-40 right-1/4 w-72 h-72 bg-accent/20 rounded-full blur-3xl animate-blob"
-            style="animation-delay: 2s"
-          ></div>
-          <div
-            class="absolute -bottom-20 right-1/3 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-blob"
-            style="animation-delay: 4s"
-          ></div>
-        </div>
+    <section class="relative border-b border-border/40 shadow-sm pt-32 pb-20 overflow-hidden">
+      <!-- Background with Topography and Gradient Overlay -->
+      <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-[url('/topography-gradient.svg')] opacity-30 bg-repeat"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-background/90 via-background/50 to-background"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/50"></div>
+      </div>
 
-        <div class="max-w-4xl mx-auto text-center relative z-10">
-          <div class="mb-8 flex justify-center">
-            <img src="/tech.svg" alt="TechVerse" class="w-32 h-32 md:w-40 md:h-40 object-contain" />
-          </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          
+          <!-- Left Column: Text Content -->
+          <div class="text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 backdrop-blur mb-8 animate-fade-in">
+              <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+              </span>
+              <p class="text-sm font-body text-primary font-semibold">
+                A Revolução para Técnicos de TI
+              </p>
+            </div>
 
-          <div
-            class="inline-block mb-8 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 backdrop-blur"
-          >
-            <p class="text-sm font-body text-primary font-semibold">
-              🚀 A Ferramenta que Todo Técnico Precisa
+            <h1 class="font-display text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
+              Gerencie seu <br/>
+              <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-purple-600">Império Tech</span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto lg:mx-0 font-body leading-relaxed">
+              Do cadastro de clientes à montagem de PCs com IA. O 
+              <span class="text-foreground font-semibold">TechVerse</span> é a plataforma definitiva para técnicos que buscam eficiência e profissionalismo.
             </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button
+                @click="navigateToApp"
+                size="lg"
+                class="font-body text-base h-14 px-8 bg-gradient-to-r from-primary to-accent hover:shadow-2xl hover:shadow-primary/40 text-white border-0 rounded-full transition-all group btn-glow"
+              >
+                Começar Gratuitamente
+                <ArrowRight class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              
+              <Button
+                @click="navigateToLogin"
+                variant="outline"
+                size="lg"
+                class="font-body text-base h-14 px-8 rounded-full border-2 border-primary/20 hover:border-primary/50 hover:bg-primary/5 transition-all backdrop-blur-sm"
+              >
+                <LogIn class="w-5 h-5 mr-2" />
+                Acessar Conta
+              </Button>
+            </div>
+
+            <!-- Trust Indicators -->
+            <div class="mt-12 flex items-center justify-center lg:justify-start gap-8 text-muted-foreground">
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5 text-green-500" />
+                <span class="text-sm">Plano Gratuito</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5 text-green-500" />
+                <span class="text-sm">Sem Cartão</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <CheckCircle2 class="w-5 h-5 text-green-500" />
+                <span class="text-sm">Setup Instantâneo</span>
+              </div>
+            </div>
           </div>
 
-          <h1
-            class="font-display text-6xl md:text-7xl font-bold text-foreground mb-8 leading-tight max-w-3xl mx-auto"
-          >
-            Seu Gerenciador de
-            <span
-              class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary"
-              >TI</span
-            >
-            Completo
-          </h1>
-
-          <p
-            class="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto font-body leading-relaxed"
-          >
-            Do cadastro de clientes até montagem de PCs.
-            <span class="text-foreground font-semibold">TechVerse</span> é a
-            plataforma gratuita para técnicos autônomos que querem trabalhar
-            mais inteligente, não mais intenso.
-          </p>
-
-          <div
-            class="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap"
-          >
-            <Button
-              @click="navigateToApp"
-              size="lg"
-              class="font-body text-base h-14 px-10 bg-gradient-to-r from-primary to-accent hover:shadow-2xl hover:shadow-primary/40 text-white border-0 rounded-full transition-all group"
-            >
-              Comece Agora (Gratuito)
-              <ArrowRight
-                class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
+          <!-- Right Column: Visuals -->
+          <div class="relative hidden lg:block">
+            <!-- Main Floating Image -->
+            <div class="relative z-10 animate-float">
+              <div class="absolute -inset-4 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+              <img 
+                src="/nano-banana.png" 
+                alt="TechVerse Nano Technology" 
+                class="relative w-full max-w-[600px] mx-auto drop-shadow-2xl transform hover:scale-105 transition-transform duration-700"
               />
-            </Button>
-            <Button
-              @click="navigateToLogin"
-              variant="outline"
-              size="lg"
-              class="font-body text-base h-14 px-10 rounded-full border-2 border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all"
-            >
-              <LogIn class="w-5 h-5 mr-2" />
-              Fazer Login
-            </Button>
+              
+              <!-- Floating Cards/Elements -->
+              <div class="absolute -right-8 top-20 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-xl animate-float" style="animation-delay: 1s;">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <TrendingUp class="w-6 h-6 text-green-500" />
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-300">Produtividade</p>
+                    <p class="text-lg font-bold text-white">+300%</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="absolute -left-4 bottom-20 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-xl animate-float" style="animation-delay: 2s;">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                    <Cpu class="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-300">IA Integrada</p>
+                    <p class="text-sm font-bold text-white">Análise em Tempo Real</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Feature Pills -->
-          <div
-            class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-16 pt-8 border-t border-border/20"
-          >
-            <div class="flex items-center justify-center gap-3">
-              <div
-                class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center"
-              >
-                <Zap class="w-5 h-5 text-primary" />
-              </div>
-              <div class="text-left">
-                <p class="text-sm font-semibold text-foreground">
-                  Sem configuração
-                </p>
-                <p class="text-xs text-muted-foreground">Rápido</p>
-              </div>
-            </div>
-            <div class="flex items-center justify-center gap-3">
-              <div
-                class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center"
-              >
-                <Shield class="w-5 h-5 text-accent" />
-              </div>
-              <div class="text-left">
-                <p class="text-sm font-semibold text-foreground">Seus dados</p>
-                <p class="text-xs text-muted-foreground">Seguro</p>
-              </div>
-            </div>
-            <div class="flex items-center justify-center gap-3">
-              <div
-                class="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center"
-              >
-                <TrendingUp class="w-5 h-5 text-secondary" />
-              </div>
-              <div class="text-left">
-                <p class="text-sm font-semibold text-foreground">Com IA</p>
-                <p class="text-xs text-muted-foreground">Inteligente</p>
-              </div>
-            </div>
-          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <!-- Features Section com Cards Interativos -->
       <section class="py-24 px-4 sm:px-6 lg:px-8 relative">
