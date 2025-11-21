@@ -52,7 +52,6 @@ async function trackUserLocation(user) {
   if (!user) return;
 
   try {
-    // Verifica se já rastreou recentemente (para evitar chamadas excessivas à API)
     const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
 
@@ -66,10 +65,25 @@ async function trackUserLocation(user) {
       if (diffHours < 1) return;
     }
 
-    const response = await fetch('https://ipapi.co/json/');
-    if (!response.ok) throw new Error('Falha ao obter dados de IP');
-
+    // Usando ipwho.is como alternativa que não requer permissão do usuário
+    // IP Geolocation é menos preciso que GPS, mas é a única opção sem pedir permissão.
+    const response = await fetch('https://ipwho.is/');
     const data = await response.json();
+
+    if (!data.success) {
+      // Fallback para ipapi.co se ipwho.is falhar
+      const fallbackResponse = await fetch('https://ipapi.co/json/');
+      if (!fallbackResponse.ok) throw new Error('Falha em ambas APIs de localização');
+      const fallbackData = await fallbackResponse.json();
+
+      await updateDoc(userDocRef, {
+        lastIp: fallbackData.ip,
+        lastLocation: `${fallbackData.city}, ${fallbackData.region_code} - ${fallbackData.country_code}`,
+        userAgent: navigator.userAgent,
+        lastTracked: new Date()
+      });
+      return;
+    }
 
     await updateDoc(userDocRef, {
       lastIp: data.ip,
