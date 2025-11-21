@@ -17,7 +17,8 @@ import {
   User,
   AlertTriangle,
   CheckCircle2,
-  Gauge
+  Gauge,
+  Coffee
 } from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { ref, computed } from "vue";
@@ -163,9 +164,10 @@ const resetQuiz = () => {
           </router-link>
           <router-link 
             to="/donate" 
-            class="px-4 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-full transition-all"
+            class="px-4 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-full transition-all flex items-center gap-2"
           >
-            Doar
+            <Coffee class="w-4 h-4" />
+            Me pague um cafezinho!
           </router-link>
         </div>
 

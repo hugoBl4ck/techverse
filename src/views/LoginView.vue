@@ -74,6 +74,31 @@
               />
             </div>
 
+            <!-- Extra Fields for Signup -->
+            <div v-if="!isLoginMode" class="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+              <div>
+                <label for="storeName" class="block text-sm font-semibold text-foreground mb-2 font-body">Nome da Loja</label>
+                <input
+                  id="storeName"
+                  v-model="storeName"
+                  type="text"
+                  required
+                  placeholder="Minha Assistência Técnica"
+                  class="w-full px-4 py-3 bg-background border border-border/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-body"
+                />
+              </div>
+              <div>
+                <label for="avatarUrl" class="block text-sm font-semibold text-foreground mb-2 font-body">Avatar URL (Opcional)</label>
+                <input
+                  id="avatarUrl"
+                  v-model="avatarUrl"
+                  type="url"
+                  placeholder="https://exemplo.com/avatar.jpg"
+                  class="w-full px-4 py-3 bg-background border border-border/50 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-body"
+                />
+              </div>
+            </div>
+
             <!-- Error Message -->
             <div v-if="error" class="p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm font-body">
               {{ error }}
@@ -162,6 +187,8 @@ import { doc, setDoc, getDoc } from 'firebase/firestore'
 const router = useRouter()
 const email = ref('')
 const password = ref('')
+const storeName = ref('')
+const avatarUrl = ref('')
 const error = ref(null)
 const isLoginMode = ref(true)
 
@@ -194,6 +221,8 @@ const handleSignUp = async () => {
       uid: user.uid,
       email: user.email,
       storeId: user.uid, // Em multi-tenant, o storeId é igual ao uid
+      storeName: storeName.value || 'Minha Loja',
+      avatarUrl: avatarUrl.value || '',
       createdAt: new Date(),
     })
     

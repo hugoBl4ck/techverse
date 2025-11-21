@@ -73,6 +73,12 @@ const routes = [
         meta: { title: "Dashboard" },
       },
       {
+        path: "perfil",
+        name: "Profile",
+        component: () => import("@/views/ProfileView.vue"),
+        meta: { title: "Meu Perfil" },
+      },
+      {
         path: "marketing",
         name: "Marketing",
         component: () => import("@/views/marketing/SalesCopyGeneratorView.vue"),
@@ -245,9 +251,8 @@ router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const allowDemo = to.matched.some((record) => record.meta.allowDemo);
 
-  document.title = `TechVerse - ${
-    to.meta.title || "Gestão"
-  } | Criado por Hugo, BLK Studio`;
+  document.title = `TechVerse - ${to.meta.title || "Gestão"
+    } | Criado por Hugo, BLK Studio`;
 
   // Rota raiz redireciona baseado em autenticação
   if (to.path === "/") {

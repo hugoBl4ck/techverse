@@ -7,7 +7,7 @@
       </div>
       
       <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div class="text-center">
+        <div class="text-center relative">
           <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/30 rounded-full border border-blue-200 dark:border-blue-800 mb-4">
             <Newspaper class="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span class="text-sm font-medium text-blue-700 dark:text-blue-300">Central de Notícias</span>
@@ -20,6 +20,14 @@
           <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Fique atualizado sobre as novidades da TechVerse e tendências do mundo tech
           </p>
+
+          <!-- Admin Button -->
+          <div v-if="isAdmin" class="absolute top-0 right-0">
+            <Button @click="openNewNews" class="bg-blue-600 hover:bg-blue-700 text-white">
+              <Plus class="w-4 h-4 mr-2" />
+              Nova Notícia
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -114,6 +122,16 @@
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+            
+            <!-- Admin Actions -->
+            <div v-if="isAdmin" class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button @click.stop="editNews(news)" class="p-2 bg-white/90 rounded-full hover:bg-white text-blue-600 transition-colors shadow-sm">
+                <Edit class="w-4 h-4" />
+              </button>
+              <button @click.stop="handleDeleteNews(news.id)" class="p-2 bg-white/90 rounded-full hover:bg-white text-red-600 transition-colors shadow-sm">
+                <Trash2 class="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           <div v-else class="relative h-48 bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-500/5 dark:to-purple-500/5 flex items-center justify-center border-b border-slate-200 dark:border-slate-700">
@@ -177,17 +195,79 @@
         </button>
       </div>
     </div>
+    <!-- Editor Modal -->
+    <Dialog :open="showEditor" @update:open="showEditor = $event">
+      <DialogContent class="sm:max-w-[700px]">
+        <DialogHeader>
+          <DialogTitle>{{ isEditing ? 'Editar Notícia' : 'Nova Notícia' }}</DialogTitle>
+        </DialogHeader>
+        
+        <div class="grid gap-4 py-4">
+          <div class="grid gap-2">
+            <Label htmlFor="titulo">Título</Label>
+            <Input id="titulo" v-model="editingNews.titulo" placeholder="Digite o título da notícia" />
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="grid gap-2">
+              <Label htmlFor="categoria">Categoria</Label>
+              <select
+                id="categoria"
+                v-model="editingNews.categoria"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="techverse">TechVerse</option>
+                <option value="tech">Tech</option>
+                <option value="tutorial">Tutorial</option>
+                <option value="release">Release</option>
+              </select>
+            </div>
+            
+            <div class="grid gap-2">
+              <Label htmlFor="imagem">URL da Imagem</Label>
+              <div class="flex gap-2">
+                <Input id="imagem" v-model="editingNews.imagem" placeholder="https://..." />
+                <div v-if="editingNews.imagem" class="w-10 h-10 rounded overflow-hidden bg-slate-100 shrink-0">
+                  <img :src="editingNews.imagem" class="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="grid gap-2">
+            <Label htmlFor="conteudo">Conteúdo (Markdown suportado)</Label>
+            <Textarea id="conteudo" v-model="editingNews.conteudo" class="h-64 font-mono text-sm" placeholder="Escreva o conteúdo da notícia..." />
+          </div>
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" @click="showEditor = false">Cancelar</Button>
+          <Button @click="handleSaveNews">
+            <Save class="w-4 h-4 mr-2" />
+            Salvar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Newspaper, Search, Filter, Eye, ArrowRight, RotateCcw } from 'lucide-vue-next'
+import { Newspaper, Search, Filter, Eye, ArrowRight, RotateCcw, Plus, Edit, Trash2, X, Save, Image as ImageIcon } from 'lucide-vue-next'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
+import { Button } from '@/components/ui/button'
 import { useFirestore } from '@/composables/useFirestore'
+import { useCurrentStore } from '@/composables/useCurrentStore'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-const { getPublishedNews } = useFirestore()
+const { getPublishedNews, saveNews, deleteNews } = useFirestore()
+const { currentUser } = useCurrentStore()
 
 // State
 const loading = ref(true)
@@ -196,7 +276,23 @@ const searchQuery = ref('')
 const selectedCategory = ref('')
 const sortBy = ref('recent')
 
+// Admin State
+const isEditing = ref(false)
+const showEditor = ref(false)
+const editingNews = ref({
+  titulo: '',
+  conteudo: '',
+  categoria: 'tech',
+  imagem: '',
+  ativo: true
+})
+
 // Computed
+const isAdmin = computed(() => {
+  // Simple check for now, ideally should be role-based
+  return currentUser.value && currentUser.value.email
+})
+
 const filteredNews = computed(() => {
   let filtered = news.value
 
@@ -261,12 +357,248 @@ const resetFilters = () => {
   sortBy.value = 'recent'
 }
 
+// Admin Methods
+const openNewNews = () => {
+  editingNews.value = {
+    titulo: '',
+    conteudo: '',
+    categoria: 'tech',
+    imagem: '',
+    ativo: true
+  }
+  isEditing.value = false
+  showEditor.value = true
+}
+
+const editNews = (item) => {
+  editingNews.value = { ...item }
+  isEditing.value = true
+  showEditor.value = true
+}
+
+const handleDeleteNews = async (id) => {
+  if (confirm('Tem certeza que deseja excluir esta notícia?')) {
+    try {
+      await deleteNews(id)
+      news.value = news.value.filter(n => n.id !== id)
+    } catch (error) {
+      console.error('Erro ao excluir notícia:', error)
+      alert('Erro ao excluir notícia')
+    }
+  }
+}
+
+const handleSaveNews = async () => {
+  try {
+    const savedId = await saveNews(editingNews.value)
+    
+    if (isEditing.value) {
+      const index = news.value.findIndex(n => n.id === savedId)
+      if (index !== -1) {
+        news.value[index] = { ...editingNews.value, id: savedId, dataPub: editingNews.value.dataPub || new Date() }
+      }
+    } else {
+      news.value.unshift({ ...editingNews.value, id: savedId, dataPub: new Date() })
+    }
+    
+    showEditor.value = false
+  } catch (error) {
+    console.error('Erro ao salvar notícia:', error)
+    alert('Erro ao salvar notícia')
+  }
+}
+
+// Auto-create default news if not exists
+const createDefaultNews = async () => {
+  // Check if already exists
+  const exists = news.value.some(n => n.titulo === "5 Formas de Perder Clientes por Má Gestão")
+  if (exists) return
+
+  const defaultNews = {
+    titulo: "5 Formas de Perder Clientes por Má Gestão",
+    categoria: "tutorial",
+    imagem: "/images/news/lost-clients.png",
+    conteudo: `## 📌 Introdução
+
+A gestão de clientes é o coração de qualquer negócio de serviços. Uma má gestão não apenas prejudica seu faturamento, mas também prejudica sua reputação no mercado.
+
+Neste artigo, vamos explorar as 5 principais formas como você pode estar perdendo clientes sem nem perceber. Confira!
+
+---
+
+## 1️⃣ Falta de Comunicação Clara e Oportuna
+
+### O Problema
+Clientes que não sabem o status de seus serviços ficam ansiosos e desconfiados.
+
+**Situação Real:**
+- Cliente encomenda uma manutenção na segunda-feira
+- Ninguém avisa quando será feito
+- Cliente fica dias sem saber o andamento
+- Cliente vai para seu concorrente
+
+### ✅ A Solução
+Com o **TechVerse**, você pode:
+- Enviar atualizações automáticas do status do serviço
+- Manter todo histórico de comunicação centralizado
+- Registrar cada etapa do trabalho em tempo real
+- Cliente vê tudo via portal
+
+---
+
+## 2️⃣ Cobranças Confusas ou Erros de Preço
+
+### O Problema
+Se o cliente não entende a sua fatura ou encontra erros repetidos, ele desaparece.
+
+**Situação Real:**
+- "Por que foi cobrado R$ 250 se eu falei R$ 150?"
+- Falta de nota fiscal ou recibo claro
+- Preços diferentes para o mesmo serviço
+
+### ✅ A Solução
+Com o **TechVerse + Módulo Financeiro**, você pode:
+- Gerar orçamentos claros antes do serviço
+- Sistema de preços consistente
+- Rastreamento automático de custos
+- Notas fiscais integradas
+- Cliente vê exatamente do que está pagando
+
+---
+
+## 3️⃣ Perda de Informações do Cliente
+
+### O Problema
+Quando você não organiza dados dos clientes, perde oportunidades.
+
+**Situação Real:**
+- "Qual era a preferência desse cliente?"
+- Não tem histórico de serviços anteriores
+- Não sabe quando foi o último atendimento
+- Cliente sente-se como um número
+
+### ✅ A Solução
+Com o **TechVerse**, cada cliente tem:
+- Perfil completo centralizado
+- Histórico completo de serviços
+- Preferências e anotações pessoais
+- Próximos serviços recomendados
+- Data do último atendimento
+- Cliente sente-se valorizado e conhecido
+
+---
+
+## 4️⃣ Agendamentos Confusos ou Perdidos
+
+### O Problema
+Clientes que não conseguem marcar horário facilmente vão para outro lugar.
+
+**Situação Real:**
+- "Qual é seu horário de funcionamento?"
+- Conflito de agendamentos (dois clientes no mesmo horário)
+- Cliente marca e você esquece
+- Fila de espera desorganizada
+
+### ✅ A Solução
+Com o **TechVerse**, você oferece:
+- Agenda clara e organizada
+- Cliente vê disponibilidade em tempo real
+- Sem conflitos de agendamento
+- Lembretes automáticos para o cliente
+- Sistema de fila transparente
+- Agendamento 24/7, sem você fazer nada
+
+---
+
+## 5️⃣ Falta de Visão Geral do Negócio
+
+### O Problema
+Se você não sabe seus números, não pode melhorar.
+
+**Situação Real:**
+- "Quanto ganhei este mês?"
+- Não sabe qual cliente é mais lucrativo
+- Não sabe qual serviço gera mais receita
+- Toma decisões no escuro
+
+### ✅ A Solução
+Com o **TechVerse Dashboard**, você vê:
+- Receita total do mês
+- Lucro real (receita - custo dos produtos)
+- Margem de cada serviço
+- Cliente mais lucrativo
+- Serviço mais procurado
+- Tendências e padrões
+
+---
+
+## 🎯 Resumo: Como o TechVerse Resolve Tudo Isso
+
+| Problema | Solução TechVerse |
+|----------|-------------------|
+| Comunicação confusa | Status automático em tempo real |
+| Cobranças erradas | Sistema financeiro preciso |
+| Perda de dados | CRM centralizado |
+| Agendamentos confusos | Agenda inteligente |
+| Falta de visão | Dashboard com métricas claras |
+
+---
+
+## 🚀 Comece Agora
+
+A boa notícia? Você não precisa reinventar a roda.
+
+Com o **TechVerse**, você resolve tudo isso em uma única plataforma. Sem papéis perdidos, sem planilhas confusas, sem atrasos.
+
+### Próximos Passos:
+1. **Teste grátis por 30 dias** - Sem cartão de crédito
+2. **Configure seus clientes** - Leva 10 minutos
+3. **Comece a organizar** - Veja a diferença no primeiro dia
+4. **Acompanhe seus números** - Dashboard automático
+
+---
+
+## 💬 Perguntas Frequentes
+
+**P: Quanto tempo leva para aprender a usar?**  
+R: 30 minutos. É bem intuitivo.
+
+**P: Posso importar meus clientes antigos?**  
+R: Sim, fazemos a importação para você.
+
+**P: E se mudar de ideia?**  
+R: Seus dados são sempre seus. Sem retenção.
+
+---
+
+**Não deixe mais seus clientes irem embora por má gestão.**  
+**Teste o TechVerse hoje mesmo e veja a diferença.**`,
+    dataPub: new Date(),
+    views: 0,
+    ativo: true
+  }
+
+  try {
+    await saveNews(defaultNews)
+    // Refresh list
+    const data = await getPublishedNews()
+    news.value = data || []
+  } catch (error) {
+    console.error('Erro ao criar notícia padrão:', error)
+  }
+}
+
 // Lifecycle
 onMounted(async () => {
   try {
     loading.value = true
     const data = await getPublishedNews()
     news.value = data || []
+    
+    // Check and create default news if admin
+    if (isAdmin.value) {
+      await createDefaultNews()
+    }
   } catch (error) {
     console.error('Erro ao carregar notícias:', error)
   } finally {
