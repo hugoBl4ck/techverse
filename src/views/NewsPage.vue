@@ -143,7 +143,7 @@
           </div>
 
           <!-- Content -->
-          <div class="p-6">
+          <div class="p-6 flex flex-col flex-grow">
             <!-- Category Badge -->
             <div class="mb-3 flex items-center gap-2">
               <Badge :variant="getCategoryVariant(news.categoria)">
@@ -155,27 +155,30 @@
             </div>
 
             <!-- Title -->
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-              {{ news.titulo }}
-            </h3>
+            <router-link :to="'/noticias/' + news.id">
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                {{ news.titulo }}
+              </h3>
+            </router-link>
 
             <!-- Excerpt -->
-            <p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-4">
+            <p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-4 flex-grow">
               {{ news.conteudo }}
             </p>
 
             <!-- Metadata -->
-            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700 mt-auto">
               <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                 <Eye class="w-4 h-4" />
                 <span>{{ news.views || 0 }} visualizações</span>
               </div>
-              <button
+              <router-link 
+                :to="'/noticias/' + news.id"
                 class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors text-sm font-medium"
               >
                 Ler mais
                 <ArrowRight class="w-4 h-4" />
-              </button>
+              </router-link>
             </div>
           </div>
         </article>
@@ -271,7 +274,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const { getPublishedNews, saveNews, deleteNews } = useFirestore()
-const { currentUser } = useCurrentStore()
+const { currentUser, authReady } = useCurrentStore()
 
 // State
 const loading = ref(true)
@@ -593,15 +596,21 @@ R: Seus dados são sempre seus. Sem retenção.
 }
 
 // Lifecycle
+// Lifecycle
 onMounted(async () => {
   try {
     loading.value = true
+    
+    // Wait for auth to be ready to ensure currentUser is populated
+    await authReady
+    
     const data = await getPublishedNews()
     news.value = data || []
     
     // Check and create default news
     // Only if user is logged in (required for write permission)
     if (currentUser.value) {
+      console.log('Usuário logado, verificando notícia padrão...')
       await createDefaultNews()
     } else {
       console.log('Usuário não logado, pulando criação automática de notícia.')

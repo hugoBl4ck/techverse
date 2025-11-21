@@ -25,6 +25,12 @@ const routes = [
     meta: { title: "Notícias TechVerse", requiresAuth: false },
   },
   {
+    path: "/noticias/:id",
+    name: "NewsDetail",
+    component: () => import("@/views/NewsDetailView.vue"),
+    meta: { title: "Notícia", requiresAuth: false },
+  },
+  {
     path: "/promocoes",
     name: "Promos",
     component: () => import("@/views/PromosPage.vue"),
