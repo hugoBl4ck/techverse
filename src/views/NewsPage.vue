@@ -595,10 +595,10 @@ onMounted(async () => {
     const data = await getPublishedNews()
     news.value = data || []
     
-    // Check and create default news if admin
-    if (isAdmin.value) {
-      await createDefaultNews()
-    }
+    // Check and create default news
+    // Note: We run this without strict admin check to ensure it gets created on first run
+    // The function itself checks if the news already exists
+    await createDefaultNews()
   } catch (error) {
     console.error('Erro ao carregar notícias:', error)
   } finally {

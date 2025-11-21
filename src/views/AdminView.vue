@@ -270,15 +270,9 @@
                     </span>
                   </td>
                   <td class="py-2 px-2">
-                    <div class="flex items-center gap-2">
-                      <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                        <img v-if="user.avatarUrl" :src="user.avatarUrl" :alt="user.nome" class="h-full w-full object-cover" />
-                        <span v-else class="text-xs font-bold text-primary">{{ user.nome?.charAt(0).toUpperCase() || 'U' }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="font-medium text-foreground">{{ user.nome || 'Sem nome' }}</span>
-                        <span class="text-xs text-muted-foreground">{{ user.email }}</span>
-                      </div>
+                    <div class="flex flex-col">
+                      <span class="font-medium text-foreground">{{ user.nome || 'Sem nome' }}</span>
+                      <span class="text-xs text-muted-foreground">{{ user.email }}</span>
                     </div>
                   </td>
                 </tr>
