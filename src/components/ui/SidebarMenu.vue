@@ -194,6 +194,20 @@
       </Button>
     </RouterLink>
 
+    <RouterLink to="/ranking-cpu" v-slot="{ isExactActive }">
+      <Button
+        variant="ghost"
+        class="w-full justify-start gap-2"
+        :class="{
+          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
+        }"
+        @click="handleNavigate"
+      >
+        <Cpu class="size-4" />
+        Ranking CPU
+      </Button>
+    </RouterLink>
+
     <!-- Seção ADMIN (Apenas Admin) -->
     <Separator v-if="isAdmin" class="my-2" />
     <div v-if="isAdmin" class="px-4 py-2 text-xs font-medium text-muted-foreground">ADMINISTRAÇÃO</div>
@@ -249,7 +263,7 @@ import { useCurrentStore } from '@/composables/useCurrentStore'
 import { RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Home, User, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List, Download, TrendingUp, Newspaper, Gift, Edit, MessageSquare } from 'lucide-vue-next'
+import { Home, User, Users, Package, Archive, PlusCircle, Blocks, Wand2, Wrench, ListChecks, Shield, Sparkles, ClipboardList, List, Download, TrendingUp, Newspaper, Gift, Edit, MessageSquare, Cpu } from 'lucide-vue-next'
 import Separator from './separator/Separator.vue'
 
 const props = defineProps({

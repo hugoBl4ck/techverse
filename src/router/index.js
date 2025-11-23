@@ -49,6 +49,12 @@ const routes = [
     meta: { title: "Solicitar Análise de Otimização", requiresAuth: false },
   },
   {
+    path: "/ranking-cpu",
+    name: "CpuRanking",
+    component: () => import("@/views/CpuRankingView.vue"),
+    meta: { title: "Ranking CPU", requiresAuth: false },
+  },
+  {
     path: "/login",
     name: "Login",
     component: () => import("@/views/LoginView.vue"),
