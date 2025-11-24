@@ -149,7 +149,6 @@ const registerWithGoogle = async () => {
       createdAt: serverTimestamp(),
       lastActive: serverTimestamp()
     })
-
     // Create store document for the user
     const storeId = `store_${user.uid.slice(0, 8)}`
     await setDoc(doc(db, 'stores', storeId), {
@@ -170,6 +169,94 @@ const registerWithGoogle = async () => {
     toast.success('Conta criada com sucesso! Redirecionando...')
 
     // Redirect to dashboard after short delay
+    setTimeout(() => {
+      router.push('/dashboard')
+    }, 2000)
+
+  } catch (error) {
+    console.error('Erro no registro com Google:', error)
+    toast.error('Erro ao criar conta com Google. Tente novamente.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// WhatsApp submission (fallback)
+const submitToWhatsApp = () => {
+  const whatsappNumber = '+5577998267548'
+  const message = `Olá! Gostaria de solicitar uma análise de otimização do meu PC.
+
+Nome: ${form.value.name}
+Email: ${form.value.email}
+Telefone: ${form.value.phone}
+Mensagem: ${form.value.message}
+
+Anexei os prints do HWiNFO64 conforme o tutorial.`
+
+  const encodedMessage = encodeURIComponent(message)
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
+  window.open(whatsappUrl, '_blank')
+}
+
+// Optimization Upload Logic
+import { useCurrentStore } from '@/composables/useCurrentStore'
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { addDoc, collection } from 'firebase/firestore'
+
+const { currentUser } = useCurrentStore()
+const uploadingFiles = ref([])
+
+const handleOptimizationUpload = async (event) => {
+  const files = Array.from(event.target.files)
+  if (!files.length) return
+
+  for (const file of files) {
+    // Validate
+    if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+      toast.error(`Arquivo inválido: ${file.name} (Apenas imagens < 5MB)`)
+      continue
+    }
+
+    const fileState = ref({ name: file.name, status: 'uploading' })
+    uploadingFiles.value.push(fileState.value)
+
+    try {
+      const fileName = `optimization-uploads/${currentUser.value.uid}/${Date.now()}_${file.name}`
+      const fileRef = storageRef(storage, fileName)
+      const snapshot = await uploadBytes(fileRef, file)
+      const downloadUrl = await getDownloadURL(snapshot.ref)
+
+      // Save reference to Firestore
+      await addDoc(collection(db, 'optimization_uploads'), {
+        userId: currentUser.value.uid,
+        userName: currentUser.value.nome || currentUser.value.email,
+        imageUrl: downloadUrl,
+        fileName: file.name,
+        createdAt: serverTimestamp()
+      })
+
+      fileState.value.status = 'success'
+      toast.success(`Upload concluído: ${file.name}`)
+    } catch (error) {
+      console.error('Upload error:', error)
+      fileState.value.status = 'error'
+      toast.error(`Erro ao enviar: ${file.name}`)
+    }
+  }
+  
+  // Clear input
+  event.target.value = ''
+}
+</script>
+
+<template>
+  <div class="min-h-screen bg-background">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center cursor-pointer" @click="router.push('/landing')">
+          <TechVerseLogoSvg />
+        </div>
         <div class="flex items-center gap-3">
           <Button @click="router.push('/login')" variant="outline" class="font-body border border-primary/30 text-primary hover:bg-primary/5">
             Login
