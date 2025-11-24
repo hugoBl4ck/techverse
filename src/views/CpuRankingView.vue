@@ -17,15 +17,20 @@
           <!-- Animated Glow Background -->
           <div class="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           
-          <div class="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden border-2 border-transparent group-hover:border-primary/50 transition-all duration-300">
+          <div @click="router.push('/perfil')" class="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden border-2 border-transparent group-hover:border-primary/50 transition-all duration-300 cursor-pointer">
             <img v-if="currentUser?.photoURL" :src="currentUser.photoURL" alt="Avatar" class="w-full h-full object-cover" />
             <span v-else>{{ currentUser?.displayName?.charAt(0).toUpperCase() || currentUser?.email?.charAt(0).toUpperCase() }}</span>
           </div>
           <div class="relative flex flex-col">
-            <span class="text-xs font-bold text-foreground leading-none group-hover:text-primary transition-colors">{{ currentUser?.displayName || 'Usuário' }}</span>
-            <button @click="handleLogout" class="text-[10px] text-muted-foreground hover:text-destructive text-left transition-colors">
-              Sair
-            </button>
+            <span @click="router.push('/perfil')" class="text-xs font-bold text-foreground leading-none group-hover:text-primary transition-colors cursor-pointer">{{ currentUser?.displayName || 'Usuário' }}</span>
+            <div class="flex gap-2">
+              <button @click="router.push('/perfil')" class="text-[10px] text-muted-foreground hover:text-primary text-left transition-colors">
+                Perfil
+              </button>
+              <button @click="handleLogout" class="text-[10px] text-muted-foreground hover:text-destructive text-left transition-colors">
+                Sair
+              </button>
+            </div>
           </div>
         </div>
         <button 
