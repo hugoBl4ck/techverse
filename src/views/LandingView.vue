@@ -238,12 +238,12 @@ const contactSpecialist = () => {
               </p>
             </div>
 
-            <h1 class="font-display text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
+            <h1 class="font-display text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight drop-shadow-lg">
               Gerencie seu <br/>
-              <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-purple-600">Império Tech</span>
+              <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-purple-600 drop-shadow-md">Império Tech</span>
             </h1>
 
-            <p class="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto lg:mx-0 font-body leading-relaxed">
+            <p class="text-lg md:text-xl text-slate-700 mb-10 max-w-2xl mx-auto lg:mx-0 font-body leading-relaxed drop-shadow-sm">
               Do cadastro de clientes à montagem de PCs com IA. O 
               <span class="text-foreground font-semibold">TechVerse</span> é a plataforma definitiva para técnicos que buscam eficiência e profissionalismo.
             </p>
