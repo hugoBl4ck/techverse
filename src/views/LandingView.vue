@@ -219,13 +219,13 @@ const contactSpecialist = () => {
     <section class="relative border-b border-border/40 shadow-sm pt-32 pb-20 overflow-hidden">
       <!-- Background with Topography and Gradient Overlay -->
       <div class="absolute inset-0 z-0">
-        <!-- New Soft Tech BG -->
-        <div class="absolute inset-0 bg-cover bg-center opacity-40 blur-sm" style="background-image: url('/soft-tech-bg.png?v=2');"></div>
+        <!-- New White Minimalist Gradient BG -->
+        <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('/WhiteMinimalistGradientWallpaper.svg');"></div>
         
-        <!-- Overlays for better text contrast -->
-        <div class="absolute inset-0 bg-[url('/topography-gradient.svg')] opacity-20 bg-repeat mix-blend-overlay"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-background/20 via-background/60 to-background"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-background/80 via-background/20 to-transparent"></div>
+        <!-- Overlays for better text contrast and smoothing -->
+        <div class="absolute inset-0 bg-white/30 backdrop-blur-[1px]"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-background"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-white/80 via-white/40 to-transparent"></div>
       </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
