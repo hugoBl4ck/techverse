@@ -57,10 +57,10 @@ Sitemap: ${DOMAIN}/sitemap.xml
       try {
         // Obtém o diretório de saída do Vite
         const outDir = path.resolve(process.cwd(), 'dist')
-        
+
         fs.writeFileSync(path.join(outDir, 'sitemap.xml'), sitemap, 'utf-8')
         fs.writeFileSync(path.join(outDir, 'robots.txt'), robotsTxt, 'utf-8')
-        
+
         console.log('✅ Sitemap e Robots.txt gerados automaticamente!')
         console.log(`✅ Total de URLs: ${publicRoutes.length}`)
         console.log(`✅ URL base: ${DOMAIN}`)

@@ -220,7 +220,7 @@ const contactSpecialist = () => {
       <!-- Background with Topography and Gradient Overlay -->
       <div class="absolute inset-0 z-0">
         <!-- New White Minimalist Gradient BG -->
-        <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('/WhiteMinimalistGradientWallpaper.svg');"></div>
+        <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('/bgwallpaperhero.png');"></div>
         
         <!-- Overlays for better text contrast and smoothing -->
         <div class="absolute inset-0 bg-white/30 backdrop-blur-[1px]"></div>
