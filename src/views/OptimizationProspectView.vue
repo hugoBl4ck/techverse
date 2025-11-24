@@ -1,29 +1,34 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { useRouter } from 'vue-router'
+import { useOptimizationStore } from '@/composables/useOptimizationStore'
+import { useCurrentStore } from '@/composables/useCurrentStore'
+import { toast } from 'vue-sonner'
+import { auth, db, storage } from '@/firebase/config'
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { doc, setDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore'
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import TechVerseLogoSvg from '@/components/TechVerseLogoSvg.vue'
+import OptimizationSidebar from '@/components/OptimizationSidebar.vue'
+
+// Import tutorial images
+import hwinfoStart from '@/assets/images/hwinfo-tela-inicial.png'
+import hwinfoCpu from '@/assets/images/hwinfo-cpu-frequencia.png'
+import hwinfoResizeBar from '@/assets/images/hwinfo-resize-bar.png'
 import hwinfoMemoryXmp from '@/assets/images/hwinfo-memoria-xmp.png'
 
 // Gallery videos
-const galleryVideos = [
-  {
-    title: 'PC Gamer RGB Montado',
-    src: '/videos/otimizacaovideo1.webm'
-  },
-  {
-    title: 'Workstation Profissional',
-    src: '/videos/otimizacaovideo2.webm'
-  },
-  {
-    title: 'PC Compacto High-End',
-    src: '/videos/otimizacaovideo3.webm'
-  }
-]
+const galleryVideos = ref([
+  { src: '/videos/pc1.mp4', title: 'Setup Gamer RGB' },
+  { src: '/videos/pc2.mp4', title: 'Workstation Profissional' },
+  { src: '/videos/pc3.mp4', title: 'PC Compacto' }
+])
 
-// Video controls
 const videoRefs = ref([])
 
 const onVideoPlay = (index) => {
@@ -41,6 +46,7 @@ const onVideoPause = (index) => {
 
 const router = useRouter()
 const optimizationStore = useOptimizationStore()
+const { currentUser } = useCurrentStore()
 
 // Form data
 const form = ref({
@@ -53,6 +59,7 @@ const form = ref({
 
 const isRegistering = ref(false)
 const isLoading = ref(false)
+const uploadingFiles = ref([])
 
 onMounted(() => {
   const { formData, pendingUploads: pending } = optimizationStore.restoreState()
@@ -60,7 +67,7 @@ onMounted(() => {
     form.value = { ...form.value, ...formData }
     if (formData.message) form.value.message = formData.message
   }
-  
+
   if (pending && pending.length > 0) {
     toast.info(`Você tem ${pending.length} arquivo(s) pronto(s) para envio. Selecione-os novamente para confirmar.`)
   }
@@ -187,31 +194,7 @@ const registerWithGoogle = async () => {
   }
 }
 
-// WhatsApp submission (fallback)
-const submitToWhatsApp = () => {
-  const whatsappNumber = '+5577998267548'
-  const message = `Olá! Gostaria de solicitar uma análise de otimização do meu PC.
-
-Nome: ${form.value.name}
-Email: ${form.value.email}
-Telefone: ${form.value.phone}
-Mensagem: ${form.value.message}
-
-Anexei os prints do HWiNFO64 conforme o tutorial.`
-
-  const encodedMessage = encodeURIComponent(message)
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
-  window.open(whatsappUrl, '_blank')
-}
-
-// Optimization Upload Logic
-import { useCurrentStore } from '@/composables/useCurrentStore'
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { addDoc, collection } from 'firebase/firestore'
-
-const { currentUser } = useCurrentStore()
-const uploadingFiles = ref([])
-
+// File upload handler
 const handleOptimizationUpload = async (event) => {
   const files = Array.from(event.target.files)
   if (!files.length) return
@@ -261,6 +244,23 @@ const handleOptimizationUpload = async (event) => {
   // Clear input
   event.target.value = ''
 }
+
+// WhatsApp submission (fallback)
+const submitToWhatsApp = () => {
+  const whatsappNumber = '+5577998267548'
+  const message = `Olá! Gostaria de solicitar uma análise de otimização do meu PC.
+
+Nome: ${form.value.name}
+Email: ${form.value.email}
+Telefone: ${form.value.phone}
+Mensagem: ${form.value.message}
+
+Anexei os prints do HWiNFO64 conforme o tutorial.`
+
+  const encodedMessage = encodeURIComponent(message)
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
+  window.open(whatsappUrl, '_blank')
+}
 </script>
 
 <template>
@@ -276,7 +276,7 @@ const handleOptimizationUpload = async (event) => {
             class="font-body border border-primary/30 text-primary hover:bg-primary/5">
             Login
           </Button>
-          <Button @click="router.push('/app/clientes')"
+          <Button @click="router.push('/dashboard')"
             class="font-body bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/50 text-white border-0">
             Acessar App
           </Button>
@@ -505,7 +505,8 @@ const handleOptimizationUpload = async (event) => {
 
                 <div class="space-y-2">
                   <Label for="upload">Imagens HWiNFO (Opcional)</Label>
-                  <Input id="upload" type="file" multiple accept="image/*" @change="handleOptimizationUpload" class="bg-background/50" />
+                  <Input id="upload" type="file" multiple accept="image/*" @change="handleOptimizationUpload"
+                    class="bg-background/50" />
                   <p class="text-xs text-muted-foreground">Envie prints das telas do HWiNFO para análise.</p>
                 </div>
 

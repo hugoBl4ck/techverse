@@ -3,7 +3,8 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-8">
       <div class="flex flex-col gap-2">
-        <h1 class="text-4xl font-display font-bold tracking-tight text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent w-fit">
+        <h1
+          class="text-4xl font-display font-bold tracking-tight text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent w-fit">
           Ranking de Processadores
         </h1>
         <p class="text-muted-foreground text-lg max-w-2xl">
@@ -13,31 +14,38 @@
 
       <!-- Login/Avatar Section -->
       <div class="flex items-center gap-4">
-        <div v-if="isAuthenticated" class="group relative flex items-center gap-3 bg-card/50 backdrop-blur-sm border border-primary/20 rounded-full pl-1 pr-4 py-1 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:border-primary/40">
+        <div v-if="isAuthenticated"
+          class="group relative flex items-center gap-3 bg-card/50 backdrop-blur-sm border border-primary/20 rounded-full pl-1 pr-4 py-1 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:border-primary/40">
           <!-- Animated Glow Background -->
-          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          <div @click="router.push('/perfil')" class="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden border-2 border-transparent group-hover:border-primary/50 transition-all duration-300 cursor-pointer">
-            <img v-if="currentUser?.photoURL" :src="currentUser.photoURL" alt="Avatar" class="w-full h-full object-cover" />
-            <span v-else>{{ currentUser?.displayName?.charAt(0).toUpperCase() || currentUser?.email?.charAt(0).toUpperCase() }}</span>
+          <div
+            class="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          </div>
+
+          <div @click="router.push('/perfil')"
+            class="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden border-2 border-transparent group-hover:border-primary/50 transition-all duration-300 cursor-pointer">
+            <img v-if="currentUser?.photoURL" :src="currentUser.photoURL" alt="Avatar"
+              class="w-full h-full object-cover" />
+            <span v-else>{{ currentUser?.displayName?.charAt(0).toUpperCase() ||
+              currentUser?.email?.charAt(0).toUpperCase() }}</span>
           </div>
           <div class="relative flex flex-col">
-            <span @click="router.push('/perfil')" class="text-xs font-bold text-foreground leading-none group-hover:text-primary transition-colors cursor-pointer">{{ currentUser?.displayName || 'Usuário' }}</span>
+            <span @click="router.push('/perfil')"
+              class="text-xs font-bold text-foreground leading-none group-hover:text-primary transition-colors cursor-pointer">{{
+                currentUser?.displayName || 'Usuário' }}</span>
             <div class="flex gap-2">
-              <button @click="router.push('/perfil')" class="text-[10px] text-muted-foreground hover:text-primary text-left transition-colors">
+              <button @click="router.push('/perfil')"
+                class="text-[10px] text-muted-foreground hover:text-primary text-left transition-colors">
                 Perfil
               </button>
-              <button @click="handleLogout" class="text-[10px] text-muted-foreground hover:text-destructive text-left transition-colors">
+              <button @click="handleLogout"
+                class="text-[10px] text-muted-foreground hover:text-destructive text-left transition-colors">
                 Sair
               </button>
             </div>
           </div>
         </div>
-        <button 
-          v-else
-          @click="router.push('/login?redirect=/ranking-cpu')"
-          class="px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-bold hover:opacity-90 transition-opacity shadow-lg hover:shadow-primary/25 hover:scale-105 active:scale-95"
-        >
+        <button v-else @click="router.push('/login?redirect=/ranking-cpu')"
+          class="px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-bold hover:opacity-90 transition-opacity shadow-lg hover:shadow-primary/25 hover:scale-105 active:scale-95">
           Fazer Login
         </button>
       </div>
@@ -46,36 +54,27 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <!-- Coluna Principal: Tabela (Occupies 8/12 on desktop) -->
       <div class="lg:col-span-8 space-y-4">
-        
+
         <!-- Controls -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-card/50 backdrop-blur-sm p-4 rounded-xl border border-border/50 shadow-sm">
+        <div
+          class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-card/50 backdrop-blur-sm p-4 rounded-xl border border-border/50 shadow-sm">
           <div class="flex items-center gap-2">
             <span class="text-sm font-medium text-muted-foreground">Ordenar por:</span>
             <div class="flex bg-muted/50 rounded-lg p-1">
-              <button 
-                @click="sortBy('multi')"
-                class="px-3 py-1.5 text-xs font-medium rounded-md transition-all"
-                :class="sortKey === 'multi' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
-              >
+              <button @click="sortBy('multi')" class="px-3 py-1.5 text-xs font-medium rounded-md transition-all"
+                :class="sortKey === 'multi' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'">
                 Multi Thread
               </button>
-              <button 
-                @click="sortBy('single')"
-                class="px-3 py-1.5 text-xs font-medium rounded-md transition-all"
-                :class="sortKey === 'single' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
-              >
+              <button @click="sortBy('single')" class="px-3 py-1.5 text-xs font-medium rounded-md transition-all"
+                :class="sortKey === 'single' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'">
                 Single Thread
               </button>
             </div>
           </div>
 
           <div class="relative w-full sm:w-72">
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              placeholder="Buscar processador (ex: Ryzen 5)..." 
-              class="w-full pl-10 pr-4 py-2 bg-background/50 border border-border/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-            />
+            <input v-model="searchQuery" type="text" placeholder="Buscar processador (ex: Ryzen 5)..."
+              class="w-full pl-10 pr-4 py-2 bg-background/50 border border-border/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
             <span class="absolute left-3 top-2.5 text-muted-foreground">
               <i class="fa-solid fa-search text-xs"></i>
             </span>
@@ -91,13 +90,15 @@
                   <th class="px-4 py-2 font-medium w-12 text-center">#</th>
                   <th class="px-4 py-2 font-medium">Processador</th>
                   <th class="px-4 py-2 font-medium w-1/4">
-                    <div class="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors" @click="sortBy('single')">
+                    <div class="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors"
+                      @click="sortBy('single')">
                       Single Thread
                       <i v-if="sortKey === 'single'" class="fa-solid fa-sort-down text-primary"></i>
                     </div>
                   </th>
                   <th class="px-4 py-2 font-medium w-1/4">
-                    <div class="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors" @click="sortBy('multi')">
+                    <div class="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors"
+                      @click="sortBy('multi')">
                       Multi Thread
                       <i v-if="sortKey === 'multi'" class="fa-solid fa-sort-down text-primary"></i>
                     </div>
@@ -105,37 +106,51 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-border/30">
-                <tr v-for="(cpu, index) in filteredCpus" :key="cpu.name" class="group transition-colors odd:bg-background/30 even:bg-muted/5 hover:bg-primary/5">
-                  <td class="px-4 py-2 text-center font-bold text-muted-foreground/50 group-hover:text-primary transition-colors">
+                <tr v-for="(cpu, index) in filteredCpus" :key="cpu.name"
+                  class="group transition-colors odd:bg-background/30 even:bg-muted/5 hover:bg-primary/5">
+                  <td
+                    class="px-4 py-2 text-center font-bold text-muted-foreground/50 group-hover:text-primary transition-colors">
                     {{ index + 1 }}
                   </td>
                   <td class="px-4 py-2">
                     <div class="flex flex-col">
-                      <div class="flex items-center gap-2">
-                        <!-- Avatar Display -->
-                        <div v-if="cpu.userAvatar" class="w-6 h-6 rounded-full overflow-hidden border border-border/50 flex-shrink-0" :title="'Enviado por: ' + cpu.userName">
-                          <img :src="cpu.userAvatar" class="w-full h-full object-cover" alt="User" />
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <span
+                          class="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{{
+                          cpu.name }}</span>
+                        <span v-if="cpu.new"
+                          class="px-1 py-0.5 text-[9px] font-bold bg-accent/10 text-accent rounded border border-accent/20 uppercase tracking-wider">Novo</span>
+                        <span v-if="cpu.special"
+                          class="px-1 py-0.5 text-[9px] font-bold bg-yellow-500/10 text-yellow-500 rounded border border-yellow-500/20 uppercase tracking-wider">{{
+                          cpu.special }}</span>
+
+                        <!-- User Tag (if user submitted) -->
+                        <div v-if="cpu.userName"
+                          class="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 border border-primary/20 rounded-full"
+                          :title="'Enviado por: ' + cpu.userName">
+                          <div v-if="cpu.userAvatar"
+                            class="w-3 h-3 rounded-full overflow-hidden border border-primary/30 flex-shrink-0">
+                            <img :src="cpu.userAvatar" class="w-full h-full object-cover" alt="User" />
+                          </div>
+                          <span class="text-[9px] font-medium text-primary">{{ cpu.userName }}</span>
                         </div>
-                        
-                        <span class="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{{ cpu.name }}</span>
-                        <span v-if="cpu.new" class="px-1 py-0.5 text-[9px] font-bold bg-accent/10 text-accent rounded border border-accent/20 uppercase tracking-wider">Novo</span>
-                        <span v-if="cpu.special" class="px-1 py-0.5 text-[9px] font-bold bg-yellow-500/10 text-yellow-500 rounded border border-yellow-500/20 uppercase tracking-wider">{{ cpu.special }}</span>
                       </div>
                       <span class="text-[10px] text-muted-foreground mt-0.5">{{ cpu.category }}</span>
                     </div>
                   </td>
-                  
+
                   <!-- Single Thread Column -->
                   <td class="px-4 py-2">
                     <div class="flex flex-col gap-1">
                       <div class="flex justify-between items-end">
-                        <span class="font-mono font-medium" :class="sortKey === 'single' ? 'text-primary font-bold' : 'text-muted-foreground'">{{ cpu.single }}</span>
+                        <span class="font-mono font-medium"
+                          :class="sortKey === 'single' ? 'text-primary font-bold' : 'text-muted-foreground'">{{
+                          cpu.single }}</span>
                       </div>
                       <div class="h-1 w-full bg-muted/50 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           class="h-full rounded-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-500"
-                          :style="{ width: (cpu.single / maxSingle) * 100 + '%' }"
-                        ></div>
+                          :style="{ width: (cpu.single / maxSingle) * 100 + '%' }"></div>
                       </div>
                     </div>
                   </td>
@@ -144,13 +159,14 @@
                   <td class="px-4 py-2">
                     <div class="flex flex-col gap-1">
                       <div class="flex justify-between items-end">
-                        <span class="font-mono font-medium" :class="sortKey === 'multi' ? 'text-primary font-bold' : 'text-muted-foreground'">{{ cpu.multi }}</span>
+                        <span class="font-mono font-medium"
+                          :class="sortKey === 'multi' ? 'text-primary font-bold' : 'text-muted-foreground'">{{ cpu.multi
+                          }}</span>
                       </div>
                       <div class="h-1 w-full bg-muted/50 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           class="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
-                          :style="{ width: (cpu.multi / maxMulti) * 100 + '%' }"
-                        ></div>
+                          :style="{ width: (cpu.multi / maxMulti) * 100 + '%' }"></div>
                       </div>
                     </div>
                   </td>
@@ -171,7 +187,7 @@
 
       <!-- Sidebar (Occupies 4/12 on desktop) -->
       <div class="lg:col-span-4 space-y-6">
-        
+
         <!-- Info Card -->
         <!-- Info Card -->
         <div class="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 shadow-lg">
@@ -181,29 +197,33 @@
             </div>
             Entendendo os Números
           </h3>
-          
+
           <div class="space-y-5">
             <div class="p-3 rounded-lg bg-background/50 border border-border/50">
               <h4 class="font-semibold text-sm text-foreground mb-1">Single Thread</h4>
               <p class="text-xs text-muted-foreground leading-relaxed">
-                Desempenho de um único núcleo. Crucial para a maioria dos <strong class="text-foreground">jogos</strong> e uso cotidiano do Windows.
+                Desempenho de um único núcleo. Crucial para a maioria dos <strong class="text-foreground">jogos</strong>
+                e uso cotidiano do Windows.
               </p>
             </div>
 
             <div class="p-3 rounded-lg bg-background/50 border border-border/50">
               <h4 class="font-semibold text-sm text-foreground mb-1">Multi Thread</h4>
               <p class="text-xs text-muted-foreground leading-relaxed">
-                Desempenho de todos os núcleos juntos. Vital para <strong class="text-foreground">streaming, edição de vídeo</strong> e renderização 3D.
+                Desempenho de todos os núcleos juntos. Vital para <strong class="text-foreground">streaming, edição de
+                  vídeo</strong> e renderização 3D.
               </p>
             </div>
 
-            <div class="relative overflow-hidden rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 p-4 border border-primary/10">
+            <div
+              class="relative overflow-hidden rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 p-4 border border-primary/10">
               <div class="relative z-10">
                 <h4 class="font-bold text-foreground mb-1">Seu PC está lento?</h4>
                 <p class="text-xs text-muted-foreground mb-3">
                   Mesmo com um bom processador, configurações erradas podem matar o desempenho.
                 </p>
-                <router-link to="/otimizacao" class="text-xs font-bold text-primary hover:text-accent transition-colors inline-flex items-center gap-1">
+                <router-link to="/otimizacao"
+                  class="text-xs font-bold text-primary hover:text-accent transition-colors inline-flex items-center gap-1">
                   Solicitar Análise Gratuita <i class="fa-solid fa-arrow-right"></i>
                 </router-link>
               </div>
@@ -225,53 +245,45 @@
             <p class="text-xs text-muted-foreground">
               Ajude a comunidade enviando seus resultados do CPU-Z.
             </p>
-            <a 
-              href="https://www.cpuid.com/softwares/cpu-z.html" 
-              target="_blank" 
-              class="flex items-center justify-center gap-2 w-full py-2 bg-muted/50 hover:bg-muted text-foreground rounded-md text-xs font-medium transition-colors border border-border/50"
-            >
+            <a href="https://www.cpuid.com/softwares/cpu-z.html" target="_blank"
+              class="flex items-center justify-center gap-2 w-full py-2 bg-muted/50 hover:bg-muted text-foreground rounded-md text-xs font-medium transition-colors border border-border/50">
               <i class="fa-solid fa-download"></i> Baixar CPU-Z
             </a>
           </div>
-          
+
           <form @submit.prevent="submitResult" class="space-y-3">
             <div>
-              <input v-model="form.model" type="text" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Modelo da CPU (ex: i5 12400F)" required />
+              <input v-model="form.model" type="text"
+                class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary"
+                placeholder="Modelo da CPU (ex: i5 12400F)" required />
             </div>
             <div>
-              <input v-model="form.memoryFreq" type="text" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Freq. Memória (ex: 3200MHz)" required />
+              <input v-model="form.memoryFreq" type="text"
+                class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary"
+                placeholder="Freq. Memória (ex: 3200MHz)" required />
             </div>
             <div class="grid grid-cols-2 gap-3">
-              <input v-model="form.single" type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Single" />
-              <input v-model="form.multi" type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Multi" />
+              <input v-model="form.single" type="number"
+                class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary"
+                placeholder="Score Single" />
+              <input v-model="form.multi" type="number"
+                class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary"
+                placeholder="Score Multi" />
             </div>
 
             <div class="space-y-2">
               <label class="text-xs font-medium text-muted-foreground">Print do Resultado (Opcional)</label>
-              <input 
-                ref="fileInput"
-                type="file" 
-                @change="handleFileChange"
-                accept="image/*"
-                class="w-full text-xs text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" 
-              />
+              <input ref="fileInput" type="file" @change="handleFileChange" accept="image/*"
+                class="w-full text-xs text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
             </div>
 
             <div class="pt-2">
-              <button 
-                v-if="isAuthenticated"
-                type="submit" 
-                :disabled="isSubmitting"
-                class="w-full py-2 bg-foreground text-background rounded-md text-xs font-bold hover:opacity-90 transition-opacity shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button v-if="isAuthenticated" type="submit" :disabled="isSubmitting"
+                class="w-full py-2 bg-foreground text-background rounded-md text-xs font-bold hover:opacity-90 transition-opacity shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                 {{ isSubmitting ? 'Enviando...' : 'Enviar Resultado' }}
               </button>
-              <button 
-                v-else
-                type="button"
-                @click="router.push('/login?redirect=/ranking-cpu')"
-                class="w-full py-2 bg-primary text-primary-foreground rounded-md text-xs font-bold hover:opacity-90 transition-opacity shadow-lg"
-              >
+              <button v-else type="button" @click="router.push('/login?redirect=/ranking-cpu')"
+                class="w-full py-2 bg-primary text-primary-foreground rounded-md text-xs font-bold hover:opacity-90 transition-opacity shadow-lg">
                 Faça Login para Enviar
               </button>
             </div>
@@ -362,7 +374,7 @@ const fetchCpus = async () => {
   try {
     const q = query(collection(db, 'cpu_ranking'), orderBy('multi', 'desc'))
     const snapshot = await getDocs(q)
-    
+
     if (snapshot.empty) {
       // Se vazio, usa dados iniciais (e opcionalmente salva no banco)
       // Para produção, idealmente isso seria feito via admin ou script separado
@@ -394,12 +406,12 @@ const seedDatabase = async () => {
 
 const filteredCpus = computed(() => {
   let cpus = [...cpuData.value]
-  
+
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     cpus = cpus.filter(cpu => cpu.name.toLowerCase().includes(query))
   }
-  
+
   return cpus.sort((a, b) => b[sortKey.value] - a[sortKey.value])
 })
 
@@ -420,7 +432,7 @@ const sortBy = (key) => {
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
-  
+
   if (file) {
     // 1. Validar Tipo de Arquivo
     if (!file.type.startsWith('image/')) {
@@ -452,7 +464,7 @@ const submitResult = async () => {
   isSubmitting.value = true
   try {
     let imageUrl = ''
-    
+
     // Upload Image if exists
     if (form.value.image) {
       const fileName = `cpu-submissions/${Date.now()}_${form.value.image.name}`
@@ -475,7 +487,7 @@ const submitResult = async () => {
     })
 
     alert('Obrigado! Seu resultado foi enviado para análise e aparecerá no ranking após aprovação.')
-    
+
     // Reset form
     form.value = {
       model: '',

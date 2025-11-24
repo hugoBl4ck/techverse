@@ -33,7 +33,7 @@ const optimizationSections = [
 </script>
 
 <template>
-  <div class="fixed left-0 top-0 h-full w-80 bg-background border-r border-border/40 shadow-xl overflow-y-auto z-30">
+  <div class="hidden lg:block fixed left-0 top-0 h-full w-80 bg-background border-r border-border/40 shadow-xl overflow-y-auto z-30">
     <!-- Sidebar Header -->
     <div class="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/40 p-4">
       <div class="flex items-center gap-3">
