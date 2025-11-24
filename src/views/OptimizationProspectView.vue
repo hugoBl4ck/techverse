@@ -5,19 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { useRouter } from "vue-router"
-import TechVerseLogoSvg from "@/components/TechVerseLogoSvg.vue"
-import { auth, db, storage } from '@/firebase/config.js'
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
-import { toast } from 'vue-sonner'
-import OptimizationSidebar from '@/components/OptimizationSidebar.vue'
-import { useOptimizationStore } from '@/stores/optimizationStore'
-
-// Import HWiNFO images
-import hwinfoStart from '@/assets/images/hwinfo-tela-inicial.png'
-import hwinfoCpu from '@/assets/images/hwinfo-cpu-frequencia.png'
-import hwinfoResizeBar from '@/assets/images/hwinfo-resize-bar.png'
 import hwinfoMemoryXmp from '@/assets/images/hwinfo-memoria-xmp.png'
 
 // Gallery videos
