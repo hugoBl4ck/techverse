@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,7 @@ import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } f
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { toast } from 'vue-sonner'
 import OptimizationSidebar from '@/components/OptimizationSidebar.vue'
+import { useOptimizationStore } from '@/stores/optimizationStore'
 
 // Import HWiNFO images
 import hwinfoStart from '@/assets/images/hwinfo-tela-inicial.png'
@@ -52,6 +53,7 @@ const onVideoPause = (index) => {
 }
 
 const router = useRouter()
+const optimizationStore = useOptimizationStore()
 
 // Form data
 const form = ref({
@@ -64,6 +66,23 @@ const form = ref({
 
 const isRegistering = ref(false)
 const isLoading = ref(false)
+
+onMounted(() => {
+  const { formData, pendingUploads: pending } = optimizationStore.restoreState()
+  if (formData.name || formData.email) {
+    form.value = { ...form.value, ...formData }
+    if (formData.message) form.value.message = formData.message
+  }
+  
+  if (pending && pending.length > 0) {
+    toast.info(`Você tem ${pending.length} arquivo(s) pronto(s) para envio. Selecione-os novamente para confirmar.`)
+  }
+})
+
+const handleLoginRedirect = () => {
+  optimizationStore.saveState(form.value)
+  router.push({ path: '/login', query: { redirect: '/otimizacao' } })
+}
 
 // Registration functions
 const registerWithEmail = async () => {
@@ -110,7 +129,7 @@ const registerWithEmail = async () => {
 
     // Redirect to dashboard after short delay
     setTimeout(() => {
-      router.push('/dashboard')
+      window.location.reload()
     }, 2000)
 
   } catch (error) {
@@ -170,7 +189,7 @@ const registerWithGoogle = async () => {
 
     // Redirect to dashboard after short delay
     setTimeout(() => {
-      router.push('/dashboard')
+      window.location.reload()
     }, 2000)
 
   } catch (error) {
@@ -209,6 +228,14 @@ const uploadingFiles = ref([])
 const handleOptimizationUpload = async (event) => {
   const files = Array.from(event.target.files)
   if (!files.length) return
+
+  if (!currentUser.value) {
+    toast.info('Faça login para enviar seus arquivos. Seus dados serão salvos.')
+    optimizationStore.saveState(form.value)
+    optimizationStore.setPendingUploads(files)
+    router.push({ path: '/login', query: { redirect: '/otimizacao' } })
+    return
+  }
 
   for (const file of files) {
     // Validate
@@ -258,7 +285,7 @@ const handleOptimizationUpload = async (event) => {
           <TechVerseLogoSvg />
         </div>
         <div class="flex items-center gap-3">
-          <Button @click="router.push('/login')" variant="outline"
+          <Button @click="handleLoginRedirect" variant="outline"
             class="font-body border border-primary/30 text-primary hover:bg-primary/5">
             Login
           </Button>
@@ -487,6 +514,12 @@ const handleOptimizationUpload = async (event) => {
                   <Label for="message">Mensagem (Opcional)</Label>
                   <Textarea id="message" v-model="form.message" placeholder="Dúvidas específicas..."
                     class="bg-background/50 min-h-[80px]" />
+                </div>
+
+                <div class="space-y-2">
+                  <Label for="upload">Imagens HWiNFO (Opcional)</Label>
+                  <Input id="upload" type="file" multiple accept="image/*" @change="handleOptimizationUpload" class="bg-background/50" />
+                  <p class="text-xs text-muted-foreground">Envie prints das telas do HWiNFO para análise.</p>
                 </div>
 
                 <Button type="submit" :disabled="isLoading"
