@@ -1,13 +1,38 @@
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="flex flex-col gap-2 mb-8">
-      <h1 class="text-4xl font-display font-bold tracking-tight text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent w-fit">
-        Ranking de Processadores
-      </h1>
-      <p class="text-muted-foreground text-lg max-w-2xl">
-        Compare o desempenho das CPUs mais populares do mercado. Dados baseados no benchmark CPU-Z.
-      </p>
+    <div class="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-8">
+      <div class="flex flex-col gap-2">
+        <h1 class="text-4xl font-display font-bold tracking-tight text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent w-fit">
+          Ranking de Processadores
+        </h1>
+        <p class="text-muted-foreground text-lg max-w-2xl">
+          Compare o desempenho das CPUs mais populares do mercado. Dados baseados no benchmark CPU-Z.
+        </p>
+      </div>
+
+      <!-- Login/Avatar Section -->
+      <div class="flex items-center gap-4">
+        <div v-if="isAuthenticated" class="flex items-center gap-3 bg-card/50 backdrop-blur-sm border border-border/50 rounded-full pl-1 pr-4 py-1 shadow-sm">
+          <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden">
+            <img v-if="currentUser?.photoURL" :src="currentUser.photoURL" alt="Avatar" class="w-full h-full object-cover" />
+            <span v-else>{{ currentUser?.displayName?.charAt(0).toUpperCase() || currentUser?.email?.charAt(0).toUpperCase() }}</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-foreground leading-none">{{ currentUser?.displayName || 'Usuário' }}</span>
+            <button @click="handleLogout" class="text-[10px] text-muted-foreground hover:text-destructive text-left transition-colors">
+              Sair
+            </button>
+          </div>
+        </div>
+        <button 
+          v-else
+          @click="router.push('/login?redirect=/ranking-cpu')"
+          class="px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
+        >
+          Fazer Login
+        </button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -135,7 +160,8 @@
       <div class="lg:col-span-4 space-y-6">
         
         <!-- Info Card -->
-        <div class="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 shadow-lg sticky top-24">
+        <!-- Info Card -->
+        <div class="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 shadow-lg">
           <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-foreground">
             <div class="p-2 rounded-lg bg-primary/10 text-primary">
               <i class="fa-solid fa-circle-info"></i>
@@ -175,16 +201,25 @@
         </div>
 
         <!-- Submission Card -->
-        <div class="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 shadow-lg">
+        <div class="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 shadow-lg sticky top-24">
           <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-foreground">
             <div class="p-2 rounded-lg bg-accent/10 text-accent">
               <i class="fa-solid fa-upload"></i>
             </div>
-            Contribua
+            Envie seus resultados
           </h3>
-          <p class="text-xs text-muted-foreground mb-4">
-            Ajude a comunidade enviando seus resultados do CPU-Z.
-          </p>
+          <div class="mb-4 space-y-3">
+            <p class="text-xs text-muted-foreground">
+              Ajude a comunidade enviando seus resultados do CPU-Z.
+            </p>
+            <a 
+              href="https://www.cpuid.com/softwares/cpu-z.html" 
+              target="_blank" 
+              class="flex items-center justify-center gap-2 w-full py-2 bg-muted/50 hover:bg-muted text-foreground rounded-md text-xs font-medium transition-colors border border-border/50"
+            >
+              <i class="fa-solid fa-download"></i> Baixar CPU-Z
+            </a>
+          </div>
           
           <form @submit.prevent="submitResult" class="space-y-3">
             <div>
@@ -194,8 +229,8 @@
               <input v-model="form.memoryFreq" type="text" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Freq. Memória (ex: 3200MHz)" required />
             </div>
             <div class="grid grid-cols-2 gap-3">
-              <input v-model="form.single" type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Single" required />
-              <input v-model="form.multi" type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Multi" required />
+              <input v-model="form.single" type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Single" />
+              <input v-model="form.multi" type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Multi" />
             </div>
 
             <div class="space-y-2">
@@ -243,9 +278,20 @@ import { collection, getDocs, addDoc, query, orderBy, serverTimestamp, writeBatc
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { toast } from 'vue-sonner'
 import { useCurrentStore } from '@/composables/useCurrentStore'
+import { signOut } from 'firebase/auth'
+import { auth } from '@/firebase/config'
 
-const { isAuthenticated } = useCurrentStore()
+const { isAuthenticated, currentUser } = useCurrentStore()
 const router = useRouter()
+
+const handleLogout = async () => {
+  try {
+    await signOut(auth)
+    toast.success('Logout realizado com sucesso')
+  } catch (error) {
+    console.error('Logout error:', error)
+  }
+}
 
 const searchQuery = ref('')
 const sortKey = ref('multi') // 'single' or 'multi'
@@ -385,8 +431,8 @@ const handleFileChange = (event) => {
 }
 
 const submitResult = async () => {
-  if (!form.value.model || !form.value.single || !form.value.multi) {
-    alert('Por favor, preencha todos os campos obrigatórios.')
+  if (!form.value.model || (!form.value.single && !form.value.multi)) {
+    alert('Por favor, preencha o modelo e pelo menos um dos scores (Single ou Multi).')
     return
   }
 
@@ -406,8 +452,8 @@ const submitResult = async () => {
     await addDoc(collection(db, 'cpu_submissions'), {
       model: form.value.model,
       memoryFreq: form.value.memoryFreq,
-      single: Number(form.value.single),
-      multi: Number(form.value.multi),
+      single: Number(form.value.single) || 0,
+      multi: Number(form.value.multi) || 0,
       imageUrl: imageUrl,
       status: 'pending',
       createdAt: serverTimestamp()
