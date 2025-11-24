@@ -218,9 +218,9 @@ const contactSpecialist = () => {
     <!-- Hero Section -->
     <section class="relative border-b border-border/40 shadow-sm pt-32 pb-20 overflow-hidden">
       <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('/bgwallpaperhero.png');"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-background"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-white/60 via-white/20 to-transparent backdrop-blur-[0.5px]"></div>
+        <div class="absolute inset-0 bg-cover bg-center opacity-80" style="background-image: url('/bgwhitewallpaperhero.png');"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/0 to-background"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-white/40 via-white/10 to-transparent backdrop-blur-[0.5px]"></div>
       </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
