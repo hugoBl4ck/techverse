@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "vue-router"
 import TechVerseLogoSvg from "@/components/TechVerseLogoSvg.vue"
-import { auth, db } from '@/firebase/config.js'
+import { auth, db, storage } from '@/firebase/config.js'
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { toast } from 'vue-sonner'
@@ -177,32 +177,6 @@ const registerWithGoogle = async () => {
   } catch (error) {
     console.error('Erro no registro com Google:', error)
     toast.error('Erro ao criar conta com Google. Tente novamente.')
-  } finally {
-    isLoading.value = false
-  }
-}
-
-// WhatsApp submission (fallback)
-const submitToWhatsApp = () => {
-  const whatsappNumber = '+5577998267548'
-  const message = `Olá! Gostaria de solicitar uma análise de otimização do meu PC.
-
-Nome: ${form.value.name}
-Email: ${form.value.email}
-Telefone: ${form.value.phone}
-Mensagem: ${form.value.message}
-
-Anexei os prints do HWiNFO64 conforme o tutorial.`
-
-  const encodedMessage = encodeURIComponent(message)
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
-  window.open(whatsappUrl, '_blank')
-}
-</script>
-
-<template>
-  <div class="min-h-screen bg-background">
-    <!-- Header -->
     <header class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div class="flex items-center cursor-pointer" @click="router.push('/landing')">
@@ -420,19 +394,6 @@ Anexei os prints do HWiNFO64 conforme o tutorial.`
                   </p>
                 </div>
               </details>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      <!-- Registration Form -->
-      <section>
-        <Card>
-          <CardHeader>
-            <CardTitle class="text-2xl">Cadastro para Análise de Otimização</CardTitle>
-            <p class="text-muted-foreground">Crie sua conta para acessar o painel e acompanhar sua análise</p>
-          </CardHeader>
-          <CardContent>
             <!-- Registration Method Toggle -->
             <div class="flex gap-2 mb-6">
               <Button

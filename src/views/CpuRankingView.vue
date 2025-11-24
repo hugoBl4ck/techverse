@@ -211,11 +211,20 @@
 
             <div class="pt-2">
               <button 
+                v-if="isAuthenticated"
                 type="submit" 
                 :disabled="isSubmitting"
                 class="w-full py-2 bg-foreground text-background rounded-md text-xs font-bold hover:opacity-90 transition-opacity shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {{ isSubmitting ? 'Enviando...' : 'Enviar Resultado' }}
+              </button>
+              <button 
+                v-else
+                type="button"
+                @click="router.push('/login?redirect=/ranking-cpu')"
+                class="w-full py-2 bg-primary text-primary-foreground rounded-md text-xs font-bold hover:opacity-90 transition-opacity shadow-lg"
+              >
+                Faça Login para Enviar
               </button>
             </div>
           </form>
@@ -228,10 +237,15 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { db, storage } from '@/firebase/config'
 import { collection, getDocs, addDoc, query, orderBy, serverTimestamp, writeBatch, doc } from 'firebase/firestore'
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { toast } from 'vue-sonner' // Assuming vue-sonner is used, or use alert/custom toast
+import { toast } from 'vue-sonner'
+import { useCurrentStore } from '@/composables/useCurrentStore'
+
+const { isAuthenticated } = useCurrentStore()
+const router = useRouter()
 
 const searchQuery = ref('')
 const sortKey = ref('multi') // 'single' or 'multi'
@@ -347,7 +361,25 @@ const sortBy = (key) => {
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
+  
   if (file) {
+    // 1. Validar Tipo de Arquivo
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione apenas arquivos de imagem (JPG, PNG, WebP).')
+      event.target.value = '' // Limpa o input
+      form.value.image = null
+      return
+    }
+
+    // 2. Validar Tamanho (Max 5MB)
+    const maxSizeInBytes = 5 * 1024 * 1024 // 5MB
+    if (file.size > maxSizeInBytes) {
+      alert('A imagem é muito grande! O tamanho máximo permitido é 5MB.')
+      event.target.value = '' // Limpa o input
+      form.value.image = null
+      return
+    }
+
     form.value.image = file
   }
 }

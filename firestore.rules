@@ -57,6 +57,24 @@ service cloud.firestore {
       allow read, write: if isSuperAdmin();
     }
 
+    // --- CPU RANKING RULES ---
+    
+    // Ranking Ativo: Público lê, apenas Admin escreve
+    match /cpu_ranking/{document=**} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Submissões: Público cria (com validação básica), apenas Admin lê/edita
+    match /cpu_submissions/{document=**} {
+      // Qualquer um pode criar (enviar resultado)
+      allow create: if true; 
+      // Apenas admin pode ver a lista de pendentes e editar/deletar
+      allow read, update, delete: if isSuperAdmin();
+    }
+
+    // -------------------------
+
     // Fórum - público pode ler, usuários autenticados podem escrever com validação
     match /forum_topics/{topicId} {
       allow read: if true;
