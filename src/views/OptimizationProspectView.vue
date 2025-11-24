@@ -243,7 +243,7 @@ const handleOptimizationUpload = async (event) => {
       toast.error(`Erro ao enviar: ${file.name}`)
     }
   }
-  
+
   // Clear input
   event.target.value = ''
 }
@@ -258,10 +258,12 @@ const handleOptimizationUpload = async (event) => {
           <TechVerseLogoSvg />
         </div>
         <div class="flex items-center gap-3">
-          <Button @click="router.push('/login')" variant="outline" class="font-body border border-primary/30 text-primary hover:bg-primary/5">
+          <Button @click="router.push('/login')" variant="outline"
+            class="font-body border border-primary/30 text-primary hover:bg-primary/5">
             Login
           </Button>
-          <Button @click="router.push('/app/clientes')" class="font-body bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/50 text-white border-0">
+          <Button @click="router.push('/app/clientes')"
+            class="font-body bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/50 text-white border-0">
             Acessar App
           </Button>
         </div>
@@ -276,7 +278,8 @@ const handleOptimizationUpload = async (event) => {
           <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Otimização</span>
         </h1>
         <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Descubra como otimizar seu PC para o máximo desempenho. Envie seus dados via HWiNFO64 e receba uma análise personalizada.
+          Descubra como otimizar seu PC para o máximo desempenho. Envie seus dados via HWiNFO64 e receba uma análise
+          personalizada.
         </p>
       </section>
 
@@ -291,7 +294,8 @@ const handleOptimizationUpload = async (event) => {
               <div>
                 <h3 class="text-lg font-semibold mb-2">1. Baixe o HWiNFO64</h3>
                 <p class="text-muted-foreground mb-2">
-                  Acesse o site oficial <a href="https://www.hwinfo.com/download/" target="_blank" class="text-primary hover:underline">hwinfo.com/download</a> e baixe a versão gratuita.
+                  Acesse o site oficial <a href="https://www.hwinfo.com/download/" target="_blank"
+                    class="text-primary hover:underline">hwinfo.com/download</a> e baixe a versão gratuita.
                 </p>
               </div>
 
@@ -306,17 +310,21 @@ const handleOptimizationUpload = async (event) => {
               <div>
                 <h3 class="text-lg font-semibold mb-2">3. Verifique a Frequência do Processador</h3>
                 <p class="text-muted-foreground mb-2">
-                  Na seção "CPU" ou "Processor", localize "Core Clock" ou "CPU Clock". Tire print desta área mostrando a frequência atual.
+                  Na seção "CPU" ou "Processor", localize "Core Clock" ou "CPU Clock". Tire print desta área mostrando a
+                  frequência atual.
                 </p>
-                <img :src="hwinfoCpu" alt="Frequência do processador no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img :src="hwinfoCpu" alt="Frequência do processador no HWiNFO64"
+                  class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
                 <h3 class="text-lg font-semibold mb-2">4. Verifique se o Resize BAR está Ativo</h3>
                 <p class="text-muted-foreground mb-2">
-                  Procure por "Resizable BAR" ou "ReBAR" na seção de GPU/Placa de Vídeo. Deve mostrar "Enabled" ou "Supported".
+                  Procure por "Resizable BAR" ou "ReBAR" na seção de GPU/Placa de Vídeo. Deve mostrar "Enabled" ou
+                  "Supported".
                 </p>
-                <img :src="hwinfoResizeBar" alt="Status do Resize BAR no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img :src="hwinfoResizeBar" alt="Status do Resize BAR no HWiNFO64"
+                  class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
@@ -324,13 +332,15 @@ const handleOptimizationUpload = async (event) => {
                 <p class="text-muted-foreground mb-2">
                   Na seção "Memory" ou "RAM", veja "DRAM Frequency" e se o XMP está ativo (XMP Profile).
                 </p>
-                <img :src="hwinfoMemoryXmp" alt="Frequência da memória e XMP no HWiNFO64" class="max-w-full h-auto rounded-lg shadow-lg" />
+                <img :src="hwinfoMemoryXmp" alt="Frequência da memória e XMP no HWiNFO64"
+                  class="max-w-full h-auto rounded-lg shadow-lg" />
               </div>
 
               <div>
                 <h3 class="text-lg font-semibold mb-2">6. Tire os Prints e Envie</h3>
                 <p class="text-muted-foreground">
-                  Tire prints das áreas mencionadas e preencha o formulário abaixo. Os prints serão enviados diretamente para meu WhatsApp junto com seus dados.
+                  Tire prints das áreas mencionadas e preencha o formulário abaixo. Os prints serão enviados diretamente
+                  para meu WhatsApp junto com seus dados.
                 </p>
               </div>
             </div>
@@ -346,49 +356,64 @@ const handleOptimizationUpload = async (event) => {
           <CardContent>
             <div class="space-y-6">
               <details class="group">
-                <summary class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
+                <summary
+                  class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
                   <h3 class="text-lg font-semibold text-foreground">O que é XMP (Extreme Memory Profile)?</h3>
                   <span class="text-primary group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <div class="pt-4 pb-6 text-muted-foreground">
                   <p class="mb-3">
-                    XMP é um perfil de overclocking criado pela Intel que permite que memórias RAM funcionem em suas frequências nominais de fábrica. Sem o XMP ativado, as memórias rodam em velocidades padrão mais baixas (geralmente 2133MHz ou 2400MHz), desperdiçando o potencial pago.
+                    XMP é um perfil de overclocking criado pela Intel que permite que memórias RAM funcionem em suas
+                    frequências nominais de fábrica. Sem o XMP ativado, as memórias rodam em velocidades padrão mais
+                    baixas (geralmente 2133MHz ou 2400MHz), desperdiçando o potencial pago.
                   </p>
                   <p class="mb-3">
-                    <strong>Por que é importante?</strong> Memórias que custam R$ 800 podem estar rodando a apenas 2400MHz em vez dos 3600MHz ou 4000MHz que você pagou. Isso afeta diretamente o desempenho em jogos, edição de vídeo e aplicações pesadas.
+                    <strong>Por que é importante?</strong> Memórias que custam R$ 800 podem estar rodando a apenas
+                    2400MHz em vez dos 3600MHz ou 4000MHz que você pagou. Isso afeta diretamente o desempenho em jogos,
+                    edição de vídeo e aplicações pesadas.
                   </p>
                   <p>
-                    <strong>Riscos:</strong> Mínimos quando usado com memórias compatíveis. Sempre verifique a compatibilidade com sua placa-mãe antes de ativar.
+                    <strong>Riscos:</strong> Mínimos quando usado com memórias compatíveis. Sempre verifique a
+                    compatibilidade com sua placa-mãe antes de ativar.
                   </p>
                 </div>
               </details>
 
               <details class="group">
-                <summary class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
+                <summary
+                  class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
                   <h3 class="text-lg font-semibold text-foreground">O que é Resize BAR (ReBAR)?</h3>
                   <span class="text-primary group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <div class="pt-4 pb-6 text-muted-foreground">
                   <p class="mb-3">
-                    Resize BAR (Resizable BAR) é uma tecnologia que permite acesso direto à memória de vídeo completa da GPU, eliminando a limitação de 256MB que existia anteriormente. Com ReBAR ativo, jogos e aplicações podem acessar toda a VRAM disponível (4GB, 8GB, 12GB, etc.).
+                    Resize BAR (Resizable BAR) é uma tecnologia que permite acesso direto à memória de vídeo completa da
+                    GPU, eliminando a limitação de 256MB que existia anteriormente. Com ReBAR ativo, jogos e aplicações
+                    podem acessar toda a VRAM disponível (4GB, 8GB, 12GB, etc.).
                   </p>
                   <p class="mb-3">
-                    <strong>Por que é importante?</strong> GPUs modernas têm enormes quantidades de memória dedicada. Sem ReBAR, mesmo uma RTX 3080 com 10GB de VRAM fica limitada a usar apenas 256MB por vez, causando engasgos e quedas de FPS em jogos modernos.
+                    <strong>Por que é importante?</strong> GPUs modernas têm enormes quantidades de memória dedicada.
+                    Sem ReBAR, mesmo uma RTX 3080 com 10GB de VRAM fica limitada a usar apenas 256MB por vez, causando
+                    engasgos e quedas de FPS em jogos modernos.
                   </p>
                   <p>
-                    <strong>Compatibilidade:</strong> Requer placa-mãe com chipset AMD B550/X570 ou Intel Z590/Z690+ com BIOS atualizada, e GPU AMD Radeon RX 6000+ ou NVIDIA RTX 30+.
+                    <strong>Compatibilidade:</strong> Requer placa-mãe com chipset AMD B550/X570 ou Intel Z590/Z690+ com
+                    BIOS atualizada, e GPU AMD Radeon RX 6000+ ou NVIDIA RTX 30+.
                   </p>
                 </div>
               </details>
 
               <details class="group">
-                <summary class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
+                <summary
+                  class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
                   <h3 class="text-lg font-semibold text-foreground">Por que verificar a temperatura é crucial?</h3>
                   <span class="text-primary group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <div class="pt-4 pb-6 text-muted-foreground">
                   <p class="mb-3">
-                    A temperatura afeta diretamente a performance, estabilidade e vida útil dos componentes. Processadores e GPUs reduzem automaticamente sua frequência quando aquecem demais (thermal throttling), causando quedas de performance inexplicáveis.
+                    A temperatura afeta diretamente a performance, estabilidade e vida útil dos componentes.
+                    Processadores e GPUs reduzem automaticamente sua frequência quando aquecem demais (thermal
+                    throttling), causando quedas de performance inexplicáveis.
                   </p>
                   <p class="mb-3">
                     <strong>Temperaturas ideais:</strong>
@@ -399,90 +424,104 @@ const handleOptimizationUpload = async (event) => {
                     <li><strong>SSD:</strong> Até 70°C (podem throttling acima disso)</li>
                   </ul>
                   <p class="mb-3">
-                    <strong>Sintomas de superaquecimento:</strong> Travamentos, reinicializações, performance instável, ventoinhas em velocidade máxima constante.
+                    <strong>Sintomas de superaquecimento:</strong> Travamentos, reinicializações, performance instável,
+                    ventoinhas em velocidade máxima constante.
                   </p>
                   <p>
-                    <strong>Soluções comuns:</strong> Limpeza de poeira, pasta térmica nova, melhor fluxo de ar no gabinete, ajustes de curva de ventoinhas na BIOS.
+                    <strong>Soluções comuns:</strong> Limpeza de poeira, pasta térmica nova, melhor fluxo de ar no
+                    gabinete, ajustes de curva de ventoinhas na BIOS.
                   </p>
                 </div>
               </details>
 
               <details class="group">
-                <summary class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
+                <summary
+                  class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
                   <h3 class="text-lg font-semibold text-foreground">O que é Precision Boost Overdrive (PBO)?</h3>
                   <span class="text-primary group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <div class="pt-4 pb-6 text-muted-foreground">
                   <p class="mb-3">
-                    PBO é uma tecnologia da AMD que permite overclock automático inteligente do processador Ryzen. O processador aumenta dinamicamente sua frequência e tensão baseado na carga de trabalho, temperatura e consumo de energia disponível.
+                    PBO é uma tecnologia da AMD que permite overclock automático inteligente do processador Ryzen. O
+                    processador aumenta dinamicamente sua frequência e tensão baseado na carga de trabalho, temperatura
+                    e consumo de energia disponível.
                   </p>
                   <p class="mb-3">
-                    <strong>Por que é importante?</strong> Processadores Ryzen modernos (3000/5000 series) podem ganhar 10-25% de performance em aplicações single-threaded e até 15% em jogos quando configurados corretamente.
+                    <strong>Por que é importante?</strong> Processadores Ryzen modernos (3000/5000 series) podem ganhar
+                    10-25% de performance em aplicações single-threaded e até 15% em jogos quando configurados
+                    corretamente.
                   </p>
                   <p class="mb-3">
-                    <strong>Configuração:</strong> Requer ajustes cuidadosos na BIOS. Níveis muito agressivos podem causar instabilidade ou superaquecimento.
+                    <strong>Configuração:</strong> Requer ajustes cuidadosos na BIOS. Níveis muito agressivos podem
+                    causar instabilidade ou superaquecimento.
                   </p>
                   <p>
-                    <strong>Compatibilidade:</strong> Apenas processadores AMD Ryzen 3000 series ou superiores com placa-mãe compatível (B450/B550/X570 com BIOS atualizada).
+                    <strong>Compatibilidade:</strong> Apenas processadores AMD Ryzen 3000 series ou superiores com
+                    placa-mãe compatível (B450/B550/X570 com BIOS atualizada).
                   </p>
                 </div>
               </details>
 
               <details class="group">
-                <summary class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
+                <summary
+                  class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
                   <h3 class="text-lg font-semibold text-foreground">Secure Boot e jogos modernos</h3>
                   <span class="text-primary group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <div class="pt-4 pb-6 text-muted-foreground">
                   <p class="mb-3">
-                    Secure Boot é uma feature de segurança que verifica a integridade do sistema operacional durante o boot. Muitos jogos modernos (especialmente da Microsoft Store e alguns títulos AAA) exigem Secure Boot ativado para funcionar.
+                    Secure Boot é uma feature de segurança que verifica a integridade do sistema operacional durante o
+                    boot. Muitos jogos modernos (especialmente da Microsoft Store e alguns títulos AAA) exigem Secure
+                    Boot ativado para funcionar.
                   </p>
                   <p class="mb-3">
-                    <strong>Por que é importante?</strong> Jogos como Forza Horizon, Gears 5, e títulos recentes podem simplesmente não iniciar sem Secure Boot. É especialmente comum em PCs que foram migrados de Windows antigo ou Linux.
+                    <strong>Por que é importante?</strong> Jogos como Forza Horizon, Gears 5, e títulos recentes podem
+                    simplesmente não iniciar sem Secure Boot. É especialmente comum em PCs que foram migrados de Windows
+                    antigo ou Linux.
                   </p>
                   <p class="mb-3">
-                    <strong>Como ativar:</strong> Entre na BIOS (DEL/F2/F10), procure por "Secure Boot" na seção de segurança e ative. Pode ser necessário limpar chaves antigas primeiro.
+                    <strong>Como ativar:</strong> Entre na BIOS (DEL/F2/F10), procure por "Secure Boot" na seção de
+                    segurança e ative. Pode ser necessário limpar chaves antigas primeiro.
                   </p>
                   <p>
-                    <strong>Nota:</strong> Secure Boot é diferente de TPM. Ambos podem ser necessários para jogos modernos, mas são features separadas.
+                    <strong>Nota:</strong> Secure Boot é diferente de TPM. Ambos podem ser necessários para jogos
+                    modernos, mas são features separadas.
                   </p>
                 </div>
               </details>
 
               <details class="group">
-                <summary class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
+                <summary
+                  class="flex justify-between items-center cursor-pointer py-4 border-b border-border/50 group-open:border-primary/50 transition-colors">
                   <h3 class="text-lg font-semibold text-foreground">Diferença entre overclock e otimização</h3>
                   <span class="text-primary group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <div class="pt-4 pb-6 text-muted-foreground">
                   <p class="mb-3">
-                    <strong>Overclock:</strong> Forçar componentes além das especificações de fábrica (ex: CPU de 3.8GHz para 4.5GHz). Pode causar instabilidade, superaquecimento e void de garantia.
+                    <strong>Overclock:</strong> Forçar componentes além das especificações de fábrica (ex: CPU de 3.8GHz
+                    para 4.5GHz). Pode causar instabilidade, superaquecimento e void de garantia.
                   </p>
                   <p class="mb-3">
-                    <strong>Otimização:</strong> Configurar componentes para funcionarem em suas especificações nominais de fábrica (ex: RAM em 3600MHz com XMP, PBO ativo). Geralmente seguro e recomendado.
+                    <strong>Otimização:</strong> Configurar componentes para funcionarem em suas especificações nominais
+                    de fábrica (ex: RAM em 3600MHz com XMP, PBO ativo). Geralmente seguro e recomendado.
                   </p>
                   <p class="mb-3">
-                    <strong>Minha abordagem:</strong> Priorizo sempre otimização segura antes de qualquer overclock. Overclock só é recomendado para usuários experientes com resfriamento adequado.
+                    <strong>Minha abordagem:</strong> Priorizo sempre otimização segura antes de qualquer overclock.
+                    Overclock só é recomendado para usuários experientes com resfriamento adequado.
                   </p>
                   <p>
-                    <strong>Garantia:</strong> Otimizações geralmente não voidam garantia. Overclock sempre voida, mesmo que seja "leve".
+                    <strong>Garantia:</strong> Otimizações geralmente não voidam garantia. Overclock sempre voida, mesmo
+                    que seja "leve".
                   </p>
                 </div>
               </details>
+            </div>
             <!-- Registration Method Toggle -->
             <div class="flex gap-2 mb-6">
-              <Button
-                @click="isRegistering = true"
-                :variant="isRegistering ? 'default' : 'outline'"
-                class="flex-1"
-              >
+              <Button @click="isRegistering = true" :variant="isRegistering ? 'default' : 'outline'" class="flex-1">
                 Criar Conta
               </Button>
-              <Button
-                @click="isRegistering = false"
-                :variant="!isRegistering ? 'default' : 'outline'"
-                class="flex-1"
-              >
+              <Button @click="isRegistering = false" :variant="!isRegistering ? 'default' : 'outline'" class="flex-1">
                 Apenas WhatsApp
               </Button>
             </div>
@@ -510,11 +549,13 @@ const handleOptimizationUpload = async (event) => {
 
               <div>
                 <Label for="message">Mensagem Adicional (opcional)</Label>
-                <Textarea id="message" v-model="form.message" placeholder="Descreva qualquer problema específico ou expectativa..." />
+                <Textarea id="message" v-model="form.message"
+                  placeholder="Descreva qualquer problema específico ou expectativa..." />
               </div>
 
               <div class="space-y-3">
-                <Button type="submit" :disabled="isLoading" class="w-full bg-gradient-to-r from-primary to-accent hover:shadow-lg">
+                <Button type="submit" :disabled="isLoading"
+                  class="w-full bg-gradient-to-r from-primary to-accent hover:shadow-lg">
                   <span v-if="isLoading">Criando conta...</span>
                   <span v-else>Criar Conta e Continuar</span>
                 </Button>
@@ -530,24 +571,30 @@ const handleOptimizationUpload = async (event) => {
 
                 <Button @click="registerWithGoogle" :disabled="isLoading" variant="outline" class="w-full">
                   <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    <path fill="currentColor"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="currentColor"
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="currentColor"
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="currentColor"
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                   </svg>
                   Continuar com Google
                 </Button>
               </div>
 
               <div class="text-sm text-muted-foreground">
-                <p>Ao criar conta, você terá acesso ao painel TechVerse para acompanhar sua análise de otimização e outros serviços.</p>
+                <p>Ao criar conta, você terá acesso ao painel TechVerse para acompanhar sua análise de otimização e
+                  outros serviços.</p>
               </div>
             </form>
 
             <div v-else class="space-y-6">
               <div class="text-center text-muted-foreground">
                 <p class="mb-4">Se preferir não criar conta, podemos conversar diretamente pelo WhatsApp.</p>
-                <p class="text-sm">Preencha os dados abaixo e você será redirecionado para o WhatsApp com suas informações.</p>
+                <p class="text-sm">Preencha os dados abaixo e você será redirecionado para o WhatsApp com suas
+                  informações.</p>
               </div>
 
               <form @submit.prevent="submitToWhatsApp" class="space-y-6">
@@ -568,11 +615,13 @@ const handleOptimizationUpload = async (event) => {
 
                 <div>
                   <Label for="message">Mensagem Adicional (opcional)</Label>
-                  <Textarea id="message" v-model="form.message" placeholder="Descreva qualquer problema específico ou expectativa..." />
+                  <Textarea id="message" v-model="form.message"
+                    placeholder="Descreva qualquer problema específico ou expectativa..." />
                 </div>
 
                 <div class="text-sm text-muted-foreground">
-                  <p>Ao enviar, você será redirecionado para o WhatsApp com seus dados. Anexe os prints do HWiNFO64 na conversa.</p>
+                  <p>Ao enviar, você será redirecionado para o WhatsApp com seus dados. Anexe os prints do HWiNFO64 na
+                    conversa.</p>
                 </div>
 
                 <Button type="submit" class="w-full bg-gradient-to-r from-primary to-accent hover:shadow-lg">
@@ -593,22 +642,11 @@ const handleOptimizationUpload = async (event) => {
           </CardHeader>
           <CardContent>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div
-                v-for="(video, index) in galleryVideos"
-                :key="index"
-                class="aspect-video bg-muted rounded-lg overflow-hidden"
-              >
-                <video
-                  :ref="el => videoRefs[index] = el"
-                  :src="video.src"
-                  :title="video.title"
-                  class="w-full h-full object-cover rounded-lg"
-                  preload="metadata"
-                  controls
-                  playsinline
-                  @play="onVideoPlay(index)"
-                  @pause="onVideoPause(index)"
-                >
+              <div v-for="(video, index) in galleryVideos" :key="index"
+                class="aspect-video bg-muted rounded-lg overflow-hidden">
+                <video :ref="el => videoRefs[index] = el" :src="video.src" :title="video.title"
+                  class="w-full h-full object-cover rounded-lg" preload="metadata" controls playsinline
+                  @play="onVideoPlay(index)" @pause="onVideoPause(index)">
                   <p class="text-center text-muted-foreground p-4">
                     Vídeo não suportado pelo seu navegador
                   </p>
@@ -630,7 +668,8 @@ const handleOptimizationUpload = async (event) => {
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-border/30 bg-gradient-to-b from-background/50 to-background backdrop-blur-sm py-8 px-4 mt-12">
+    <footer
+      class="border-t border-border/30 bg-gradient-to-b from-background/50 to-background backdrop-blur-sm py-8 px-4 mt-12">
       <div class="max-w-7xl mx-auto text-center">
         <p class="text-sm text-muted-foreground">
           © {{ new Date().getFullYear() }} TechVerse. Desenvolvido com ❤️ por HugoBl4ck.
