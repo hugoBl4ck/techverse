@@ -176,6 +176,12 @@ const contactSpecialist = () => {
             Notícias
           </router-link>
           <router-link 
+            to="/ranking-cpu" 
+            class="px-4 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-full transition-all"
+          >
+            Ranking CPU
+          </router-link>
+          <router-link 
             to="/donate" 
             class="px-4 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-full transition-all flex items-center gap-2"
           >

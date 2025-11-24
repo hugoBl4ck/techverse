@@ -188,19 +188,34 @@
           
           <form @submit.prevent="submitResult" class="space-y-3">
             <div>
-              <input type="text" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Modelo da CPU (ex: i5 12400F)" required />
+              <input v-model="form.model" type="text" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Modelo da CPU (ex: i5 12400F)" required />
             </div>
             <div>
-              <input type="text" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Freq. Memória (ex: 3200MHz)" required />
+              <input v-model="form.memoryFreq" type="text" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Freq. Memória (ex: 3200MHz)" required />
             </div>
             <div class="grid grid-cols-2 gap-3">
-              <input type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Single" required />
-              <input type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Multi" required />
+              <input v-model="form.single" type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Single" required />
+              <input v-model="form.multi" type="number" class="w-full px-3 py-2 bg-background/50 border border-border/50 rounded-md text-xs focus:ring-1 focus:ring-primary" placeholder="Score Multi" required />
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-medium text-muted-foreground">Print do Resultado (Opcional)</label>
+              <input 
+                ref="fileInput"
+                type="file" 
+                @change="handleFileChange"
+                accept="image/*"
+                class="w-full text-xs text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" 
+              />
             </div>
 
             <div class="pt-2">
-              <button type="submit" class="w-full py-2 bg-foreground text-background rounded-md text-xs font-bold hover:opacity-90 transition-opacity shadow-lg">
-                Enviar Resultado
+              <button 
+                type="submit" 
+                :disabled="isSubmitting"
+                class="w-full py-2 bg-foreground text-background rounded-md text-xs font-bold hover:opacity-90 transition-opacity shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{ isSubmitting ? 'Enviando...' : 'Enviar Resultado' }}
               </button>
             </div>
           </form>
@@ -212,13 +227,30 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { db, storage } from '@/firebase/config'
+import { collection, getDocs, addDoc, query, orderBy, serverTimestamp, writeBatch, doc } from 'firebase/firestore'
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { toast } from 'vue-sonner' // Assuming vue-sonner is used, or use alert/custom toast
 
 const searchQuery = ref('')
 const sortKey = ref('multi') // 'single' or 'multi'
+const cpuData = ref([])
+const isLoading = ref(true)
 
-// Dados aproximados baseados em benchmarks públicos (CPU-Z)
-const cpuData = [
+// Form Data
+const form = ref({
+  model: '',
+  memoryFreq: '',
+  single: '',
+  multi: '',
+  image: null
+})
+const isSubmitting = ref(false)
+const fileInput = ref(null)
+
+// Dados iniciais para seed (caso o banco esteja vazio)
+const initialCpuData = [
   { name: 'Intel Core i9-14900K', single: 978, multi: 17100, category: 'Extremamente Forte', new: true },
   { name: 'AMD Ryzen 9 7950X', single: 790, multi: 15800, category: 'Extremamente Forte' },
   { name: 'Intel Core i9-13900K', single: 945, multi: 16800, category: 'Extremamente Forte' },
@@ -252,12 +284,43 @@ const cpuData = [
   { name: 'AMD Ryzen 5 1600', single: 380, multi: 2800, category: 'Entrada' },
 ]
 
-// Computed max values for progress bars
-const maxSingle = computed(() => Math.max(...cpuData.map(c => c.single)))
-const maxMulti = computed(() => Math.max(...cpuData.map(c => c.multi)))
+const fetchCpus = async () => {
+  isLoading.value = true
+  try {
+    const q = query(collection(db, 'cpu_ranking'), orderBy('multi', 'desc'))
+    const snapshot = await getDocs(q)
+    
+    if (snapshot.empty) {
+      // Se vazio, usa dados iniciais (e opcionalmente salva no banco)
+      // Para produção, idealmente isso seria feito via admin ou script separado
+      console.log('Banco vazio, usando dados locais')
+      cpuData.value = initialCpuData
+      // Uncomment to auto-seed on first load (use with caution)
+      // seedDatabase() 
+    } else {
+      cpuData.value = snapshot.docs.map(doc => doc.data())
+    }
+  } catch (error) {
+    console.error('Erro ao buscar CPUs:', error)
+    cpuData.value = initialCpuData // Fallback
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Função auxiliar para popular o banco (pode ser chamada via console ou botão oculto)
+const seedDatabase = async () => {
+  const batch = writeBatch(db)
+  initialCpuData.forEach(cpu => {
+    const docRef = doc(collection(db, 'cpu_ranking'))
+    batch.set(docRef, cpu)
+  })
+  await batch.commit()
+  console.log('Database seeded!')
+}
 
 const filteredCpus = computed(() => {
-  let cpus = [...cpuData]
+  let cpus = [...cpuData.value]
   
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
@@ -267,12 +330,78 @@ const filteredCpus = computed(() => {
   return cpus.sort((a, b) => b[sortKey.value] - a[sortKey.value])
 })
 
+// Computed max values for progress bars
+const maxSingle = computed(() => {
+  if (cpuData.value.length === 0) return 1000
+  return Math.max(...cpuData.value.map(c => c.single))
+})
+
+const maxMulti = computed(() => {
+  if (cpuData.value.length === 0) return 20000
+  return Math.max(...cpuData.value.map(c => c.multi))
+})
+
 const sortBy = (key) => {
   sortKey.value = key
 }
 
-const submitResult = () => {
-  alert('Obrigado! Seu resultado foi enviado para análise.')
-  // TODO: Implementar envio real para backend/firebase
+const handleFileChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    form.value.image = file
+  }
 }
+
+const submitResult = async () => {
+  if (!form.value.model || !form.value.single || !form.value.multi) {
+    alert('Por favor, preencha todos os campos obrigatórios.')
+    return
+  }
+
+  isSubmitting.value = true
+  try {
+    let imageUrl = ''
+    
+    // Upload Image if exists
+    if (form.value.image) {
+      const fileName = `cpu-submissions/${Date.now()}_${form.value.image.name}`
+      const fileRef = storageRef(storage, fileName)
+      const snapshot = await uploadBytes(fileRef, form.value.image)
+      imageUrl = await getDownloadURL(snapshot.ref)
+    }
+
+    // Save to Firestore
+    await addDoc(collection(db, 'cpu_submissions'), {
+      model: form.value.model,
+      memoryFreq: form.value.memoryFreq,
+      single: Number(form.value.single),
+      multi: Number(form.value.multi),
+      imageUrl: imageUrl,
+      status: 'pending',
+      createdAt: serverTimestamp()
+    })
+
+    alert('Obrigado! Seu resultado foi enviado para análise e aparecerá no ranking após aprovação.')
+    
+    // Reset form
+    form.value = {
+      model: '',
+      memoryFreq: '',
+      single: '',
+      multi: '',
+      image: null
+    }
+    if (fileInput.value) fileInput.value.value = ''
+
+  } catch (error) {
+    console.error('Erro ao enviar:', error)
+    alert('Erro ao enviar resultado. Tente novamente.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+onMounted(() => {
+  fetchCpus()
+})
 </script>

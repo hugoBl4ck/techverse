@@ -314,6 +314,138 @@
           </div>
         </CardContent>
       </Card>
+
+      <!-- Card de Ranking CPU -->
+      <Card>
+        <CardHeader>
+          <CardTitle class="flex justify-between items-center">
+            <span>Gerenciar Ranking CPU</span>
+            <Button size="sm" variant="outline" @click="seedCpuDatabase">
+              <Database class="w-4 h-4 mr-2" />
+              Seed Inicial
+            </Button>
+          </CardTitle>
+          <p class="text-sm text-muted-foreground">Aprove envios de usuários ou gerencie o ranking atual.</p>
+        </CardHeader>
+        <CardContent>
+          <Tabs default-value="pending" class="w-full">
+            <TabsList class="grid w-full grid-cols-2">
+              <TabsTrigger value="pending">Pendentes ({{ pendingSubmissions.length }})</TabsTrigger>
+              <TabsTrigger value="active">Ranking Ativo</TabsTrigger>
+            </TabsList>
+            
+            <!-- Pendentes -->
+            <TabsContent value="pending" class="space-y-4 pt-4">
+              <div v-if="pendingSubmissions.length === 0" class="text-center py-8 text-muted-foreground">
+                Nenhum envio pendente.
+              </div>
+              <div v-else class="grid gap-4">
+                <div v-for="sub in pendingSubmissions" :key="sub.id" class="border rounded-lg p-4 flex flex-col sm:flex-row gap-4 items-start">
+                  <div v-if="sub.imageUrl" class="w-full sm:w-32 h-32 bg-muted rounded-md overflow-hidden flex-shrink-0">
+                    <a :href="sub.imageUrl" target="_blank">
+                      <img :src="sub.imageUrl" class="w-full h-full object-cover hover:scale-110 transition-transform" />
+                    </a>
+                  </div>
+                  <div class="flex-1 space-y-1">
+                    <h4 class="font-bold text-lg">{{ sub.model }}</h4>
+                    <p class="text-sm text-muted-foreground">Memória: {{ sub.memoryFreq }}</p>
+                    <div class="flex gap-4 mt-2">
+                      <div class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">Single: {{ sub.single }}</div>
+                      <div class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-bold">Multi: {{ sub.multi }}</div>
+                    </div>
+                    <p class="text-xs text-muted-foreground mt-2">Enviado em: {{ sub.createdAt?.toDate().toLocaleString() }}</p>
+                  </div>
+                  <div class="flex flex-col gap-2 w-full sm:w-auto">
+                    <Button size="sm" @click="openEditModal(sub, true)">
+                      <CheckCircle2 class="w-4 h-4 mr-2" /> Aprovar/Editar
+                    </Button>
+                    <Button size="sm" variant="destructive" @click="rejectSubmission(sub.id)">
+                      <XCircle class="w-4 h-4 mr-2" /> Rejeitar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <!-- Ativos -->
+            <TabsContent value="active" class="space-y-4 pt-4">
+               <div class="flex justify-end mb-4">
+                 <Button size="sm" @click="openEditModal({}, false)">
+                   <Plus class="w-4 h-4 mr-2" /> Adicionar Manualmente
+                 </Button>
+               </div>
+               <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b">
+                      <th class="text-left py-2 px-2">CPU</th>
+                      <th class="text-right py-2 px-2">Single</th>
+                      <th class="text-right py-2 px-2">Multi</th>
+                      <th class="text-center py-2 px-2">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="cpu in activeRanking" :key="cpu.id" class="border-b hover:bg-muted/20">
+                      <td class="py-2 px-2 font-medium">{{ cpu.name }}</td>
+                      <td class="py-2 px-2 text-right">{{ cpu.single }}</td>
+                      <td class="py-2 px-2 text-right">{{ cpu.multi }}</td>
+                      <td class="py-2 px-2 text-center">
+                        <div class="flex justify-center gap-2">
+                          <Button size="icon" variant="ghost" @click="openEditModal(cpu, false)">
+                            <Pencil class="w-4 h-4" />
+                          </Button>
+                          <Button size="icon" variant="ghost" class="text-destructive" @click="deleteRankingItem(cpu.id)">
+                            <Trash2 class="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+               </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
+      <!-- Modal de Edição/Aprovação -->
+      <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-background rounded-lg shadow-xl w-full max-w-md p-6 border border-border">
+          <h3 class="text-lg font-bold mb-4">{{ isApproving ? 'Aprovar e Editar' : 'Editar CPU' }}</h3>
+          
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <Label>Modelo da CPU</Label>
+              <Input v-model="editForm.name" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <Label>Single Score</Label>
+                <Input type="number" v-model.number="editForm.single" />
+              </div>
+              <div class="space-y-2">
+                <Label>Multi Score</Label>
+                <Input type="number" v-model.number="editForm.multi" />
+              </div>
+            </div>
+            <div class="space-y-2">
+              <Label>Categoria (Ex: Forte, Médio)</Label>
+              <Input v-model="editForm.category" />
+            </div>
+            <div class="flex items-center gap-2">
+               <input type="checkbox" id="isNew" v-model="editForm.new" class="rounded border-gray-300" />
+               <Label for="isNew">Marcar como NOVO</Label>
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 mt-6">
+            <Button variant="outline" @click="showEditModal = false">Cancelar</Button>
+            <Button @click="saveCpuData">
+              {{ isApproving ? 'Aprovar e Publicar' : 'Salvar Alterações' }}
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -321,13 +453,14 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { db } from '@/firebase/config.js';
-import { collection, getDocs, addDoc, deleteDoc, doc, query, orderBy, where } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, query, orderBy, where, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ExternalLink, Plus, RotateCcw, Pencil, Trash2, Gift, Save } from 'lucide-vue-next';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ExternalLink, Plus, RotateCcw, Pencil, Trash2, Gift, Save, CheckCircle2, XCircle, Database } from 'lucide-vue-next';
 import { useFirestore } from '@/composables/useFirestore';
 import { toast } from 'vue-sonner';
 
@@ -360,12 +493,26 @@ const isSavingPix = ref(false);
 const pixConfig = ref({
   chave: '',
   nomeRecebimento: '',
-  chave: '',
-  nomeRecebimento: '',
   cidade: '',
   cep: ''
 });
 let refreshInterval;
+
+// --- CPU Ranking State ---
+const pendingSubmissions = ref([])
+const activeRanking = ref([])
+const showEditModal = ref(false)
+const isApproving = ref(false)
+const editForm = ref({
+  id: '',
+  name: '',
+  single: 0,
+  multi: 0,
+  category: '',
+  new: false,
+  memoryFreq: '', // Optional, for reference
+  imageUrl: '' // Optional, for reference
+})
 
 // --- Estatísticas ---
 const fetchUserCount = async () => {
@@ -662,8 +809,6 @@ const loadPixConfig = async () => {
       pixConfig.value = {
         chave: config.chave || '',
         nomeRecebimento: config.nomeRecebimento || '',
-        chave: config.chave || '',
-        nomeRecebimento: config.nomeRecebimento || '',
         cidade: config.cidade || '',
         cep: config.cep || ''
       };
@@ -688,6 +833,151 @@ const handleSavePixConfig = async () => {
   }
 };
 
+// --- CPU Ranking Logic ---
+const fetchPendingSubmissions = async () => {
+  try {
+    const q = query(collection(db, 'cpu_submissions'), where('status', '==', 'pending'), orderBy('createdAt', 'desc'))
+    const snapshot = await getDocs(q)
+    pendingSubmissions.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  } catch (error) {
+    console.error('Erro ao buscar envios pendentes:', error)
+  }
+}
+
+const fetchActiveRanking = async () => {
+  try {
+    const q = query(collection(db, 'cpu_ranking'), orderBy('multi', 'desc'))
+    const snapshot = await getDocs(q)
+    activeRanking.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  } catch (error) {
+    console.error('Erro ao buscar ranking ativo:', error)
+  }
+}
+
+const openEditModal = (item, approving) => {
+  isApproving.value = approving
+  editForm.value = {
+    id: item.id || '',
+    name: item.model || item.name || '',
+    single: item.single || 0,
+    multi: item.multi || 0,
+    category: item.category || 'Médio',
+    new: item.new || false,
+    memoryFreq: item.memoryFreq || '',
+    imageUrl: item.imageUrl || ''
+  }
+  showEditModal.value = true
+}
+
+const saveCpuData = async () => {
+  try {
+    const data = {
+      name: editForm.value.name,
+      single: editForm.value.single,
+      multi: editForm.value.multi,
+      category: editForm.value.category,
+      new: editForm.value.new,
+      updatedAt: serverTimestamp()
+    }
+
+    if (isApproving.value) {
+      // Add to ranking
+      await addDoc(collection(db, 'cpu_ranking'), data)
+      // Delete from submissions
+      await deleteDoc(doc(db, 'cpu_submissions', editForm.value.id))
+      toast.success('CPU Aprovada e Adicionada ao Ranking!')
+    } else {
+      if (editForm.value.id) {
+        // Update existing
+        await updateDoc(doc(db, 'cpu_ranking', editForm.value.id), data)
+        toast.success('CPU Atualizada!')
+      } else {
+        // Create new manual
+        await addDoc(collection(db, 'cpu_ranking'), data)
+        toast.success('CPU Criada!')
+      }
+    }
+    
+    showEditModal.value = false
+    fetchPendingSubmissions()
+    fetchActiveRanking()
+  } catch (error) {
+    console.error('Erro ao salvar CPU:', error)
+    toast.error('Erro ao salvar.')
+  }
+}
+
+const rejectSubmission = async (id) => {
+  if (!confirm('Tem certeza que deseja rejeitar este envio?')) return
+  try {
+    await deleteDoc(doc(db, 'cpu_submissions', id))
+    toast.success('Envio rejeitado.')
+    fetchPendingSubmissions()
+  } catch (error) {
+    console.error('Erro ao rejeitar:', error)
+    toast.error('Erro ao rejeitar.')
+  }
+}
+
+const deleteRankingItem = async (id) => {
+  if (!confirm('Tem certeza que deseja excluir esta CPU do ranking?')) return
+  try {
+    await deleteDoc(doc(db, 'cpu_ranking', id))
+    toast.success('CPU removida.')
+    fetchActiveRanking()
+  } catch (error) {
+    console.error('Erro ao remover:', error)
+    toast.error('Erro ao remover.')
+  }
+}
+
+const seedCpuDatabase = async () => {
+  if (!confirm('Isso vai adicionar os dados iniciais ao banco. Continuar?')) return
+  
+  const initialCpuData = [
+    { name: 'Intel Core i9-14900K', single: 978, multi: 17100, category: 'Extremamente Forte', new: true },
+    { name: 'AMD Ryzen 9 7950X', single: 790, multi: 15800, category: 'Extremamente Forte' },
+    { name: 'Intel Core i9-13900K', single: 945, multi: 16800, category: 'Extremamente Forte' },
+    { name: 'AMD Ryzen 9 7950X3D', single: 780, multi: 15500, category: 'Extremamente Forte' },
+    { name: 'Intel Core i7-14700K', single: 930, multi: 15200, category: 'Extremamente Forte', new: true },
+    { name: 'Intel Core i7-13700K', single: 870, multi: 12500, category: 'Muito Forte' },
+    { name: 'AMD Ryzen 9 5950X', single: 690, multi: 11900, category: 'Muito Forte' },
+    { name: 'Intel Core i5-14600K', single: 860, multi: 10400, category: 'Muito Forte', new: true },
+    { name: 'Intel Core i5-13600K', single: 830, multi: 9900, category: 'Muito Forte' },
+    { name: 'AMD Ryzen 7 7800X3D', single: 710, multi: 7800, category: 'Forte (Gaming King)', special: 'Gaming King' },
+    { name: 'Intel Core i9-12900K', single: 810, multi: 11400, category: 'Muito Forte' },
+    { name: 'AMD Ryzen 7 7700X', single: 770, multi: 8000, category: 'Forte' },
+    { name: 'AMD Ryzen 9 5900X', single: 680, multi: 9500, category: 'Forte' },
+    { name: 'Intel Core i7-12700K', single: 790, multi: 9300, category: 'Forte' },
+    { name: 'AMD Ryzen 7 5800X3D', single: 620, multi: 6400, category: 'Forte (Gaming)' },
+    { name: 'AMD Ryzen 5 5500X3D', single: 590, multi: 4500, category: 'Custo-Benefício', new: true, special: 'Budget King' },
+    { name: 'AMD Ryzen 7 5800X', single: 650, multi: 6600, category: 'Forte' },
+    { name: 'Intel Core i5-12600K', single: 770, multi: 7200, category: 'Forte' },
+    { name: 'AMD Ryzen 5 7600X', single: 750, multi: 6100, category: 'Médio-Alto' },
+    { name: 'Intel Core i5-13400F', single: 730, multi: 6600, category: 'Médio-Alto' },
+    { name: 'AMD Ryzen 5 5600X', single: 640, multi: 4800, category: 'Médio' },
+    { name: 'Intel Core i5-12400F', single: 700, multi: 4900, category: 'Médio' },
+    { name: 'AMD Ryzen 5 5600', single: 610, multi: 4700, category: 'Médio' },
+    { name: 'Intel Core i9-9900K', single: 580, multi: 5500, category: 'Médio' },
+    { name: 'AMD Ryzen 7 3700X', single: 520, multi: 5400, category: 'Médio' },
+    { name: 'Intel Core i7-8700K', single: 550, multi: 3700, category: 'Médio-Baixo' },
+    { name: 'AMD Ryzen 5 3600', single: 510, multi: 4000, category: 'Médio-Baixo' },
+    { name: 'Intel Core i3-12100F', single: 680, multi: 3400, category: 'Entrada Forte' },
+    { name: 'AMD Ryzen 5 5500', single: 580, multi: 4300, category: 'Médio-Baixo' },
+    { name: 'Intel Core i5-10400F', single: 490, multi: 3100, category: 'Entrada' },
+    { name: 'AMD Ryzen 5 1600', single: 380, multi: 2800, category: 'Entrada' },
+  ]
+
+  const batch = writeBatch(db)
+  initialCpuData.forEach(cpu => {
+    const docRef = doc(collection(db, 'cpu_ranking'))
+    batch.set(docRef, cpu)
+  })
+  await batch.commit()
+  toast.success('Database seeded!')
+  fetchActiveRanking()
+}
+
 onMounted(() => {
   fetchUserCount();
   fetchActiveUsers();
@@ -695,6 +985,8 @@ onMounted(() => {
   fetchStores();
   fetchPromotions();
   loadPixConfig();
+  fetchPendingSubmissions();
+  fetchActiveRanking();
   
   // Atualiza usuários ativos a cada 30 segundos
   refreshInterval = setInterval(() => {
