@@ -112,6 +112,11 @@
                   <td class="px-4 py-2">
                     <div class="flex flex-col">
                       <div class="flex items-center gap-2">
+                        <!-- Avatar Display -->
+                        <div v-if="cpu.userAvatar" class="w-6 h-6 rounded-full overflow-hidden border border-border/50 flex-shrink-0" :title="'Enviado por: ' + cpu.userName">
+                          <img :src="cpu.userAvatar" class="w-full h-full object-cover" alt="User" />
+                        </div>
+                        
                         <span class="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{{ cpu.name }}</span>
                         <span v-if="cpu.new" class="px-1 py-0.5 text-[9px] font-bold bg-accent/10 text-accent rounded border border-accent/20 uppercase tracking-wider">Novo</span>
                         <span v-if="cpu.special" class="px-1 py-0.5 text-[9px] font-bold bg-yellow-500/10 text-yellow-500 rounded border border-yellow-500/20 uppercase tracking-wider">{{ cpu.special }}</span>
@@ -463,6 +468,8 @@ const submitResult = async () => {
       single: Number(form.value.single) || 0,
       multi: Number(form.value.multi) || 0,
       imageUrl: imageUrl,
+      userAvatar: currentUser.value?.photoURL || '',
+      userName: currentUser.value?.displayName || 'Usuário',
       status: 'pending',
       createdAt: serverTimestamp()
     })

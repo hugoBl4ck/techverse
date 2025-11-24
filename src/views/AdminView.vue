@@ -511,7 +511,9 @@ const editForm = ref({
   category: '',
   new: false,
   memoryFreq: '', // Optional, for reference
-  imageUrl: '' // Optional, for reference
+  imageUrl: '', // Optional, for reference
+  userAvatar: '',
+  userName: ''
 })
 
 // --- Estatísticas ---
@@ -836,9 +838,13 @@ const handleSavePixConfig = async () => {
 // --- CPU Ranking Logic ---
 const fetchPendingSubmissions = async () => {
   try {
-    const q = query(collection(db, 'cpu_submissions'), where('status', '==', 'pending'), orderBy('createdAt', 'desc'))
+    // Removed orderBy to avoid missing index error. Sorting in memory if needed.
+    const q = query(collection(db, 'cpu_submissions'), where('status', '==', 'pending'))
     const snapshot = await getDocs(q)
-    pendingSubmissions.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    let subs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    // Sort in memory
+    subs.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+    pendingSubmissions.value = subs
   } catch (error) {
     console.error('Erro ao buscar envios pendentes:', error)
   }
@@ -864,7 +870,9 @@ const openEditModal = (item, approving) => {
     category: item.category || 'Médio',
     new: item.new || false,
     memoryFreq: item.memoryFreq || '',
-    imageUrl: item.imageUrl || ''
+    imageUrl: item.imageUrl || '',
+    userAvatar: item.userAvatar || '',
+    userName: item.userName || ''
   }
   showEditModal.value = true
 }
@@ -877,6 +885,8 @@ const saveCpuData = async () => {
       multi: editForm.value.multi,
       category: editForm.value.category,
       new: editForm.value.new,
+      userAvatar: editForm.value.userAvatar,
+      userName: editForm.value.userName,
       updatedAt: serverTimestamp()
     }
 
