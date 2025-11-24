@@ -217,15 +217,10 @@ const contactSpecialist = () => {
 
     <!-- Hero Section -->
     <section class="relative border-b border-border/40 shadow-sm pt-32 pb-20 overflow-hidden">
-      <!-- Background with Topography and Gradient Overlay -->
       <div class="absolute inset-0 z-0">
-        <!-- New White Minimalist Gradient BG -->
         <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('/bgwallpaperhero.png');"></div>
-        
-        <!-- Overlays for better text contrast and smoothing -->
-        <div class="absolute inset-0 bg-white/30 backdrop-blur-[1px]"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-background"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-white/80 via-white/40 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-background"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-white/60 via-white/20 to-transparent backdrop-blur-[0.5px]"></div>
       </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
