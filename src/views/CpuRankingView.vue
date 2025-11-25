@@ -117,22 +117,22 @@
                       <div class="flex items-center gap-2 flex-wrap">
                         <span
                           class="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{{
-                          cpu.name }}</span>
+                            cpu.name }}</span>
                         <span v-if="cpu.new"
                           class="px-1 py-0.5 text-[9px] font-bold bg-accent/10 text-accent rounded border border-accent/20 uppercase tracking-wider">Novo</span>
                         <span v-if="cpu.special"
                           class="px-1 py-0.5 text-[9px] font-bold bg-yellow-500/10 text-yellow-500 rounded border border-yellow-500/20 uppercase tracking-wider">{{
-                          cpu.special }}</span>
+                            cpu.special }}</span>
 
                         <!-- User Tag (if user submitted) -->
                         <div v-if="cpu.userName"
-                          class="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 border border-primary/20 rounded-full"
+                          class="inline-flex items-center gap-1.5 px-2 py-1 bg-primary/10 border border-primary/20 rounded-full"
                           :title="'Enviado por: ' + cpu.userName">
                           <div v-if="cpu.userAvatar"
-                            class="w-3 h-3 rounded-full overflow-hidden border border-primary/30 flex-shrink-0">
+                            class="w-5 h-5 rounded-full overflow-hidden border border-primary/30 flex-shrink-0">
                             <img :src="cpu.userAvatar" class="w-full h-full object-cover" alt="User" />
                           </div>
-                          <span class="text-[9px] font-medium text-primary">{{ cpu.userName }}</span>
+                          <span class="text-[10px] font-medium text-primary">{{ cpu.userName }}</span>
                         </div>
                       </div>
                       <span class="text-[10px] text-muted-foreground mt-0.5">{{ cpu.category }}</span>
@@ -145,7 +145,7 @@
                       <div class="flex justify-between items-end">
                         <span class="font-mono font-medium"
                           :class="sortKey === 'single' ? 'text-primary font-bold' : 'text-muted-foreground'">{{
-                          cpu.single }}</span>
+                            cpu.single }}</span>
                       </div>
                       <div class="h-1 w-full bg-muted/50 rounded-full overflow-hidden">
                         <div
