@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     }
 
     // Preparar dados para análise com informações reais
-     const prompt = `Você é um especialista em marketing e e-commerce de produtos de tecnologia.
+    const prompt = `Você é um especialista em marketing e e-commerce de produtos de tecnologia.
 
     Analise o seguinte produto REAL e gere uma promoção profissional baseada em DADOS REAIS:
 
@@ -115,7 +115,7 @@ export default async function handler(req, res) {
 
     // Validar e processar o link
     const linkProcessado = await validarEProcessarLink(productLink)
-    
+
     console.log('=== RESULTADO FINAL ===')
     console.log('Link Original:', productLink)
     console.log('Link Processado:', linkProcessado)
@@ -173,7 +173,7 @@ async function callPerplexity(prompt, apiKey) {
 }
 
 async function callGemini(prompt, apiKey) {
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${apiKey}`
 
   const response = await fetch(GEMINI_URL, {
     method: 'POST',
@@ -210,7 +210,7 @@ async function validarEProcessarLink(url) {
   try {
     // Validar URL básica
     const urlObj = new URL(url)
-    
+
     // Se for AliExpress, processar com API
     if (url.includes('aliexpress') || url.includes('s.click.aliexpress')) {
       return await processarLinkAliExpressAPI(url)
@@ -232,7 +232,7 @@ async function validarEProcessarLink(url) {
 async function processarLinkAliExpressAPI(url) {
   try {
     let finalUrl = url
-    
+
     // Se for link de redirecionamento curto, resolver primeiro
     // Usamos GET pois HEAD pode não funcionar corretamente para redirects no AliExpress.
     if (url.includes('s.click.aliexpress')) {
@@ -253,7 +253,7 @@ async function processarLinkAliExpressAPI(url) {
 
     // Extrair product ID do URL final
     const productId = extrairProductIdDoUrl(finalUrl)
-    
+
     if (!productId) {
       console.warn('Não foi possível extrair ID do produto:', finalUrl)
       return finalUrl
@@ -262,7 +262,7 @@ async function processarLinkAliExpressAPI(url) {
     // Tentar usar API do AliExpress para validar e gerar link correto
     const linkValidado = await validarProductoComAPI(productId, finalUrl)
     return linkValidado || finalUrl
-    
+
   } catch (error) {
     console.error('Erro ao processar link AliExpress:', error.message)
     // Em caso de erro, retornar URL original
@@ -277,23 +277,23 @@ async function processarLinkAliExpressAPI(url) {
 function extrairProductIdDoUrl(url) {
   try {
     const urlObj = new URL(url)
-    
+
     // Formato 1: /item/12345678901.html
     const match1 = urlObj.pathname.match(/\/item\/(\d+)/)
     if (match1) return match1[1]
-    
+
     // Formato 2: ?item_id=12345678901
     const itemId = urlObj.searchParams.get('item_id')
     if (itemId) return itemId
-    
+
     // Formato 3: /wholesale-item/12345678901.html
     const match2 = urlObj.pathname.match(/\/wholesale-item\/(\d+)/)
     if (match2) return match2[1]
-    
+
     // Formato 4: /w/wholesale-12345678901.html
     const match3 = urlObj.pathname.match(/\/w\/wholesale-(\d+)/)
     if (match3) return match3[1]
-    
+
     return null
   } catch (error) {
     console.error('Erro ao extrair ID:', error.message)
@@ -308,7 +308,7 @@ function extrairProductIdDoUrl(url) {
 async function validarProductoComAPI(productId, originalUrl) {
   try {
     const ALIEX_API_KEY = process.env.ALIEXPRESS_API_KEY
-    
+
     // Se não temos credenciais, apenas normalizar URL
     if (!ALIEX_API_KEY) {
       console.log('ALIEXPRESS_API_KEY não configurada, usando URL normalizado')
@@ -317,7 +317,7 @@ async function validarProductoComAPI(productId, originalUrl) {
 
     // Chamar API do AliExpress para validar o produto
     const produtoValido = await chamarAPIAliExpress(productId, ALIEX_API_KEY)
-    
+
     if (produtoValido) {
       console.log(`Produto ${productId} validado com sucesso na API do AliExpress`)
       return normalizarUrlAliExpress(originalUrl)
@@ -325,7 +325,7 @@ async function validarProductoComAPI(productId, originalUrl) {
       console.warn(`Produto ${productId} não encontrado na API do AliExpress`)
       return normalizarUrlAliExpress(originalUrl)
     }
-    
+
   } catch (error) {
     console.error('Erro na validação com API:', error.message)
     // Em caso de erro na API, continuar com URL normalizado
@@ -340,15 +340,15 @@ async function validarProductoComAPI(productId, originalUrl) {
 async function chamarAPIAliExpress(productId, apiKey) {
   try {
     const crypto = require('crypto')
-    
+
     // AliExpress API requer app_key (public) e app_secret (private)
     // Se apenas uma chave for fornecida, assumimos que é a app_key
     const appKey = apiKey
     const appSecret = process.env.ALIEXPRESS_SECRET || apiKey // Fallback para a mesma chave
-    
+
     // Parâmetros da requisição - timestamp em millisegundos
     const timestamp = Date.now().toString()
-    
+
     const params = {
       app_key: appKey,
       method: 'aliexpress.affiliate.productdetail.get',
@@ -364,13 +364,13 @@ async function chamarAPIAliExpress(productId, apiKey) {
     // Construir string para assinar: sort alphabetically, then concatenate key+value
     const sortedKeys = Object.keys(params).sort()
     let signStr = appSecret // Começa com o secret
-    
+
     sortedKeys.forEach(key => {
       signStr += key + params[key]
     })
-    
+
     signStr += appSecret // Termina com o secret
-    
+
     // Gerar MD5
     const sign = crypto
       .createHash('md5')
@@ -440,7 +440,7 @@ async function chamarAPIAliExpress(productId, apiKey) {
 function normalizarUrlAliExpress(url) {
   try {
     const urlObj = new URL(url)
-    
+
     // Preservar parâmetros importantes para affiliate tracking
     const paramsPreservados = [
       'item_id',
@@ -456,9 +456,9 @@ function normalizarUrlAliExpress(url) {
       'src',
       'pvid'
     ]
-    
+
     const novasParams = new URLSearchParams()
-    
+
     paramsPreservados.forEach(param => {
       const valor = urlObj.searchParams.get(param)
       if (valor) {
@@ -469,10 +469,10 @@ function normalizarUrlAliExpress(url) {
     // Reconstruir URL com protocolo HTTPS e parâmetros limpos
     const queryString = novasParams.toString()
     const urlNormalizada = `https://${urlObj.hostname}${urlObj.pathname}${queryString ? '?' + queryString : ''}`
-    
+
     console.log('URL normalizada:', urlNormalizada)
     return urlNormalizada
-    
+
   } catch (error) {
     console.error('Erro ao normalizar URL:', error.message)
     return url
@@ -503,11 +503,11 @@ async function extrairDadosProduto(url) {
 
     // Extrair titulo do produto (procura em múltiplos lugares)
     let titulo = null
-    
+
     // AliExpress usa h1 com class específica para título
     const tituloMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/)
     if (tituloMatch) titulo = tituloMatch[1].trim()
-    
+
     // Alternativa: procurar em atributos JSON do site
     if (!titulo) {
       const jsonMatch = html.match(/"productTitle":"([^"]+)"/)
@@ -527,7 +527,7 @@ async function extrairDadosProduto(url) {
 
     // Extrair imagens (procura por multiple imagens)
     let imagens = []
-    
+
     // AliExpress geralmente tem imgs em um div específico
     const imgMatches = html.matchAll(/<img[^>]*src="([^"]*?alicdn[^"]*)"[^>]*>/g)
     for (const match of imgMatches) {
@@ -570,7 +570,7 @@ async function buscarImagensDoLink(url) {
   try {
     // Usar a API do Bing para buscar imagens relacionadas
     // Alternativa: usar o próprio link e fazer scraping
-    
+
     // Para AliExpress, podemos tentar extrair as imagens do HTML
     if (url.includes('aliexpress') || url.includes('ali')) {
       // Usar a API de busca de imagens do Bing

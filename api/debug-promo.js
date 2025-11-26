@@ -136,7 +136,7 @@ Retorne APENAS o JSON, sem markdown ou explicações.`
       if (!promocaoData && GEMINI_KEY) {
         try {
           debugInfo.processamento.push('Tentando gerar com Gemini...')
-          const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_KEY}`
+          const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${GEMINI_KEY}`
 
           const response = await fetch(GEMINI_URL, {
             method: 'POST',

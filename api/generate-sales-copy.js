@@ -135,7 +135,7 @@ async function callPerplexity(prompt, apiKey) {
 }
 
 async function callGemini(prompt, apiKey, item) {
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${apiKey}`;
 
   const response = await fetch(GEMINI_URL, {
     method: 'POST',
@@ -168,7 +168,7 @@ async function callGemini(prompt, apiKey, item) {
 
 function gerarTextoCPU(nome, preco, descricao, compat) {
   const socket = compat.socket || 'Socket compatível';
-  
+
   return {
     instagramPost: `⚡ PROCESSADOR EM DESTAQUE
 
@@ -263,7 +263,7 @@ Nossa equipe verifica compatibilidade gratuitamente.
 
 function gerarTextoRAM(nome, preco, descricao, compat) {
   const tipoRam = compat.tipoRam || 'DDR4/DDR5';
-  
+
   return {
     instagramPost: `💾 MEMÓRIA RAM
 
@@ -311,7 +311,7 @@ Verifica compatibilidade gratuitamente.
 function gerarTextoPlacaMae(nome, preco, descricao, compat) {
   const socket = compat.socket || 'Socket compatível';
   const tipoRam = compat.tipoRam || 'DDR4/DDR5';
-  
+
   return {
     instagramPost: `🖥️ MOTHERBOARD
 

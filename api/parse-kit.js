@@ -45,10 +45,10 @@ export default async function handler(request, response) {
       const jsonResult = await callPerplexity(texto, PPLX_KEY);
       return response.status(200).json(jsonResult);
     } catch (perplexityError) {
-      
+
       // ===== ESTE É O LOG DETALHADO QUE VOCÊ PEDIU =====
       console.error(
-        "FALHA NO PERPLEXITY. Motivo:", 
+        "FALHA NO PERPLEXITY. Motivo:",
         perplexityError.message
       );
       // =================================================
@@ -105,7 +105,7 @@ async function callPerplexity(texto, apiKey) {
 // --- HELPER 2: CHAMADA DO GEMINI ---
 async function callGemini(texto, apiKey) {
   // A API do Gemini usa uma URL e um formato de 'body' diferentes
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${apiKey}`;
 
   // O prompt do Gemini funciona melhor se pedirmos explicitamente o JSON
   const geminiPrompt = `${systemPrompt}\n\nTexto para analisar:\n${texto}`;
@@ -121,7 +121,7 @@ async function callGemini(texto, apiKey) {
       }],
       generationConfig: {
         // Força a resposta a ser JSON
-        responseMimeType: "application/json", 
+        responseMimeType: "application/json",
       }
     })
   });
