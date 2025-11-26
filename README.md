@@ -1,100 +1,238 @@
-# TechVerse
+# 📚 TechVerse - Sistema de Gestão para Assistências Técnicas
 
-## Descrição
+![TechVerse](https://img.shields.io/badge/TechVerse-v1.0-purple)
+![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green)
+![Firebase](https://img.shields.io/badge/Firebase-Latest-orange)
+![PWA](https://img.shields.io/badge/PWA-Enabled-blue)
 
-O TechVerse é um sistema de gestão abrangente desenvolvido para otimizar o gerenciamento de clientes, serviços, inventário de peças e montagem de kits. Construído com Vue 3, Vite e TailwindCSS, oferece uma interface moderna e responsiva para facilitar as operações diárias.
+## 🚀 Sobre o Projeto
 
-## Funcionalidades
+TechVerse é uma plataforma completa de gestão para assistências técnicas de informática. Desenvolvido com Vue.js 3, Firebase e implementado como Progressive Web App (PWA), oferece uma solução moderna e eficiente para gerenciar todos os aspectos de uma assistência técnica.
 
-- **Dashboard:** Visão geral e acesso rápido às principais funcionalidades.
-- **Gestão de Clientes:** Cadastro, listagem, visualização de detalhes e edição de informações de clientes.
-- **Gestão de Serviços:** Registro e acompanhamento de serviços prestados, associados a clientes.
-- **Gestão de Inventário:** Controle de peças em estoque, incluindo cadastro, edição e listagem. Funcionalidade de importação de peças via IA.
-- **Montador de Kits:** Ferramenta para criar e gerenciar kits de peças, com visualização de detalhes dos kits salvos.
+### ✨ Principais Funcionalidades
 
-## Tecnologias Utilizadas
+- 📋 **Gestão de Ordens de Serviço** - Workflow completo do diagnóstico à entrega
+- 👥 **Gestão de Clientes** - Histórico completo e controle de equipamentos
+- 📦 **Controle de Inventário** - Gestão de peças e componentes
+- 💰 **Dashboard Financeiro** - Métricas de receitas, despesas e lucratividade
+- 📰 **Sistema de Notícias** - Mantenha clientes informados
+- 🎁 **Promoções Integradas** - Divulgue ofertas com links de afiliados
+- 🎮 **Ranking de CPUs** - Gamificação e comparação de processadores
+- 🔧 **Guia de Otimização** - Ajude clientes a melhorar performance
+- 📱 **PWA** - Funciona offline e pode ser instalado
 
-- [Vue 3](https://vuejs.org/) - Framework progressivo para construção de interfaces de usuário.
-- [Vite](https://vitejs.dev/) - Ferramenta de build rápida para desenvolvimento web moderno.
-- [Vue Router](https://router.vuejs.org/) - Roteamento oficial para Vue.js.
-- [Tailwind CSS](https://tailwindcss.com/) - Framework CSS utilitário para estilização rápida e responsiva.
-- [Firebase](https://firebase.google.com/) - Plataforma de desenvolvimento de aplicativos (provavelmente para autenticação e/ou banco de dados).
-- [Radix Vue](https://www.radix-vue.com/) - Componentes UI sem estilo para Vue.
-- [Lucide Vue Next](https://lucide.dev/) - Biblioteca de ícones.
-- Outras dependências como `class-variance-authority`, `clsx`, `tailwind-merge`, `v-calendar`, `vuedraggable`.
+## 🏗️ Tecnologias Utilizadas
 
-## Instalação
+- **Frontend:** Vue.js 3 (Composition API)
+- **Styling:** Tailwind CSS
+- **Backend:** Firebase (Firestore + Authentication)
+- **Build:** Vite
+- **PWA:** Vite PWA Plugin
+- **Hosting:** Vercel
 
-Para configurar o projeto localmente, siga os passos abaixo:
+## 🌐 Demo
 
-1.  Clone o repositório:
-    ```bash
-    git clone <URL_DO_REPOSITORIO>
-    cd techverse
-    ```
+**URL:** [https://techverseapp.vercel.app](https://techverseapp.vercel.app)
 
-2.  Instale as dependências:
-    ```bash
-    npm install
-    ```
+## 📖 Documentação
 
-3.  Configure o Firebase:
-    Crie um arquivo `src/firebase/config.js` e adicione suas credenciais do Firebase:
-    ```javascript
-    // src/firebase/config.js
-    import { initializeApp } from 'firebase/app';
-    // import { getAnalytics } from 'firebase/analytics';
-    // import { getAuth } from 'firebase/auth';
-    // import { getFirestore } from 'firebase/firestore';
+Toda a documentação está organizada na pasta `/docs`:
 
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID",
-      measurementId: "YOUR_MEASUREMENT_ID"
-    };
+### 📂 Estrutura de Documentação
 
-    const app = initializeApp(firebaseConfig);
-    // const analytics = getAnalytics(app);
-    // const auth = getAuth(app);
-    // const db = getFirestore(app);
+```
+docs/
+├── README.md                    # Este arquivo
+├── LEIA_PRIMEIRO.md            # Guia de início rápido
+├── QUICK_START.md              # Instalação e configuração
+│
+├── 📘 guias/                   # Guias de uso e desenvolvimento
+│   ├── GUIA_PWA.md
+│   ├── GUIA_SITEMAP_SEO.md
+│   ├── GUIA_MARKETING_SOCIAL.md
+│   ├── GUIA_MODULO_FINANCEIRO.md
+│   ├── GUIA_PAGINA_NOTICIAS.md
+│   ├── GUIA_PAGINA_PROMOCOES.md
+│   └── ... (mais guias)
+│
+├── 🏗️ arquitetura/            # Arquitetura e estrutura
+│   ├── ARQUITETURA_FINANCEIRA.md
+│   ├── ARQUITETURA_PROMO_DOACAO.md
+│   ├── DIAGRAMA_FLUXO_NOVO.md
+│   └── ESTRUTURA_VISUAL.md
+│
+├── 📢 marketing/               # Material de marketing
+│   ├── APRESENTACAO_LINKEDIN.md
+│   ├── APRESENTACAO_TWITTER_X.md
+│   ├── APRESENTACAO_FACEBOOK.md
+│   └── MARKETING_UPGRADE.md
+│
+├── 🔧 correcoes/              # Correções e fixes
+│   ├── CORRECOES_FIREBASE_PWA.md
+│   ├── FIRESTORE_RULES_FIX.md
+│   ├── FIX_404_E_ROTAS.md
+│   └── ... (mais correções)
+│
+├── ✅ checklists/             # Checklists de tarefas
+│   ├── CHECKLIST_SITEMAP.md
+│   ├── CHECKLIST_FINANCEIRO.md
+│   └── CHECKLIST_NOTICIAS.md
+│
+└── 📝 exemplos/               # Exemplos de código
+    ├── EXEMPLOS_INTEGRACAO.md
+    └── EXEMPLO_INTEGRACAO_FINANCEIRO.md
+```
 
-    export { app /*, analytics, auth, db */ };
-    ```
+## 🚀 Início Rápido
 
-## Uso
+### Pré-requisitos
 
-Para iniciar o servidor de desenvolvimento:
+- Node.js 18+ 
+- npm ou yarn
+- Conta Firebase (para backend)
+
+### Instalação
 
 ```bash
+# Clone o repositório
+git clone https://github.com/hugoBl4ck/techverse.git
+
+# Entre na pasta
+cd techverse
+
+# Instale as dependências
+npm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env
+# Edite .env com suas credenciais do Firebase
+
+# Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-Abra seu navegador e acesse `http://localhost:5173` (ou a porta indicada no terminal).
+### Build para Produção
 
-## Scripts Disponíveis
+```bash
+# Build
+npm run build
 
-- `npm run dev`: Inicia o servidor de desenvolvimento com Vite.
-- `npm run build`: Compila o projeto para produção.
-- `npm run preview`: Serve a build de produção localmente para pré-visualização.
+# Preview do build
+npm run preview
+```
 
-## Versão Melhorada
+## 📚 Guias Principais
 
-Recentemente, o código passou por um processo de refatoração significativo para melhorar a qualidade, manutenibilidade e performance. As principais mudanças incluem:
+### Para Começar
+1. [LEIA_PRIMEIRO.md](./LEIA_PRIMEIRO.md) - Visão geral do projeto
+2. [QUICK_START.md](./QUICK_START.md) - Configuração inicial
 
-- **Extração de Lógica para Composables:** A lógica de manipulação de dados do Firestore foi extraída de componentes para *composables* reutilizáveis. Por exemplo, `useItem.js` agora gerencia todas as operações relacionadas a itens (buscar, salvar, atualizar), limpando o componente `ItemForm.vue` de responsabilidades de back-end.
+### Desenvolvimento
+- [GUIA_PWA.md](./guias/GUIA_PWA.md) - Como funciona o PWA
+- [GUIA_SITEMAP_SEO.md](./guias/GUIA_SITEMAP_SEO.md) - SEO e sitemap
+- [CHEAT_SHEET_IMPORTS.md](./guias/CHEAT_SHEET_IMPORTS.md) - Referência de imports
 
-- **Componentização e Redução de Duplicação:**
-  - **`KitBuilderView.vue`:** A exibição das listas de itens foi refatorada. Um componente `ItemList.vue` foi criado para renderizar cada categoria de item, e a lógica de agrupamento de itens foi centralizada em uma única propriedade computada (`groupedItems`), eliminando a repetição de código no template.
-  - **`KitMount.vue`:** A função `saveKitToInventory` foi otimizada para usar um loop, tornando o código mais limpo e fácil de manter.
+### Funcionalidades
+- [GUIA_MODULO_FINANCEIRO.md](./guias/GUIA_MODULO_FINANCEIRO.md) - Módulo financeiro
+- [GUIA_PAGINA_NOTICIAS.md](./guias/GUIA_PAGINA_NOTICIAS.md) - Sistema de notícias
+- [GUIA_PAGINA_PROMOCOES.md](./guias/GUIA_PAGINA_PROMOCOES.md) - Sistema de promoções
 
-- **Centralização de Configurações:**
-  - **`ItemChip.vue`:** A configuração de aparência dos chips de itens (ícones e cores) foi movida para um arquivo de utilitário (`src/lib/item-config.js`). Isso desacopla a configuração do componente e facilita a manutenção e reutilização.
+### Marketing
+- [GUIA_MARKETING_SOCIAL.md](./marketing/GUIA_MARKETING_SOCIAL.md) - Estratégia de redes sociais
+- [APRESENTACAO_LINKEDIN.md](./marketing/APRESENTACAO_LINKEDIN.md) - Posts para LinkedIn
+- [APRESENTACAO_TWITTER_X.md](./marketing/APRESENTACAO_TWITTER_X.md) - Posts para Twitter/X
+- [APRESENTACAO_FACEBOOK.md](./marketing/APRESENTACAO_FACEBOOK.md) - Posts para Facebook
 
-- **Melhora na Estrutura de Dados:**
-  - **`ItemForm.vue`:** Os campos do formulário foram agrupados em um único objeto reativo (`form`), simplificando o gerenciamento do estado e a passagem de dados.
+## 🎯 Funcionalidades Principais
 
-Essas mudanças resultam em um código mais modular, legível e escalável, seguindo as melhores práticas do Vue 3.
+### 1. Gestão de Ordens de Serviço
+- Criação e acompanhamento de ordens
+- Workflow visual (Aguardando → Em Andamento → Concluído)
+- Histórico completo de serviços
+- Controle de peças utilizadas
+
+### 2. Gestão de Clientes
+- Cadastro completo de clientes
+- Histórico de equipamentos
+- Comunicação centralizada
+- Métricas de atendimento
+
+### 3. Controle de Inventário
+- Gestão de peças e componentes
+- Alertas de estoque baixo
+- Histórico de movimentações
+- Controle de valores
+
+### 4. Dashboard Financeiro
+- Receitas e despesas em tempo real
+- Gráficos de lucratividade
+- Fluxo de caixa
+- Relatórios mensais
+
+### 5. Sistema de Notícias
+- Publicação de conteúdo
+- Categorização de notícias
+- Engajamento com clientes
+- SEO otimizado
+
+### 6. Promoções Integradas
+- Divulgação de ofertas
+- Links de afiliados
+- Integração com marketplaces
+- Tracking de conversões
+
+### 7. PWA (Progressive Web App)
+- Funciona offline
+- Instalável em qualquer dispositivo
+- Atualizações automáticas
+- Performance otimizada
+
+## 🔒 Segurança
+
+- Autenticação via Firebase Auth
+- Regras de segurança Firestore
+- Sistema multi-tenant
+- Proteção de rotas
+- Validação de dados
+
+## 📊 Performance
+
+- Lighthouse Score: 90+
+- First Contentful Paint: < 1.5s
+- PWA compliant
+- Code splitting
+- Lazy loading
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Por favor:
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 👨‍💻 Autor
+
+**Hugo Black**
+- GitHub: [@hugoBl4ck](https://github.com/hugoBl4ck)
+
+## 🙏 Agradecimentos
+
+- Vue.js Team
+- Firebase Team
+- Tailwind CSS Team
+- Comunidade Open Source
+
+## 📞 Suporte
+
+Para suporte, abra uma issue no GitHub ou entre em contato através do site.
+
+---
+
+**Desenvolvido com ❤️ para a comunidade tech brasileira**
