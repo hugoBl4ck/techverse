@@ -50,7 +50,7 @@ const periodOptions = [
 ];
 
 const loadServices = async () => {
-  
+
   if (!storeId.value) {
     isLoading.value = false;
     return;
@@ -67,7 +67,7 @@ const loadServices = async () => {
     );
     const q = query(servicesCol, orderBy("date", "desc"));
     const servicesSnapshot = await getDocs(q);
-    
+
     allServices.value = servicesSnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
@@ -76,7 +76,7 @@ const loadServices = async () => {
         date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
       };
     });
-    
+
   } catch (error) {
     console.error('❌ Erro ao carregar serviços:', error);
     allServices.value = [];
@@ -86,13 +86,18 @@ const loadServices = async () => {
 };
 
 const fetchPromotions = async () => {
-  const promotionsCol = collection(db, "promocoes");
-  const q = query(promotionsCol, orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
-  promotions.value = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+  try {
+    const promotionsCol = collection(db, "promos");
+    const q = query(promotionsCol, orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    promotions.value = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error('Erro ao carregar promoções:', error);
+    promotions.value = [];
+  }
 };
 
 const loadClients = async () => {
@@ -203,12 +208,12 @@ const periodRevenue = computed(() => {
         <Card>
           <CardHeader>
             <div class="flex justify-between items-center">
-              <CardTitle>Serviços - {{ selectedPeriod === 'current-month' ? 'Mês Atual' : periodOptions.find(p => p.value === selectedPeriod)?.label }}</CardTitle>
-              <select
-                v-model="selectedPeriod"
-                class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              >
-                <option v-for="option in periodOptions" :key="option.value" :value="option.value" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+              <CardTitle>Serviços - {{selectedPeriod === 'current-month' ? 'Mês Atual' : periodOptions.find(p =>
+                p.value === selectedPeriod)?.label }}</CardTitle>
+              <select v-model="selectedPeriod"
+                class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <option v-for="option in periodOptions" :key="option.value" :value="option.value"
+                  class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
                   {{ option.label }}
                 </option>
               </select>
@@ -230,36 +235,26 @@ const periodRevenue = computed(() => {
                   <TableRow v-for="service in filteredServices" :key="service.id">
                     <TableCell class="font-medium">{{
                       service.customerName
-                    }}</TableCell>
+                      }}</TableCell>
                     <TableCell>{{
                       service.date?.toLocaleDateString?.() || "N/A"
-                    }}</TableCell>
-                    <TableCell
-                      >R$ {{ (service.totalAmount || 0).toFixed(2) }}</TableCell
-                    >
+                      }}</TableCell>
+                    <TableCell>R$ {{ (service.totalAmount || 0).toFixed(2) }}</TableCell>
                     <TableCell>
-                      <ul
-                        v-if="service.observations"
-                        class="list-disc list-inside"
-                      >
-                        <li
-                          v-for="(obs, index) in Array.isArray(
-                            service.observations
-                          )
-                            ? service.observations
-                            : [service.observations]"
-                          :key="index"
-                        >
+                      <ul v-if="service.observations" class="list-disc list-inside">
+                        <li v-for="(obs, index) in Array.isArray(
+                          service.observations
+                        )
+                          ? service.observations
+                          : [service.observations]" :key="index">
                           {{ obs }}
                         </li>
                       </ul>
-                      <span v-else class="text-muted-foreground text-sm"
-                        >-</span
-                      >
+                      <span v-else class="text-muted-foreground text-sm">-</span>
                     </TableCell>
                     <TableCell class="text-sm text-muted-foreground">{{
                       service.computerConfiguration || "-"
-                    }}</TableCell>
+                      }}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
