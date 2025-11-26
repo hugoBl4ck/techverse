@@ -25,8 +25,8 @@ function sitemapPlugin() {
   return {
     name: 'generate-sitemap',
     writeBundle() {
-      // Data atual no formato ISO (YYYY-MM-DD)
-      const lastmod = new Date().toISOString().split('T')[0]
+      // Data atual no formato ISO 8601 completo (YYYY-MM-DDTHH:MM:SS+00:00)
+      const lastmod = new Date().toISOString()
 
       // Gera sitemap.xml
       const urls = publicRoutes.map(route => {
