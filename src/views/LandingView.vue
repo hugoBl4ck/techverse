@@ -138,6 +138,13 @@ const contactSpecialist = () => {
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
 }
 
+const quizRecommendation = computed(() => {
+  return quizAnswers.value.includes('frequent') || quizAnswers.value.includes('sometimes')
+    ? 'Otimização Completa de Hardware & Software'
+    : 'Manutenção Preventiva & Tuning'
+})
+
+
 
 </script>
 
@@ -608,8 +615,7 @@ const contactSpecialist = () => {
                     <h5 class="text-lg font-bold text-foreground mb-2">Análise Concluída!</h5>
                     <p class="text-muted-foreground mb-4">Baseado nas suas respostas, recomendamos:</p>
                     <p class="text-xl font-semibold text-accent mb-6">
-                      {{ quizAnswers.includes('frequent') || quizAnswers.includes('sometimes') ? 'Otimização Completa de
-                      Hardware & Software' : 'Manutenção Preventiva & Tuning' }}
+                      {{ quizRecommendation }}
                     </p>
                   </div>
 
