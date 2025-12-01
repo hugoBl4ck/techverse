@@ -218,6 +218,37 @@ const copyLink = () => {
   toast.success('Link copiado para a área de transferência!')
 }
 
+const updateMetaTags = (newsItem) => {
+  if (!newsItem) return
+  
+  // Update Title
+  document.title = `${newsItem.titulo} | TechVerse`
+  
+  // Update Meta Description
+  const metaDescription = document.querySelector('meta[name="description"]')
+  if (metaDescription) {
+    // Get first 150 chars of content for description, stripping markdown
+    const plainText = newsItem.conteudo.replace(/[#*`_]/g, '').substring(0, 155) + '...'
+    metaDescription.setAttribute('content', plainText)
+  }
+  
+  // Open Graph Tags (for sharing)
+  updateOgTag('og:title', newsItem.titulo)
+  updateOgTag('og:description', newsItem.conteudo.replace(/[#*`_]/g, '').substring(0, 155) + '...')
+  updateOgTag('og:image', newsItem.imagem || 'https://techverseapp.vercel.app/techLOGO.svg')
+  updateOgTag('og:url', window.location.href)
+}
+
+const updateOgTag = (property, content) => {
+  let tag = document.querySelector(`meta[property="${property}"]`)
+  if (!tag) {
+    tag = document.createElement('meta')
+    tag.setAttribute('property', property)
+    document.head.appendChild(tag)
+  }
+  tag.setAttribute('content', content)
+}
+
 onMounted(async () => {
   const id = route.params.id
   if (!id) {
@@ -232,6 +263,9 @@ onMounted(async () => {
 
     if (docSnap.exists()) {
       news.value = { id: docSnap.id, ...docSnap.data() }
+      
+      // Update SEO
+      updateMetaTags(news.value)
       
       // Increment views
       updateDoc(docRef, {
