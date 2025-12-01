@@ -114,6 +114,7 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallbackDenylist: [/^\/sitemap.xml$/, /^\/robots.txt$/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
