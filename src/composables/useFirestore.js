@@ -374,6 +374,56 @@ export function useFirestore() {
     }
   }
 
+  /**
+   * Carrega comentários de uma notícia
+   */
+  const getComments = async (newsId) => {
+    try {
+      const commentsRef = collection(db, 'noticias', newsId, 'comentarios')
+      const q = query(commentsRef, orderBy('criadoEm', 'desc'))
+      const snapshot = await getDocs(q)
+
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        criadoEm: doc.data().criadoEm?.toDate?.() || doc.data().criadoEm
+      }))
+    } catch (err) {
+      console.error('Erro ao carregar comentários:', err)
+      return []
+    }
+  }
+
+  /**
+   * Adiciona um comentário
+   */
+  const addComment = async (newsId, comment) => {
+    try {
+      const commentsRef = collection(db, 'noticias', newsId, 'comentarios')
+      const docRef = await addDoc(commentsRef, {
+        ...comment,
+        criadoEm: new Date()
+      })
+      return docRef.id
+    } catch (err) {
+      console.error('Erro ao adicionar comentário:', err)
+      throw err
+    }
+  }
+
+  /**
+   * Deleta um comentário
+   */
+  const deleteComment = async (newsId, commentId) => {
+    try {
+      const commentRef = doc(db, 'noticias', newsId, 'comentarios', commentId)
+      await deleteDoc(commentRef)
+    } catch (err) {
+      console.error('Erro ao deletar comentário:', err)
+      throw err
+    }
+  }
+
   return {
     isLoading,
     error,
@@ -389,6 +439,9 @@ export function useFirestore() {
     getDonations,
     getDonationStats,
     getActivePromos,
-    getPublishedNews
+    getPublishedNews,
+    getComments,
+    addComment,
+    deleteComment
   }
 }

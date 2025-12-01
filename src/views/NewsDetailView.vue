@@ -31,76 +31,90 @@
 
     <!-- Content -->
     <article v-else>
-      <!-- Header -->
-      <header class="bg-background border-b border-border/40">
-        <div class="container mx-auto px-4 py-12 max-w-4xl text-center">
-          <div class="flex items-center justify-center gap-3 mb-6">
-            <span class="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+      <!-- Hero Section with Gradient Overlay -->
+      <header class="relative bg-muted/30 border-b border-border/40 overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, rgba(0,0,0,0.1) 1px, transparent 0); background-size: 24px 24px;"></div>
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+        
+        <div class="container mx-auto px-4 py-16 md:py-20 max-w-4xl text-center relative z-10">
+          <div class="flex flex-wrap items-center justify-center gap-3 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-primary/10 text-primary border border-primary/20 shadow-sm">
               {{ formatarCategoria(news.categoria) }}
             </span>
-            <span class="text-sm text-muted-foreground">
+            <span class="text-sm text-muted-foreground flex items-center gap-1">
+              <Calendar class="w-3.5 h-3.5" />
               {{ formatarData(news.dataPub) }}
+            </span>
+            <span class="text-sm text-muted-foreground flex items-center gap-1 ml-2">
+              <Eye class="w-3.5 h-3.5" />
+              {{ news.views || 0 }} views
             </span>
           </div>
           
-          <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-8 leading-tight">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground mb-8 leading-[1.1] animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
             {{ news.titulo }}
           </h1>
 
-          <!-- Author/Meta (Optional) -->
-          <div class="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <div class="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-              <User class="w-4 h-4" />
+          <!-- Author -->
+          <div class="flex items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white shadow-lg ring-2 ring-background">
+              <User class="w-5 h-5" />
             </div>
-            <span>Por <span class="font-medium text-foreground">Equipe TechVerse</span></span>
+            <div class="text-left">
+              <p class="text-sm font-semibold text-foreground">Equipe TechVerse</p>
+              <p class="text-xs text-muted-foreground">Editor Chefe</p>
+            </div>
           </div>
         </div>
       </header>
 
       <!-- Hero Image -->
-      <div v-if="news.imagem" class="container mx-auto px-4 max-w-5xl -mt-8 mb-12">
-        <div class="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl border border-border/50">
+      <div v-if="news.imagem" class="container mx-auto px-4 max-w-5xl -mt-12 mb-16 relative z-20 animate-in fade-in zoom-in-95 duration-1000 delay-300">
+        <div class="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl border border-border/50 bg-muted group">
           <img 
             :src="news.imagem" 
             :alt="news.titulo"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
         </div>
       </div>
 
       <!-- Article Body -->
       <div class="container mx-auto px-4 max-w-3xl">
-        <div class="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-img:rounded-xl">
+        <div class="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-l-primary prose-blockquote:bg-muted/30 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg">
           <!-- Simple Markdown Rendering -->
           <div v-for="(block, index) in parsedContent" :key="index" class="mb-6">
             <!-- Headers -->
-            <h2 v-if="block.type === 'h2'" :id="'h2-'+index" class="scroll-mt-20">
+            <h2 v-if="block.type === 'h2'" :id="'h2-'+index" class="scroll-mt-24 text-2xl md:text-3xl mt-12 mb-6 pb-2 border-b border-border/50">
               {{ block.content }}
             </h2>
-            <h3 v-else-if="block.type === 'h3'" :id="'h3-'+index" class="scroll-mt-20">
+            <h3 v-else-if="block.type === 'h3'" :id="'h3-'+index" class="scroll-mt-24 text-xl md:text-2xl mt-8 mb-4 text-foreground/90">
               {{ block.content }}
             </h3>
             
             <!-- List -->
-            <ul v-else-if="block.type === 'list'">
-              <li v-for="(item, i) in block.items" :key="i">
+            <ul v-else-if="block.type === 'list'" class="space-y-2 my-6">
+              <li v-for="(item, i) in block.items" :key="i" class="flex items-start gap-2">
+                <span class="mt-2 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>
                 <span v-html="formatInline(item)"></span>
               </li>
             </ul>
 
             <!-- Table -->
-             <div v-else-if="block.type === 'table'" class="not-prose overflow-x-auto my-8 border border-border rounded-lg shadow-sm">
+             <div v-else-if="block.type === 'table'" class="not-prose overflow-x-auto my-8 border border-border rounded-lg shadow-sm bg-card">
               <table class="w-full text-sm text-left">
                 <thead class="bg-muted/50 text-xs uppercase font-semibold text-muted-foreground">
                   <tr>
-                    <th v-for="(header, h) in block.headers" :key="h" class="px-6 py-3">
+                    <th v-for="(header, h) in block.headers" :key="h" class="px-6 py-3 whitespace-nowrap">
                       {{ header }}
                     </th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-border">
-                  <tr v-for="(row, r) in block.rows" :key="r" class="bg-background hover:bg-muted/20">
-                    <td v-for="(cell, c) in row" :key="c" class="px-6 py-4 font-medium text-foreground">
+                  <tr v-for="(row, r) in block.rows" :key="r" class="bg-background hover:bg-muted/20 transition-colors">
+                    <td v-for="(cell, c) in row" :key="c" class="px-6 py-4 font-medium text-foreground whitespace-nowrap">
                       {{ cell }}
                     </td>
                   </tr>
@@ -109,45 +123,74 @@
             </div>
 
             <!-- Horizontal Rule -->
-            <hr v-else-if="block.type === 'hr'" />
+            <hr v-else-if="block.type === 'hr'" class="my-12 border-border" />
 
             <!-- Code Block (Simple) -->
-            <pre v-else-if="block.type === 'code'" class="bg-muted p-4 rounded-lg overflow-x-auto text-sm"><code>{{ block.content }}</code></pre>
+            <div v-else-if="block.type === 'code'" class="relative group my-6">
+              <pre class="bg-zinc-950 text-zinc-50 p-4 rounded-lg overflow-x-auto text-sm font-mono border border-zinc-800 shadow-inner"><code>{{ block.content }}</code></pre>
+            </div>
 
             <!-- Quote -->
-            <blockquote v-else-if="block.type === 'quote'" class="border-l-4 border-primary pl-4 italic text-muted-foreground">
-              {{ block.content }}
+            <blockquote v-else-if="block.type === 'quote'" class="border-l-4 border-primary pl-6 italic text-muted-foreground my-8 text-lg">
+              "{{ block.content }}"
             </blockquote>
 
             <!-- Paragraph -->
-            <p v-else>
+            <p v-else class="leading-relaxed text-foreground/90">
               <span v-html="formatInline(block.content)"></span>
             </p>
           </div>
         </div>
 
-        <!-- Footer -->
-        <div class="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <Button variant="ghost" as-child>
+        <!-- Share Section -->
+        <div class="mt-16 py-8 border-y border-border flex flex-col sm:flex-row justify-between items-center gap-6">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Compartilhar artigo:</span>
+            <div class="flex gap-2">
+              <a 
+                :href="`https://wa.me/?text=${encodeURIComponent(news.titulo + ' - ' + currentUrl)}`" 
+                target="_blank" 
+                class="w-10 h-10 rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110"
+                title="Compartilhar no WhatsApp"
+              >
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+              </a>
+              <a 
+                :href="`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`" 
+                target="_blank" 
+                class="w-10 h-10 rounded-full bg-[#0077b5]/10 text-[#0077b5] hover:bg-[#0077b5] hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110"
+                title="Compartilhar no LinkedIn"
+              >
+                <i class="fa-brands fa-linkedin-in text-lg"></i>
+              </a>
+              <a 
+                :href="`mailto:?subject=${encodeURIComponent(news.titulo)}&body=${encodeURIComponent('Confira esta notícia: ' + currentUrl)}`"
+                class="w-10 h-10 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-all duration-300 hover:scale-110"
+                title="Compartilhar por Email"
+              >
+                <i class="fa-regular fa-envelope text-lg"></i>
+              </a>
+              <button 
+                @click="copyLink"
+                class="w-10 h-10 rounded-full bg-muted text-muted-foreground hover:bg-foreground hover:text-background flex items-center justify-center transition-all duration-300 hover:scale-110"
+                title="Copiar Link"
+              >
+                <LinkIcon class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          <Button variant="outline" as-child class="group">
             <router-link to="/noticias">
-              <ArrowLeft class="w-4 h-4 mr-2" />
+              <ArrowLeft class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
               Voltar para o Blog
             </router-link>
           </Button>
-          
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-muted-foreground">Compartilhar:</span>
-            <Button variant="outline" size="icon" class="rounded-full w-8 h-8">
-              <i class="fa-brands fa-whatsapp text-sm"></i>
-            </Button>
-            <Button variant="outline" size="icon" class="rounded-full w-8 h-8">
-              <i class="fa-brands fa-linkedin text-sm"></i>
-            </Button>
-            <Button variant="outline" size="icon" class="rounded-full w-8 h-8">
-              <i class="fa-regular fa-envelope text-sm"></i>
-            </Button>
-          </div>
         </div>
+
+        <!-- Comments Section -->
+        <CommentsSection :news-id="news.id" />
+        
       </div>
     </article>
   </div>
@@ -159,12 +202,21 @@ import { useRoute } from 'vue-router'
 import { db } from '@/firebase/config'
 import { doc, getDoc, updateDoc, increment } from 'firebase/firestore'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, AlertCircle, User } from 'lucide-vue-next'
+import { ArrowLeft, AlertCircle, User, Calendar, Eye, Link as LinkIcon } from 'lucide-vue-next'
+import CommentsSection from '@/components/CommentsSection.vue'
+import { toast } from 'vue-sonner'
 
 const route = useRoute()
 const loading = ref(true)
 const error = ref(null)
 const news = ref(null)
+
+const currentUrl = computed(() => window.location.href)
+
+const copyLink = () => {
+  navigator.clipboard.writeText(currentUrl.value)
+  toast.success('Link copiado para a área de transferência!')
+}
 
 onMounted(async () => {
   const id = route.params.id
