@@ -212,19 +212,7 @@
     <Separator v-if="isAdmin" class="my-2" />
     <div v-if="isAdmin" class="px-4 py-2 text-xs font-medium text-muted-foreground">ADMINISTRAÇÃO</div>
 
-    <RouterLink v-if="isAdmin" to="/test-visuals" v-slot="{ isExactActive }">
-      <Button
-        variant="ghost"
-        class="w-full justify-start gap-2"
-        :class="{
-          'border-l-4 border-sidebar-active-border shadow-lg': isExactActive,
-        }"
-        @click="handleNavigate"
-      >
-        <Edit class="size-4" />
-        Gerenciar Promoções
-      </Button>
-    </RouterLink>
+
 
     <RouterLink v-if="isAdmin" to="/exportar-dados" v-slot="{ isExactActive }">
       <Button

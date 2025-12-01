@@ -223,6 +223,27 @@ const handleLogin = async () => {
 
 const handleSignUp = async () => {
   error.value = null
+
+  // Validação de email mais rigorosa
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  if (!emailRegex.test(email.value)) {
+    error.value = 'Por favor, insira um email válido.'
+    return
+  }
+
+  // Verificar comprimento das partes do email
+  const [localPart, domainPart] = email.value.split('@')
+  if (localPart.length < 3) {
+    error.value = 'O nome de usuário do email deve ter pelo menos 3 caracteres.'
+    return
+  }
+  
+  const domainName = domainPart.split('.')[0]
+  if (domainName.length < 2) {
+    error.value = 'O domínio do email parece inválido.'
+    return
+  }
+
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
     const user = userCredential.user

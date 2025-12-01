@@ -22,6 +22,9 @@
         </CardContent>
       </Card>
 
+      <!-- Painel de Gerenciamento Geral (Promoções, Notícias, Doações) -->
+      <PromoInfoPanel />
+
       <!-- Card de Configuração PIX -->
       <Card>
         <CardHeader>
@@ -463,6 +466,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExternalLink, Plus, RotateCcw, Pencil, Trash2, Gift, Save, CheckCircle2, XCircle, Database } from 'lucide-vue-next';
 import { useFirestore } from '@/composables/useFirestore';
 import { toast } from 'vue-sonner';
+import PromoInfoPanel from '@/components/PromoInfoPanel.vue';
 
 const { getPixConfig, savePixConfig } = useFirestore();
 

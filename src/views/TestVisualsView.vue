@@ -186,8 +186,7 @@
       </CardContent>
     </Card>
 
-    <!-- Painel Informativo: Promoções, Notícias e Doações -->
-    <PromoInfoPanel />
+
 
   </div>
 </template>
@@ -197,7 +196,7 @@ import { toast } from 'vue-sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import PromoInfoPanel from '@/components/PromoInfoPanel.vue';
+
 import { 
   Loader2, 
   CheckCircle, 

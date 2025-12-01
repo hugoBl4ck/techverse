@@ -359,8 +359,7 @@ export function useFirestore() {
       const newsRef = collection(db, 'noticias')
       const q = query(
         newsRef,
-        where('ativo', '==', true),
-        orderBy('dataPub', 'desc')
+        where('ativo', '==', true)
       )
       const snapshot = await getDocs(q)
 
