@@ -77,7 +77,7 @@
             <h2 v-if="block.type === 'h2'" :id="'h2-'+index" class="scroll-mt-20">
               {{ block.content }}
             </h2>
-            <h3 v-if="block.type === 'h3'" :id="'h3-'+index" class="scroll-mt-20">
+            <h3 v-else-if="block.type === 'h3'" :id="'h3-'+index" class="scroll-mt-20">
               {{ block.content }}
             </h3>
             
